@@ -1,0 +1,397 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Puppet Certificate verify fails without indications | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="Puppet 3.x Certificate verify fails without indications
+在部署Puppet时，要求Master的版本高于Client的版本。最近我在很少见的RHEL4上安装puppet时遇到无法获取证书的情况。
+环境如下：Puppet Master: Cent">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/11/17/puppet-certificate-verify-fails-without-indications/" title="Puppet Certificate verify fails without indications" itemprop="url">Puppet Certificate verify fails without indications</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2013-11-17T06:04:48.000Z" itemprop="datePublished">11月 17 2013</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>Puppet 3.x Certificate verify fails without indications</p>
+<p>在部署Puppet时，要求Master的版本高于Client的版本。最近我在很少见的RHEL4上安装puppet时遇到无法获取证书的情况。</p>
+<p>环境如下：<br>Puppet Master: Centos 6.4 openssl 1.0 Ruby 1.8.7  Puppet 3.3.2<br>Puppet Client: RedHat 4 openssl 0.9.7 Ruby 1.8.7  Puppet 3.3.2 </p>
+<p>最开始尝试时，Master采用yum安装，Client采用源码包编译。<br>client端运行 <code>puppet agent -t --server puppet.domain.com</code> 时提示：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="keyword">Error</span>: Could <span class="keyword">not</span> <span class="built_in">request</span> certificate: Unsupported digest algorithm (SHA256).
+Exiting; failed <span class="keyword">to</span> retrieve certificate <span class="keyword">and</span> waitforcert <span class="keyword">is</span> disabled
+</pre></td></tr></table></figure>
+
+<p>这时发现应该是版本不兼容导致，后上网在google bbs查询到：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>Puppet <span class="number">3.1</span><span class="number">.0</span> will never work <span class="keyword">with</span> an agent <span class="keyword">that</span> <span class="command">run</span> openssl library <span class="property">version</span> <span class="number">0.9</span><span class="number">.7</span> (which <span class="keyword">is</span> <span class="keyword">the</span> <span class="property">version</span> <span class="property">running</span> <span class="function_start"><span class="keyword">on</span></span> RH4)
+</pre></td></tr></table></figure>
+
+<p>可以采用的方法有：<br>1、升级openssl 至1.0<br>2、尝试降puppet版本<br>3、修改certificate_signer.rb文件</p>
+<p>考虑到后续的升级以及维护上考虑。暂时先使用方法2.进行puppet降级处理。<br>最终得到结论为：<br>RHEL4 需要在openssl 0.9.7  puppet 2.7.x 下才可以正常工作。<br>但由于与puppet 3.x 版本存在冲突。因此，需要将Master的版本同时降至2.7.x</p>
+<p>最终的环境为：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>Puppet Master: Centos 6.4 openssl 0.9.7 Ruby 1.8.7  Puppet 2.7.20
+Puppet Client: RedHat 4 openssl 0.9.7 Ruby 1.8.7  Puppet 2.7.20
+</pre></td></tr></table></figure>
+
+<p>各位在使用puppet时还是需要多注意下环境以及版本依赖。</p>
+<p>我只能吐槽下公司的RHEL4了。</p>
+<p>参考：<a href="https://groups.google.com/forum/#!msg/puppet-users/UJecs2MgkZo/OQ7-FQ4QXiEJ" target="_blank" rel="external">https://groups.google.com/forum/#!msg/puppet-users/UJecs2MgkZo/OQ7-FQ4QXiEJ</a></p>
+<p>未完待续，有空再试验下将openssl的版本进行升级，测试puppet 3.x是否可行。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/puppet/">puppet</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2013/11/17/puppet-certificate-verify-fails-without-indications/" data-title="Puppet Certificate verify fails without indications | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2013/12/09/feelings-after-upgrade/" title="Feelings after upgrade">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Feelings after upgrade</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2013/11/08/hexo-deploy-err/"  title="hexo deploy err">
+ <strong>NEXT:</strong><br/> 
+ <span>hexo deploy err
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

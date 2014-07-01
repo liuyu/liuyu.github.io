@@ -1,0 +1,475 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>puppet troubleshooting | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="Puppet 常见故障排错
+请求篇
+为什么使用“puppet cert —list”命令查看不到证书？
+答：puppet cert 必须要有root权限，需要使用 sudo puppet cert --list
+收到“certificates were not trusted”信息
+答：通常这种错误出现在重新安装了服务，但没有清除之前的证书。这个时候需要在Master和本地清除相关证书。 
+
+在Puppet Master上清除该主机证书：sudo puppet cert --clean {node certname}  
+在本地删除证书文件目录：sudo rm -r /etc/puppet/ssl; rm -r /var/lib/puppet/ssl">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/01/06/puppet-troubleshooting/" title="puppet troubleshooting" itemprop="url">puppet troubleshooting</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-01-06T09:18:00.000Z" itemprop="datePublished">1月 6 2014</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Puppet_常见故障排错"><span class="toc-number">1.</span> <span class="toc-text">Puppet 常见故障排错</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#请求篇"><span class="toc-number">1.1.</span> <span class="toc-text">请求篇</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么使用“puppet_cert_—list”命令查看不到证书？"><span class="toc-number">1.1.1.</span> <span class="toc-text">为什么使用“puppet cert —list”命令查看不到证书？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#收到“certificates_were_not_trusted”信息"><span class="toc-number">1.1.2.</span> <span class="toc-text">收到“certificates were not trusted”信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#客户端运行test时遇到如下错误"><span class="toc-number">1.1.3.</span> <span class="toc-text">客户端运行test时遇到如下错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到错误_“err:_Could_not_request_certificate:_Connection_refused_-_connect”"><span class="toc-number">1.1.4.</span> <span class="toc-text">遇到错误 “err: Could not request certificate: Connection refused - connect”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到“warning:_peer_certificate_won’t_be_verified_in_this_SSL_session”"><span class="toc-number">1.1.5.</span> <span class="toc-text">遇到“warning: peer certificate won’t be verified in this SSL session”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到“failed_to_retrieve_certificate_and_waitforcert_is_disabled”"><span class="toc-number">1.1.6.</span> <span class="toc-text">遇到“failed to retrieve certificate and waitforcert is disabled”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到“Failed_to_retrieve_current_state_of_resource:_Could_not_retrieve_information_from_source(s)”"><span class="toc-number">1.1.7.</span> <span class="toc-text">遇到“Failed to retrieve current state of resource: Could not retrieve information from source(s)”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Could_not_retrieve_information_from_environment_production_source(s)_puppet://”"><span class="toc-number">1.1.8.</span> <span class="toc-text">错误“Could not retrieve information from environment production source(s) puppet://”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Could_not_request_certificate:_undefined_method_‘closed?’”"><span class="toc-number">1.1.9.</span> <span class="toc-text">错误“Could not request certificate: undefined method ‘closed?’”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Change_from_absent_to_file_failed”"><span class="toc-number">1.1.10.</span> <span class="toc-text">错误“Change from absent to file failed”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Change_failed_…_Could_not_find_server”"><span class="toc-number">1.1.11.</span> <span class="toc-text">错误“Change failed … Could not find server”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Could_not_retrieve_catalog_from_remote_server”"><span class="toc-number">1.1.12.</span> <span class="toc-text">错误“Could not retrieve catalog from remote server”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Run_of_Puppet_configuration_client_already_in_progress”"><span class="toc-number">1.1.13.</span> <span class="toc-text">错误“Run of Puppet configuration client already in progress”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Cannot_override_local_resource_on_node”"><span class="toc-number">1.1.14.</span> <span class="toc-text">错误“Cannot override local resource on node”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Error_400_on_SERVER:_No_support_for_http_method_POST”"><span class="toc-number">1.1.15.</span> <span class="toc-text">错误“Error 400 on SERVER: No support for http method POST”</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#语法篇"><span class="toc-number">1.2.</span> <span class="toc-text">语法篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#排错思路篇"><span class="toc-number">1.3.</span> <span class="toc-text">排错思路篇</span></a></li></ol>
+		</div>
+		
+		<h1 id="Puppet_常见故障排错">Puppet 常见故障排错</h1>
+<h2 id="请求篇">请求篇</h2>
+<h3 id="为什么使用“puppet_cert_—list”命令查看不到证书？">为什么使用“puppet cert —list”命令查看不到证书？</h3>
+<p><strong>答</strong>：puppet cert 必须要有root权限，需要使用 <code>sudo puppet cert --list</code></p>
+<h3 id="收到“certificates_were_not_trusted”信息">收到“certificates were not trusted”信息</h3>
+<p><strong>答</strong>：通常这种错误出现在重新安装了服务，但没有清除之前的证书。这个时候需要在Master和本地清除相关证书。<br> </p>
+<ol>
+<li>在Puppet Master上清除该主机证书：<code>sudo puppet cert --clean {node certname}</code> <br> </li>
+<li>在本地删除证书文件目录：<code>sudo rm -r /etc/puppet/ssl; rm -r /var/lib/puppet/ssl</code></li>
+</ol>
+<a id="more"></a>
+
+<h3 id="客户端运行test时遇到如下错误">客户端运行test时遇到如下错误</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre><span class="built_in">err</span>: Could <span class="keyword">not</span> retrieve catalog from remote <span class="built_in">server</span>: hostname <span class="keyword">not</span> match <span class="keyword">with</span> the <span class="built_in">server</span> certificate
+warning: <span class="keyword">Not</span> using cache <span class="keyword">on</span> failed catalog
+<span class="built_in">err</span>: Could <span class="keyword">not</span> retrieve catalog; skipping run
+<span class="built_in">err</span>: Could <span class="keyword">not</span> send report: hostname <span class="keyword">not</span> match <span class="keyword">with</span> the <span class="built_in">server</span> certificate
+</pre></td></tr></table></figure>
+
+<p><strong>答</strong>：解决方案是 <em>修改服务器的主机名</em> 和 <em>本机的hosts解析</em><br>官方提示在遇到<code>hostname not match with the server certificate</code>错误信息提示时，需要检查Master的主机名与agent解析时是否一致。否则会导致无法进行下一步，解决步骤如下：<br></p>
+<ol>
+<li>查看Master认证的主机名： <code>$ sudo puppet master --configprint certname</code><br> </li>
+<li>停止master服务：<code>sudo /etc/init.d/puppetmaster stop</code><br> </li>
+<li>删除master的私钥和公钥：<code>$ sudo find $(puppet master --configprint ssldir) -name &quot;$(puppet master --configprint certname).pem&quot; -delete</code><br> </li>
+<li>在主配置文件<code>/etc/puppet/puppet.conf</code>中配置<em>certname</em>选项指定master认证主机名，建议与hostname保持一致。<br\></br\></li>
+<li>启动master进行测试，<code>$ sudo puppet master --no-daemonize --verbose</code> <br></li>
+<li>确定OK后可以启动Master：<code>sudo /etc/init.d/puppetmaster start</code><br> </li>
+</ol>
+<h3 id="遇到错误_“err:_Could_not_request_certificate:_Connection_refused_-_connect”">遇到错误 “err: Could not request certificate: Connection refused - connect”</h3>
+<p><strong>答</strong>：无法连接至master。有如下几种情况：<br> </p>
+<ol>
+<li>Master没有启动 <br> </li>
+<li>Master防火墙没有开8140 port or close iptables firewall <br></li>
+<li>agent上没有指定master hosts’IP或者是无法解析master’IP <br></li>
+</ol>
+<p>与此同类的错误还有”err: Could not request certificate: getaddrinfo: Name or service not known”但解决方案同上。</p>
+<h3 id="遇到“warning:_peer_certificate_won’t_be_verified_in_this_SSL_session”">遇到“warning: peer certificate won’t be verified in this SSL session”</h3>
+<p><strong>答</strong>：master没有颁发证书，在master查看相关客户端证书请求后进行颁发。</p>
+<ol>
+<li>查看未颁发证书的客户端：<code>sudo puppet cert list</code> <br></li>
+<li>颁发证书：<code>sudo puppet cert sign {node certname}</code></li>
+</ol>
+<h3 id="遇到“failed_to_retrieve_certificate_and_waitforcert_is_disabled”">遇到“failed to retrieve certificate and waitforcert is disabled”</h3>
+<p><strong>答</strong>：证书失效或颁发不正当，清除后重试。</p>
+<ol>
+<li>Master清除证书命令：<code>sudo puppet cert clean {node certname}</code> <br></li>
+<li>客户端删除证书目录：<code>sudo rm -r /etc/puppet/ssl; rm -r /var/lib/puppet/ssl</code></li>
+</ol>
+<h3 id="遇到“Failed_to_retrieve_current_state_of_resource:_Could_not_retrieve_information_from_source(s)”">遇到“Failed to retrieve current state of resource: Could not retrieve information from source(s)”</h3>
+<p>错误提示类似于：<br><code>err: //test/File[/tmp/foo]: Failed to retrieve current state of resource: Could not retrieve information from source(s) puppet:///test/foo at /etc/puppet/modules test/manifests/init.pp:5</code></p>
+<p><strong>答</strong>:这种错误大家比较常见，一般是配置文件写得有问题导致，在file资源的写法中，如果采用模块当前目录下的file。配置文件应该写为<code>source =&gt; &quot;puppet:///test/foo&quot;</code><br>代码已有提示 <code>test/manifests/init.pp:5</code>第5行写法有误。</p>
+<h3 id="错误“Could_not_retrieve_information_from_environment_production_source(s)_puppet://”">错误“Could not retrieve information from environment production source(s) puppet://”</h3>
+<p>这也是比较常见的错误，提示如下：<br><code>err: /File[/var/lib/puppet/lib]: Could not evaluate: Could not retrieve
+information from environment production source(s) puppet://foo/plugins</code><br><br><strong>答</strong>：这是Master配置文件不当，需要在puppet.conf中配置 <code>pluginsync=false</code> 或者在任意模块目录创建lib自定义一个fact，不过这带来的坏处是所有的agent都会同步此lib。</p>
+<h3 id="错误“Could_not_request_certificate:_undefined_method_‘closed?’”">错误“Could not request certificate: undefined method ‘closed?’”</h3>
+<p>错误提示如下：<br><code>err: Could not request certificate: undefined method &#39;closed?&#39; for nil:NilClass Exiting; failed to retrieve certificate and watiforcert is disabled</code> <br><br><strong>答</strong>： 通常是权限或防火墙导致，需要确保agent有root权限能够读取certificates文件，也就是/var/lib/puppet/ssl目录权限。同时检查8140端口是否被墙。</p>
+<h3 id="错误“Change_from_absent_to_file_failed”">错误“Change from absent to file failed”</h3>
+<p>错误提示：<code>err: //test/File[/tmp/missing/foo]/ensure: change from absent to file failed: Could not set file on ensure: No such file or directory - /tmp/missing/foo at /etc/puppet/modules/test/manifests/init.pp:5</code> <br><br><strong>答</strong>：这个错误提示很明显，目录不存在，解决方案就是创建<code>/tmp/missing</code>目录，可以采用puppet file directory来创建，或者手工创建。</p>
+<h3 id="错误“Change_failed_…_Could_not_find_server”">错误“Change failed … Could not find server”</h3>
+<p>错误提示：<code>err: //test/File[/tmp/foo]/content: change from {md5}068008008418dff20750a94336318974 to {md5}8db2d67767577c70b1251fd80ad32943 failed: Could not find server puppet</code><br><br><strong>答</strong>： 这个错误是配置了filebucket，但在配置server name时采用的是puppet，导致agent无法找到puppet master，需要使用完整的域名。配置如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="tag">filebucket</span> <span class="rules">{
+    <span class="rule"><span class="attribute">puppetmaster</span>:<span class="value"> server =&gt; <span class="string">"puppet1.example.com"</span>
+</span></span></span>}
+</pre></td></tr></table></figure><br>### 错误“undefined method `closed?’ for nil:NilClass”<br>错误提示: <code>err: Could not retrieve catalog from remote server: undefined method closed? for nil:NilClass</code><br><br><strong>答</strong>： 语法配置错误，请检查语法，建议安装puppet-lint. <a href="https://github.com/rodjek/puppet-lint" target="_blank" rel="external">https://github.com/rodjek/puppet-lint</a><br><br>### 错误“certificate verify failed”<br>错误提示：<code>err: /File[/var/lib/puppet/lib]: Failed to generate additional resources using &#39;eval_generate&#39;: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed
+err: /File[/var/lib/puppet/lib]: Failed to retrieve current state of resource: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed Could not retrieve file metadata for puppet://puppet.example.com/plugins: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed
+err: Could not retrieve catalog from remote server: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed</code> <br><br><strong>答</strong>： 证书验证失败，可能是由于服务重装，多个master验证，等原因导致，删除本地证书目录，重新进行授权即可。agent删除证书目录命令：<code>find /var/lib/puppet -type f -print0 |xargs -0r rm</code><br><br>### 错误“no certificate found and waitforcert is disabled”<br>错误提示：<code>warning: peer certificate won&#39;t be verified in this SSL session
+Exiting; no certificate found and waitforcert is disabled</code>  <br><br><strong>答</strong>： Puppet Master没有给该机器授权，颁发签名证书。<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>puppet cert list (查看未颁发签名证书的机器列表)
+puppet cert sign node1<span class="preprocessor">.example</span><span class="preprocessor">.com</span> （颁发签名证书）
+</pre></td></tr></table></figure>
+
+<h3 id="错误“Could_not_retrieve_catalog_from_remote_server”">错误“Could not retrieve catalog from remote server”</h3>
+<p>错误提示：<code>err: Could not retrieve catalog from remote server: No such file or directory - /var/lib/puppet/client_yaml/catalog</code><br><strong>答</strong>： 没有创建yaml相关的文件，所以导致agent无法写。在使用yaml时比较常见。</p>
+<h3 id="错误“Run_of_Puppet_configuration_client_already_in_progress”">错误“Run of Puppet configuration client already in progress”</h3>
+<p>错误提示：<code>notice: Run of Puppet configuration client already in progress; skipping</code><br><strong>答</strong>： puppet agent进程正在后台运行，如果你使用puppet agent —test时会报如上错误，可以采用<code>ps axf</code>命令查看puppet进程。然后查看puppet 进程锁文件 <code>/var/lib/puppet/state/puppetdlock</code> 是否已经存在。puppet 3.x 有效地改进了这一错误，取消掉了puppet kick功能。理由就是在kick时可能agent正在运行，会导致大量的失败。</p>
+<h3 id="错误“Cannot_override_local_resource_on_node”">错误“Cannot override local resource on node”</h3>
+<p>错误提示：<code>err: Could not retrieve catalog from remote server: Error 400 on SERVER: Exported resource Opsviewmonitored[foo] cannot override local resource on node bar.example.com</code><br><strong>答</strong>： export 虚拟资源时会出现此错误，可能是因为重复定义，或其它原因，给出的解决方案是运行<code>puppet clean node</code>。然后查询数据库相关的信息<code>select hosts.name from hosts,resources where restype=&#39;Opsviewmonitored&#39; and title=&#39;foo&#39; and hosts.id = resources.host_id;</code></p>
+<h3 id="错误“Error_400_on_SERVER:_No_support_for_http_method_POST”">错误“Error 400 on SERVER: No support for http method POST”</h3>
+<p>错误提示：<code>err: Could not retrieve catalog from remote server: Error 400 on SERVER: No support for http method POST</code><br><strong>答</strong>： 版本问题。Master的版本一定要高于Client。</p>
+<hr>
+<h2 id="语法篇">语法篇</h2>
+<p>略，采用puppet-lint进行排查吧。</p>
+<h2 id="排错思路篇">排错思路篇</h2>
+<p>目前大部分错误都集中在授权，以前Hosts或DNS解析上。这需要去简单理解puppet的工作原理，然后再根据错误提示进行修改。很多人在收到错误提示后，都不思考或查看，这需要做出一些改变。</p>
+<p>回头有空再整理些架构上的case吧。 </p>
+<p>参考  <a href="http://docs.puppetlabs.com/guides/troubleshooting.html" target="_blank" rel="external">官方troubleshooting</a> </p>
+<p>参考  <a href="http://bitcube.co.uk/content/puppet-errors-explained" target="_blank" rel="external">Puppet errors explained</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/puppet/">puppet</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Puppet/">Puppet</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2014/01/06/puppet-troubleshooting/" data-title="puppet troubleshooting | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/01/22/linux-tcpip-tuning/" title="linux tcpip tuning">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  linux tcpip tuning</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/01/04/the-best-books-my-read-in-2013/"  title="the best books my read in 2013">
+ <strong>NEXT:</strong><br/> 
+ <span>the best books my read in 2013
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Puppet_常见故障排错"><span class="toc-number">1.</span> <span class="toc-text">Puppet 常见故障排错</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#请求篇"><span class="toc-number">1.1.</span> <span class="toc-text">请求篇</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么使用“puppet_cert_—list”命令查看不到证书？"><span class="toc-number">1.1.1.</span> <span class="toc-text">为什么使用“puppet cert —list”命令查看不到证书？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#收到“certificates_were_not_trusted”信息"><span class="toc-number">1.1.2.</span> <span class="toc-text">收到“certificates were not trusted”信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#客户端运行test时遇到如下错误"><span class="toc-number">1.1.3.</span> <span class="toc-text">客户端运行test时遇到如下错误</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到错误_“err:_Could_not_request_certificate:_Connection_refused_-_connect”"><span class="toc-number">1.1.4.</span> <span class="toc-text">遇到错误 “err: Could not request certificate: Connection refused - connect”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到“warning:_peer_certificate_won’t_be_verified_in_this_SSL_session”"><span class="toc-number">1.1.5.</span> <span class="toc-text">遇到“warning: peer certificate won’t be verified in this SSL session”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到“failed_to_retrieve_certificate_and_waitforcert_is_disabled”"><span class="toc-number">1.1.6.</span> <span class="toc-text">遇到“failed to retrieve certificate and waitforcert is disabled”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#遇到“Failed_to_retrieve_current_state_of_resource:_Could_not_retrieve_information_from_source(s)”"><span class="toc-number">1.1.7.</span> <span class="toc-text">遇到“Failed to retrieve current state of resource: Could not retrieve information from source(s)”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Could_not_retrieve_information_from_environment_production_source(s)_puppet://”"><span class="toc-number">1.1.8.</span> <span class="toc-text">错误“Could not retrieve information from environment production source(s) puppet://”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Could_not_request_certificate:_undefined_method_‘closed?’”"><span class="toc-number">1.1.9.</span> <span class="toc-text">错误“Could not request certificate: undefined method ‘closed?’”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Change_from_absent_to_file_failed”"><span class="toc-number">1.1.10.</span> <span class="toc-text">错误“Change from absent to file failed”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Change_failed_…_Could_not_find_server”"><span class="toc-number">1.1.11.</span> <span class="toc-text">错误“Change failed … Could not find server”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Could_not_retrieve_catalog_from_remote_server”"><span class="toc-number">1.1.12.</span> <span class="toc-text">错误“Could not retrieve catalog from remote server”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Run_of_Puppet_configuration_client_already_in_progress”"><span class="toc-number">1.1.13.</span> <span class="toc-text">错误“Run of Puppet configuration client already in progress”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Cannot_override_local_resource_on_node”"><span class="toc-number">1.1.14.</span> <span class="toc-text">错误“Cannot override local resource on node”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误“Error_400_on_SERVER:_No_support_for_http_method_POST”"><span class="toc-number">1.1.15.</span> <span class="toc-text">错误“Error 400 on SERVER: No support for http method POST”</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#语法篇"><span class="toc-number">1.2.</span> <span class="toc-text">语法篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#排错思路篇"><span class="toc-number">1.3.</span> <span class="toc-text">排错思路篇</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

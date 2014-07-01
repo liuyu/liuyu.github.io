@@ -1,0 +1,614 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>sed 和 awk 示例操作对比 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="sed 和 awk 都是 Linux下常用的流编辑器，他们各有各的特色，本文并不是要做什么对比，而是权当好玩，把《SED单行脚本快速参考》这文章，用 awk 做了一遍~至于孰好孰坏，那真是很难评论了。一般来说，sed的命令会更短小一些，同时也更难读懂；而 awk 稍微长点，但是 if、while这样的，逻辑性比较强，更加像“程序”。到底喜欢用哪个，就让各位看官自己决定吧！
+文本间隔：
+
+在每一行后面增加一空行sed G
+awk &amp;#39;{printf(&amp;quot;%s\n\n&amp;quot;,$0)}&amp;#39;
+将原来的所有空行删除并在每一行后面增加一空行。
+这样在输出的文本中每一行后面将有且只有一空行。sed &amp;#39;/^$/d;G&amp;#39;
+awk &amp;#39;!/^$/{printf(&amp;quot;%s\n\n&amp;quot;,$0)}&amp;#39;">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/sed-vs-awk/" title="sed 和 awk 示例操作对比" itemprop="url">sed 和 awk 示例操作对比</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T09:26:05.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>sed 和 awk 都是 Linux下常用的流编辑器，他们各有各的特色，本文并不是要做什么对比，而是权当好玩，把《SED单行脚本快速参考》这文章，用 awk 做了一遍~至于孰好孰坏，那真是很难评论了。一般来说，sed的命令会更短小一些，同时也更难读懂；而 awk 稍微长点，但是 if、while这样的，逻辑性比较强，更加像“程序”。到底喜欢用哪个，就让各位看官自己决定吧！</p>
+<p>文本间隔：</p>
+<ul>
+<li>在每一行后面增加一空行<br><code>sed G
+awk &#39;{printf(&quot;%s\n\n&quot;,$0)}&#39;</code></li>
+<li>将原来的所有空行删除并在每一行后面增加一空行。</li>
+<li><p>这样在输出的文本中每一行后面将有且只有一空行。<br><code>sed &#39;/^$/d;G&#39;
+awk &#39;!/^$/{printf(&quot;%s\n\n&quot;,$0)}&#39;</code></p>
+<a id="more"></a>
+</li>
+<li><p>在每一行后面增加两行空行<br><code>sed &#39;G;G&#39;
+awk &#39;{printf(&quot;%s\n\n\n&quot;,$0)}&#39;</code></p>
+</li>
+<li>将第一个脚本所产生的所有空行删除（即删除所有偶数行）<br><code>sed &#39;n;d&#39;
+awk &#39;{f=!f;if(f)print $0}&#39;</code></li>
+<li>在匹配式样“regex”的行之前插入一空行<br><code>sed &#39;/regex/{x;p;x;}&#39;
+awk &#39;{if(/regex/)printf(&quot;\n%s\n&quot;,$0);else print $0}&#39;</code></li>
+<li>在匹配式样“regex”的行之后插入一空行<br><code>sed &#39;/regex/G&#39;
+awk &#39;{if(/regex/)printf(&quot;%s\n\n&quot;,$0);else print $0}&#39;</code></li>
+<li>在匹配式样“regex”的行之前和之后各插入一空行<br><code>sed &#39;/regex/{x;p;x;G;}&#39;
+awk &#39;{if(/regex/)printf(&quot;\n%s\n\n&quot;,$0);else print $0}&#39;</code><br>编号：</li>
+<li>为文件中的每一行进行编号（简单的左对齐方式）。这里使用了“制表符”</li>
+<li>（tab，见本文末尾关于’\t’的用法的描述）而不是空格来对齐边缘。<br><code>sed = filename | sed &#39;N;s/\n/\t/&#39;
+awk &#39;{i++;printf(&quot;%d\t%s\n&quot;,i,$0)}&#39;</code></li>
+<li>对文件中的所有行编号（行号在左，文字右端对齐）。<br><code>sed = filename | sed &#39;N; s/^/ /; s/ *\(.\{6,\}\)\n/\1 /&#39;
+awk &#39;{i++;printf(&quot;%6d %s\n&quot;,i,$0)}&#39;</code></li>
+<li>对文件中的所有行编号，但只显示非空白行的行号。<br><code>sed &#39;/./=&#39; filename | sed &#39;/./N; s/\n/ /&#39;
+awk &#39;{i++;if(!/^$/)printf(&quot;%d %s\n&quot;,i,$0);else print}&#39;</code></li>
+<li>计算行数 （模拟 “wc -l”）<br><code>sed -n &#39;$=&#39;
+awk &#39;{i++}END{print i}&#39;</code><br>文本转换和替代：</li>
+<li>Unix环境：转换DOS的新行符（CR/LF）为Unix格式。<br><code>sed &#39;s/.$//&#39; # 假设所有行以CR/LF结束
+sed &#39;s/^M$//&#39; # 在bash/tcsh中，将按Ctrl-M改为按Ctrl-V
+sed &#39;s/\x0D$//&#39; # ssed、gsed 3.02.80，及更高版本
+awk &#39;{sub(/\x0D$/,&quot;&quot;);print $0}&#39;</code></li>
+<li>Unix环境：转换Unix的新行符（LF）为DOS格式。<br><code>sed &quot;s/$/</code>echo -e \\r<code>/&quot; # 在ksh下所使用的命令
+sed &#39;s/$&#39;&quot;/</code>echo \\r<code>/&quot; # 在bash下所使用的命令
+sed &quot;s/$/</code>echo \\r<code>/&quot; # 在zsh下所使用的命令
+sed &#39;s/$/\r/&#39; # gsed 3.02.80 及更高版本
+awk &#39;{printf(&quot;%s\r\n&quot;,$0)}&#39;</code></li>
+<li>DOS环境：转换Unix新行符（LF）为DOS格式。<br><code>sed &quot;s/$//&quot; # 方法 1
+sed -n p # 方法 2</code><br>DOS环境的略过</li>
+<li>DOS环境：转换DOS新行符（CR/LF）为Unix格式。</li>
+<li>下面的脚本只对UnxUtils sed 4.0.7 及更高版本有效。要识别UnxUtils版本的</li>
+<li>sed可以通过其特有的“–text”选项。你可以使用帮助选项（“–help”）看</li>
+<li>其中有无一个“–text”项以此来判断所使用的是否是UnxUtils版本。其它DOS</li>
+<li>版本的的sed则无法进行这一转换。但可以用“tr”来实现这一转换。<br><code>sed &quot;s/\r//&quot; infile &amp;gt;outfile # UnxUtils sed v4.0.7 或更高版本
+tr -d \r outfile # GNU tr 1.22 或更高版本</code><br>DOS环境的略过</li>
+<li>将每一行前导的“空白字符”（空格，制表符）删除</li>
+<li>使之左对齐<br><code>sed &#39;s/^[ \t]*//&#39; # 见本文末尾关于&#39;\t&#39;用法的描述
+awk &#39;{sub(/^[ \t]+/,&quot;&quot;);print $0}&#39;</code></li>
+<li>将每一行拖尾的“空白字符”（空格，制表符）删除<br><code>sed &#39;s/[ \t]*$//&#39; # 见本文末尾关于&#39;\t&#39;用法的描述
+awk &#39;{sub(/[ \t]+$/,&quot;&quot;);print $0}&#39;</code></li>
+<li>将每一行中的前导和拖尾的空白字符删除<br><code>sed &#39;s/^[ \t]*//;s/[ \t]*$//&#39;
+awk &#39;{sub(/^[ \t]+/,&quot;&quot;);sub(/[ \t]+$/,&quot;&quot;);print $0}&#39;</code></li>
+<li>在每一行开头处插入5个空格（使全文向右移动5个字符的位置）<br><code>sed &#39;s/^/ /&#39;
+awk &#39;{printf(&quot; %s\n&quot;,$0)}&#39;</code></li>
+<li>以79个字符为宽度，将所有文本右对齐</li>
+<li>78个字符外加最后的一个空格<br><code>sed -e :a -e &#39;s/^.\{1,78\}$/ &amp;amp;/;ta&#39;
+awk &#39;{printf(&quot;%79s\n&quot;,$0)}&#39;</code></li>
+<li>以79个字符为宽度，使所有文本居中。在方法1中，为了让文本居中每一行的前</li>
+<li>头和后头都填充了空格。 在方法2中，在居中文本的过程中只在文本的前面填充</li>
+<li>空格，并且最终这些空格将有一半会被删除。此外每一行的后头并未填充空格。<br><code>sed -e :a -e &#39;s/^.\{1,77\}$/ &amp;amp; /;ta&#39; # 方法1
+sed -e :a -e &#39;s/^.\{1,77\}$/ &amp;amp;/;ta&#39; -e &#39;s/\( *\)\1/\1/&#39; # 方法2
+awk &#39;{for(i=0;i&amp;lt;39-length($0)/2;i++)printf(&quot; &quot;);printf(&quot;%s\n&quot;,$0)}&#39; #相当于上面的方法二</code></li>
+<li>在每一行中查找字串“foo”，并将找到的“foo”替换为“bar”<br><code>sed &#39;s/foo/bar/&#39; # 只替换每一行中的第一个“foo”字串
+sed &#39;s/foo/bar/4&#39; # 只替换每一行中的第四个“foo”字串
+sed &#39;s/foo/bar/g&#39; # 将每一行中的所有“foo”都换成“bar”
+sed &#39;s/\(.*\)foo\(.*foo\)/\1bar\2/&#39; # 替换倒数第二个“foo”
+sed &#39;s/\(.*\)foo/\1bar/&#39; # 替换最后一个“foo”
+awk &#39;{gsub(/foo/,&quot;bar&quot;);print $0}&#39; # 将每一行中的所有“foo”都换成“bar”</code></li>
+<li>只在行中出现字串“baz”的情况下将“foo”替换成“bar”<br><code>sed &#39;/baz/s/foo/bar/g&#39;
+awk &#39;{if(/baz/)gsub(/foo/,&quot;bar&quot;);print $0}&#39;</code></li>
+<li>将“foo”替换成“bar”，并且只在行中未出现字串“baz”的情况下替换<br><code>sed &#39;/baz/!s/foo/bar/g&#39;
+awk &#39;{if(/baz$/)gsub(/foo/,&quot;bar&quot;);print $0}&#39;</code></li>
+<li>不管是“scarlet”“ruby”还是“puce”，一律换成“red”<br><code>sed &#39;s/scarlet/red/g;s/ruby/red/g;s/puce/red/g&#39; #对多数的sed都有效
+gsed &#39;s/scarlet\|ruby\|puce/red/g&#39; # 只对GNU sed有效
+awk &#39;{gsub(/scarlet|ruby|puce/,&quot;red&quot;);print $0}&#39;</code></li>
+<li>倒置所有行，第一行成为最后一行，依次类推（模拟“tac”）。</li>
+<li>由于某些原因，使用下面命令时HHsed v1.5会将文件中的空行删除<br><code>sed &#39;1!G;h;$!d&#39; # 方法1
+sed -n &#39;1!G;h;$p&#39; # 方法2
+awk &#39;{A[i++]=$0}END{for(j=i-1;j&amp;gt;=0;j--)print A[j]}&#39;</code></li>
+<li>将行中的字符逆序排列，第一个字成为最后一字，……（模拟“rev”）<br><code>sed &#39;/\n/!G;s/\(.\)\(.*\n\)/&amp;amp;\2\1/;//D;s/.//&#39;
+awk &#39;{for(i=length($0);i&amp;gt;0;i--)printf(&quot;%s&quot;,substr($0,i,1));printf(&quot;\n&quot;)}&#39;</code></li>
+<li>将每两行连接成一行（类似“paste”）<br><code>sed &#39;$!N;s/\n/ /&#39;
+awk &#39;{f=!f;if(f)printf(&quot;%s&quot;,$0);else printf(&quot; %s\n&quot;,$0)}&#39;</code></li>
+<li>如果当前行以反斜杠“\”结束，则将下一行并到当前行末尾</li>
+<li>并去掉原来行尾的反斜杠<br><code>sed -e :a -e &#39;/\\$/N; s/\\\n//; ta&#39;
+awk &#39;{if(/\\$/)printf(&quot;%s&quot;,substr($0,0,length($0)-1));else printf(&quot;%s\n&quot;,$0)}&#39;</code></li>
+<li>如果当前行以等号开头，将当前行并到上一行末尾</li>
+<li>并以单个空格代替原来行头的“=”<br><code>sed -e :a -e &#39;$!N;s/\n=/ /;ta&#39; -e &#39;P;D&#39;
+awk &#39;{if(/^=/)printf(&quot; %s&quot;,substr($0,2));else printf(&quot;%s%s&quot;,a,$0);a=&quot;\n&quot;}END{printf(&quot;\n&quot;)}&#39;</code></li>
+<li>为数字字串增加逗号分隔符号，将“1234567”改为“1,234,567”<br><code>gsed &#39;:a;s/\B[0-9]\{3\}\&amp;gt;/,&amp;amp;/;ta&#39; # GNU sed
+sed -e :a -e &#39;s/\(.*[0-9]\)\([0-9]\{3\}\)/\1,\2/;ta&#39; # 其他sed</code><br>*awk的正则没有后向匹配和引用，搞的比较狼狈，呵呵。<br><code>awk &#39;{while(match($0,/[0-9][0-9][0-9][0-9]+/)){$0=sprintf(&quot;%s,%s&quot;,substr($0,0,RSTART+RLENGTH-4),substr($0,RSTART+RLENGTH-3))}print $0}&#39;</code></li>
+<li>为带有小数点和负号的数值增加逗号分隔符（GNU sed）<br><code>gsed -r &#39;:a;s/(^|[^0-9.])([0-9]+)([0-9]{3})/\1\2,\3/g;ta&#39;
+*和上例差不多
+awk &#39;{while(match($0,/[^\.0-9][0-9][0-9][0-9][0-9]+/)){$0=sprintf(&quot;%s,%s&quot;,substr($0,0,RSTART+RLENGTH-4),substr($0,RSTART+RLENGTH-3))}print $0}&#39;</code></li>
+<li>在每5行后增加一空白行 （在第5，10，15，20，等行后增加一空白行）<br><code>gsed &#39;0~5G&#39; # 只对GNU sed有效
+sed &#39;n;n;n;n;G;&#39; # 其他sed
+awk &#39;{print $0;i++;if(i==5){printf(&quot;\n&quot;);i=0}}&#39;</code><br>选择性地显示特定行：</li>
+<li>显示文件中的前10行 （模拟“head”的行为）<br><code>sed 10q
+awk &#39;{print;if(NR==10)exit}&#39;</code></li>
+<li>显示文件中的第一行 （模拟“head -1”命令）<br><code>sed q
+awk &#39;{print;exit}&#39;</code></li>
+<li>显示文件中的最后10行 （模拟“tail”）<br><code>sed -e :a -e &#39;$q;N;11,$D;ba&#39;</code><br>*用awk干这个有点亏，得全文缓存，对于大文件肯定很慢<br><code>awk &#39;{A[NR]=$0}END{for(i=NR-9;i&amp;lt;=NR;i++)print A}&#39;</code></li>
+<li>显示文件中的最后2行（模拟“tail -2”命令）<br><code>sed &#39;$!N;$!D&#39;
+awk &#39;{A[NR]=$0}END{for(i=NR-1;i&amp;lt;=NR;i++)print A}&#39;</code></li>
+<li>显示文件中的最后一行（模拟“tail -1”）<br><code>sed &#39;$!d&#39; # 方法1
+sed -n &#39;$p&#39; # 方法2
+*这个比较好办，只存最后一行了。
+awk &#39;{A=$0}END{print A}&#39;</code></li>
+<li>显示文件中的倒数第二行<br><code>sed -e &#39;$!{h;d;}&#39; -e x # 当文件中只有一行时，输出空行
+sed -e &#39;1{$q;}&#39; -e &#39;$!{h;d;}&#39; -e x # 当文件中只有一行时，显示该行
+sed -e &#39;1{$d;}&#39; -e &#39;$!{h;d;}&#39; -e x # 当文件中只有一行时，不输出</code><br>*存两行呗（当文件中只有一行时，输出空行）<br><code>awk &#39;{B=A;A=$0}END{print B}&#39;</code></li>
+<li>只显示匹配正则表达式的行（模拟“grep”）<br><code>sed -n &#39;/regexp/p&#39; # 方法1
+sed &#39;/regexp/!d&#39; # 方法2
+awk &#39;/regexp/{print}&#39;</code></li>
+<li>只显示“不”匹配正则表达式的行（模拟“grep -v”）<br><code>sed -n &#39;/regexp/!p&#39; # 方法1，与前面的命令相对应
+sed &#39;/regexp/d&#39; # 方法2，类似的语法
+awk &#39;!/regexp/{print}&#39;</code></li>
+<li>查找“regexp”并将匹配行的上一行显示出来，但并不显示匹配行<br><code>sed -n &#39;/regexp/{g;1!p;};h&#39;
+awk &#39;/regexp/{print A}{A=$0}&#39;</code></li>
+<li>查找“regexp”并将匹配行的下一行显示出来，但并不显示匹配行<br><code>sed -n &#39;/regexp/{n;p;}&#39;
+awk &#39;{if(A)print;A=0}/regexp/{A=1}&#39;</code></li>
+<li>显示包含“regexp”的行及其前后行，并在第一行之前加上“regexp”所在行的行号 （类似“grep -A1 -B1”）<br><code>sed -n -e &#39;/regexp/{=;x;1!p;g;$!N;p;D;}&#39; -e h
+awk &#39;{if(F)print;F=0}/regexp/{print NR;print b;print;F=1}{b=$0}&#39;</code></li>
+<li>显示包含“AAA”、“BBB”和“CCC”的行（任意次序）<br><code>sed &#39;/AAA/!d; /BBB/!d; /CCC/!d&#39; # 字串的次序不影响结果
+awk &#39;{if(match($0,/AAA/) &amp;amp;&amp;amp; match($0,/BBB/) &amp;amp;&amp;amp; match($0,/CCC/))print}&#39;</code></li>
+<li>显示包含“AAA”、“BBB”和“CCC”的行（固定次序）<br><code>sed &#39;/AAA.*BBB.*CCC/!d&#39;
+awk &#39;{if(match($0,/AAA.*BBB.*CCC/))print}&#39;</code></li>
+<li>显示包含“AAA”“BBB”或“CCC”的行 （模拟“egrep”）<br><code>sed -e &#39;/AAA/b&#39; -e &#39;/BBB/b&#39; -e &#39;/CCC/b&#39; -e d # 多数sed
+gsed &#39;/AAA\|BBB\|CCC/!d&#39; # 对GNU sed有效
+awk &#39;/AAA/{print;next}/BBB/{print;next}/CCC/{print}&#39;
+awk &#39;/AAA|BBB|CCC/{print}&#39;</code></li>
+<li>显示包含“AAA”的段落 （段落间以空行分隔）</li>
+<li>HHsed v1.5 必须在“x;”后加入“G;”，接下来的3个脚本都是这样<br><code>sed -e &#39;/./{H;$!d;}&#39; -e &#39;x;/AAA/!d;&#39;
+awk &#39;BEGIN{RS=&quot;&quot;}/AAA/{print}&#39;
+awk -vRS= &#39;/AAA/{print}&#39;</code></li>
+<li>显示包含“AAA”“BBB”和“CCC”三个字串的段落 （任意次序）<br><code>sed -e &#39;/./{H;$!d;}&#39; -e &#39;x;/AAA/!d;/BBB/!d;/CCC/!d&#39;
+awk -vRS= &#39;{if(match($0,/AAA/) &amp;amp;&amp;amp; match($0,/BBB/) &amp;amp;&amp;amp; match($0,/CCC/))print}&#39;</code></li>
+<li>显示包含“AAA”、“BBB”、“CCC”三者中任一字串的段落 （任意次序）<br><code>sed -e &#39;/./{H;$!d;}&#39; -e &#39;x;/AAA/b&#39; -e &#39;/BBB/b&#39; -e &#39;/CCC/b&#39; -e d
+gsed &#39;/./{H;$!d;};x;/AAA\|BBB\|CCC/b;d&#39; # 只对GNU sed有效
+awk -vRS= &#39;/AAA|BBB|CCC/{print &quot;&quot;;print}&#39;</code></li>
+<li>显示包含65个或以上字符的行<br><code>sed -n &#39;/^.\{65\}/p&#39;
+cat ll.txt | awk &#39;{if(length($0)&amp;gt;=65)print}&#39;</code></li>
+<li>显示包含65个以下字符的行<br><code>sed -n &#39;/^.\{65\}/!p&#39; # 方法1，与上面的脚本相对应
+sed &#39;/^.\{65\}/d&#39; # 方法2，更简便一点的方法
+awk &#39;{if(length($0)&amp;lt;=65)print}&#39;</code></li>
+<li>显示部分文本——从包含正则表达式的行开始到最后一行结束<br><code>sed -n &#39;/regexp/,$p&#39;
+awk &#39;/regexp/{F=1}{if(F)print}&#39;</code></li>
+<li>显示部分文本——指定行号范围（从第8至第12行，含8和12行）<br><code>sed -n &#39;8,12p&#39; # 方法1
+sed &#39;8,12!d&#39; # 方法2
+awk &#39;{if(NR&amp;gt;=8 &amp;amp;&amp;amp; NR&amp;lt;12)print}&#39;</code></li>
+<li>显示第52行<br><code>sed -n &#39;52p&#39; # 方法1
+sed &#39;52!d&#39; # 方法2
+sed &#39;52q;d&#39; # 方法3, 处理大文件时更有效率
+awk &#39;{if(NR==52){print;exit}}&#39;</code></li>
+<li>从第3行开始，每7行显示一次<br><code>gsed -n &#39;3~7p&#39; # 只对GNU sed有效
+sed -n &#39;3,${p;n;n;n;n;n;n;}&#39; # 其他sed
+awk &#39;{if(NR==3)F=1}{if(F){i++;if(i%7==1)print}}&#39;</code></li>
+<li><p>显示两个正则表达式之间的文本（包含）<br><code>sed -n &#39;/Iowa/,/Montana/p&#39; # 区分大小写方式
+awk &#39;/Iowa/{F=1}{if(F)print}/Montana/{F=0}&#39;</code><br>选择性地删除特定行：</p>
+</li>
+<li><p>显示通篇文档，除了两个正则表达式之间的内容<br><code>sed &#39;/Iowa/,/Montana/d&#39;
+awk &#39;/Iowa/{F=1}{if(!F)print}/Montana/{F=0}&#39;</code></p>
+</li>
+<li>删除文件中相邻的重复行（模拟“uniq”）</li>
+<li>只保留重复行中的第一行，其他行删除<br><code>sed &#39;$!N; /^\(.*\)\n\1$/!P; D&#39;
+awk &#39;{if($0!=B)print;B=$0}&#39;</code></li>
+<li>删除文件中的重复行，不管有无相邻。注意hold space所能支持的缓存大小，或者使用GNU sed。<br><code>sed -n &#39;G; s/\n/&amp;amp;&amp;amp;/; /^\([ -~]*\n\).*\n\1/d; s/\n//; h; P&#39; #bones7456注：我这里此命令并不能正常工作
+awk &#39;{if(!($0 in B))print;B[$0]=1}&#39;</code></li>
+<li>删除除重复行外的所有行（模拟“uniq -d”）<br><code>sed &#39;$!N; s/^\(.*\)\n\1$/\1/; t; D&#39;
+awk &#39;{if($0==B &amp;amp;&amp;amp; $0!=l){print;l=$0}B=$0}&#39;</code></li>
+<li>删除文件中开头的10行<br><code>sed &#39;1,10d&#39;
+awk &#39;{if(NR&amp;gt;10)print}&#39;</code></li>
+<li>删除文件中的最后一行<br><code>sed &#39;$d&#39;</code><br>*awk在过程中并不知道文件一共有几行，所以只能通篇缓存，大文件可能不适合，下面两个也一样<br><code>awk &#39;{B[NR]=$0}END{for(i=0;i&amp;lt;=NR-1;i++)print B}&#39;</code></li>
+<li>删除文件中的最后两行<br><code>sed &#39;N;$!P;$!D;$d&#39;
+awk &#39;{B[NR]=$0}END{for(i=0;i&amp;lt;=NR-2;i++)print B}&#39;</code></li>
+<li>删除文件中的最后10行<br><code>sed -e :a -e &#39;$d;N;2,10ba&#39; -e &#39;P;D&#39; # 方法1
+sed -n -e :a -e &#39;1,10!{P;N;D;};N;ba&#39; # 方法2
+awk &#39;{B[NR]=$0}END{for(i=0;i&amp;lt;=NR-10;i++)print B}&#39;</code></li>
+<li>删除8的倍数行<br><code>gsed &#39;0~8d&#39; # 只对GNU sed有效
+sed &#39;n;n;n;n;n;n;n;d;&#39; # 其他sed
+awk &#39;{if(NR%8!=0)print}&#39; |head</code></li>
+<li>删除匹配式样的行<br><code>sed &#39;/pattern/d&#39; # 删除含pattern的行。当然pattern可以换成任何有效的正则表达式
+awk &#39;{if(!match($0,/pattern/))print}&#39;</code></li>
+<li>删除文件中的所有空行（与“grep ‘.’ ”效果相同）<br><code>sed &#39;/^$/d&#39; # 方法1
+sed &#39;/./!d&#39; # 方法2
+awk &#39;{if(!match($0,/^$/))print}&#39;</code></li>
+<li>只保留多个相邻空行的第一行。并且删除文件顶部和尾部的空行。</li>
+<li>（模拟“cat -s”）<br><code>sed &#39;/./,/^$/!d&#39; #方法1，删除文件顶部的空行，允许尾部保留一空行
+sed &#39;/^$/N;/\n$/D&#39; #方法2，允许顶部保留一空行，尾部不留空行
+awk &#39;{if(!match($0,/^$/)){print;F=1}else{if(F)print;F=0}}&#39; #同上面的方法2</code></li>
+<li>只保留多个相邻空行的前两行。<br><code>sed &#39;/^$/N;/\n$/N;//D&#39;
+awk &#39;{if(!match($0,/^$/)){print;F=0}else{if(F&amp;lt;2)print;F++}}&#39;</code></li>
+<li>删除文件顶部的所有空行<br><code>sed &#39;/./,$!d&#39;
+awk &#39;{if(F || !match($0,/^$/)){print;F=1}}&#39;</code></li>
+<li>删除文件尾部的所有空行<br><code>sed -e :a -e &#39;/^\n*$/{$d;N;ba&#39; -e &#39;}&#39; # 对所有sed有效
+sed -e :a -e &#39;/^\n*$/N;/\n$/ba&#39; # 同上，但只对 gsed 3.02.*有效
+awk &#39;/^.+$/{for(i=l;i</code></li>
+<li>删除每个段落的最后一行<br><code>sed -n &#39;/^$/{p;h;};/./{x;/./p;}&#39;</code><br>*很长，很ugly，应该有更好的办法<br><code>awk -vRS= &#39;{B=$0;l=0;f=1;while(match(B,/\n/)&amp;gt;0){print substr(B,l,RSTART-l-f);l=RSTART;sub(/\n/,&quot;&quot;,B);f=0};print &quot;&quot;}&#39;</code><br>特殊应用：</li>
+<li>移除手册页（man page）中的nroff标记。在Unix System V或bash shell下使</li>
+<li>用’echo’命令时可能需要加上 -e 选项。<br><code>sed &quot;s/.</code>echo \\b<code>//g&quot; # 外层的双括号是必须的（Unix环境）
+sed &#39;s/.^H//g&#39; # 在bash或tcsh中, 按 Ctrl-V 再按 Ctrl-H
+sed &#39;s/.\x08//g&#39; # sed 1.5，GNU sed，ssed所使用的十六进制的表示方法
+awk &#39;{gsub(/.\x08/,&quot;&quot;,$0);print}&#39;</code></li>
+<li>提取新闻组或 e-mail 的邮件头<br><code>sed &#39;/^$/q&#39; # 删除第一行空行后的所有内容
+awk &#39;{print}/^$/{exit}&#39;</code></li>
+<li>提取新闻组或 e-mail 的正文部分<br><code>sed &#39;1,/^$/d&#39; # 删除第一行空行之前的所有内容
+awk &#39;{if(F)print}/^$/{F=1}&#39;</code></li>
+<li>从邮件头提取“Subject”（标题栏字段），并移除开头的“Subject:”字样<br><code>sed &#39;/^Subject: */!d; s///;q&#39;
+awk &#39;/^Subject:.*/{print substr($0,10)}/^$/{exit}&#39;</code></li>
+<li>从邮件头获得回复地址<br><code>sed &#39;/^Reply-To:/q; /^From:/h; /./d;g;q&#39;</code><br><em>好像是输出第一个Reply-To:开头的行？From是干啥用的？不清楚规则。。<br>`awk ‘/^Reply-To:.</em>/{print;exit}/^$/{exit}’ `</li>
+<li>获取邮件地址。在上一个脚本所产生的那一行邮件头的基础上进一步的将非电邮地址的部分剃除。（见上一脚本）<br><code>sed &#39;s/ *(.*)//; s/&amp;gt;.*//; s/.*[:&amp;lt;] *//&#39;</code><br>*取尖括号里的东西吧？<br><code>awk -F&#39;[&amp;lt;&amp;gt;]+&#39; &#39;{print $2}&#39;</code></li>
+<li>在每一行开头加上一个尖括号和空格（引用信息）<br><code>sed &#39;s/^/&amp;gt; /&#39;
+awk &#39;{print &quot;&amp;gt; &quot; $0}&#39;</code></li>
+<li>将每一行开头处的尖括号和空格删除（解除引用）<br><code>sed &#39;s/^&amp;gt; //&#39;
+awk &#39;/^&amp;gt; /{print substr($0,3)}&#39;</code></li>
+<li>移除大部分的HTML标签（包括跨行标签）<br><code>sed -e :a -e &#39;s/&amp;lt;[^&amp;gt;]*&amp;gt;//g;/
+awk &#39;{gsub(/&amp;lt;[^&amp;gt;]*&amp;gt;/,&quot;&quot;,$0);print}&#39;</code></li>
+<li>将分成多卷的uuencode文件解码。移除文件头信息，只保留uuencode编码部分。</li>
+<li>文件必须以特定顺序传给sed。下面第一种版本的脚本可以直接在命令行下输入；</li>
+<li>第二种版本则可以放入一个带执行权限的shell脚本中。（由Rahul Dhesi的一</li>
+<li>个脚本修改而来。）<br><code>sed &#39;/^end/,/^begin/d&#39; file1 file2 ... fileX | uudecode # vers. 1
+sed &#39;/^end/,/^begin/d&#39; &quot;$@&quot; | uudecode # vers. 2</code><br>*我不想装个uudecode验证，大致写个吧<br><code>awk &#39;/^end/{F=0}{if(F)print}/^begin/{F=1}&#39; file1 file2 ... fileX</code></li>
+<li>将文件中的段落以字母顺序排序。段落间以（一行或多行）空行分隔。GNU sed使用</li>
+<li>字元“\v”来表示垂直制表符，这里用它来作为换行符的占位符——当然你也可以</li>
+<li>用其他未在文件中使用的字符来代替它。<br><code>sed &#39;/./{H;d;};x;s/\n/={NL}=/g&#39; file | sort | sed &#39;1s/={NL}=//;s/={NL}=/\n/g&#39;
+gsed &#39;/./{H;d};x;y/\n/\v/&#39; file | sort | sed &#39;1s/\v//;y/\v/\n/&#39;
+awk -vRS= &#39;{gsub(/\n/,&quot;\v&quot;,$0);print}&#39; ll.txt | sort | awk &#39;{gsub(/\v/,&quot;\n&quot;,$0);print;print &quot;&quot;}&#39;</code></li>
+<li>分别压缩每个.TXT文件，压缩后删除原来的文件并将压缩后的.ZIP文件</li>
+<li>命名为与原来相同的名字（只是扩展名不同）。（DOS环境：“dir /b”</li>
+<li>显示不带路径的文件名）。<br>`echo @echo off &gt;zipup.bat<br>dir /b <em>.txt | sed “s/^(.</em>).TXT/pkzip -mo \1 \1.TXT/“ &gt;&gt;zipup.bat </li>
+</ul>
+<p>DOS 环境再次略过，而且感觉这里用 bash 的参数 ${i%.TXT}.zip 替换更帅。</p>
+<p><a href="http://bbs.linuxtone.org/thread-4699-1-1.html" target="_blank" rel="external">http://bbs.linuxtone.org/thread-4699-1-1.html</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/awk/">awk</a><a href="/tags/sed/">sed</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Commands/">Commands</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/sed-vs-awk/" data-title="sed 和 awk 示例操作对比 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/sedline/" title="SED单行脚本快速参考">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  SED单行脚本快速参考</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/shell-interview-questions/"  title="shell 面试题汇集">
+ <strong>NEXT:</strong><br/> 
+ <span>shell 面试题汇集
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

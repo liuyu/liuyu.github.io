@@ -1,0 +1,410 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>php-fpm explain | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="php-fpm详解原文链接：http://php-fpm.anight.org/wiki：http://www.php-fpm.com/翻译：http://syre.blogbus.com/logs/20092011.html
+什么是 FastCGIFastCGI 是一个可伸缩、高速的在web se">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/18/php-fpm-explanation/" title="php-fpm explain" itemprop="url">php-fpm explain</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-17T23:44:30.000Z" itemprop="datePublished">12月 18 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>php-fpm详解<br>原文链接：<a href="http://php-fpm.anight.org/" target="_blank" rel="external">http://php-fpm.anight.org/</a><br>wiki：<a href="http://www.php-fpm.com/" target="_blank" rel="external">http://www.php-fpm.com/</a><br>翻译：<a href="http://syre.blogbus.com/logs/20092011.html" target="_blank" rel="external">http://syre.blogbus.com/logs/20092011.html</a></p>
+<p>什么是 FastCGI<br>FastCGI 是一个可伸缩、高速的在web server和脚本语言间通迅的接口。关于FastCGI技术的更多信息可以在官方网 站和Wikipedia看到。<br>FastCGI 被许多脚本语言所支持，包括 php，如果用 —enable-fastcgi 选项编译的话。<br>多数流行的web server都支持 FastCGI。包括Apache（mod_fastcgi和mod_fcgid），Zeus，nginx和lighttpd。</p>
+<p>FastCGI 的主要优点是把动态语言和 web server 分离开来。这种技术允许 web server 和动态语言运行在不同的主机上。这可以改进可扩展性和安全性而没有大的效率损失。<br>php-fpm 可以和任何支持外部 FastCGI 技术的 web server 一起使用。</p>
+<p>php-fpm是做啥用的<br>很不幸，官方网站 php.net 上的 php 在将 FastCGI SAPI 用于生产环境方面有许多已知的问题。<br>下面是关于启用 FastCGI SAPI 时的问题和 php-fpm 是如何解决他们的对比列表。</p>
+<p>描述<br>php自带的<br>spawn-fcgi + spawn-php.sh + daemontools<br>php-fpm<br>php守护进程化： pid file, log file, setsid(), setuid(), setgid(), chroot()<br>(-)<br>(+)<br>(+)<br>进程管理。可以用 “graceful” 来停止并启动 php worker 进程而不会丢失请求。能够平滑地升级配置和二进制程序而不丢失任何请求。<br>php4 (-), php5 (只有 graceful)<br>(-)<br>(+)<br>严格限制来源请求的 web server 的 ip 地址<br>php4 (-) php5 (+) (从 5.2.2 开始)<br>(-)<br>(+)<br>根据负载动态调整进程数<br>(-)<br>(-)<br>Todo<br>用不同的 uid/gid/chroot/environment 和不同的 php.ini 选项启动 worder 进程。你不需要 safe mode 了！<br>(-)<br>(-)<br>(+)<br>记录 worker 进程 stdout 和 stderr 日志<br>(-)<br>(-)<br>(+)<br>如果使用优化器，在共享内存意外破坏的情况下紧急重启所有的进程<br>(-)<br>(-)<br>(+)<br>如果 set_time_limit() 失败，确保进程会结束<br>(-)<br>(-)<br>(+)</p>
+<p>特色功能 Error header、优化的上传支持、fastcgi_finish_request()<br>特色功能<br>所有这些特性都是“不打断”的方式实现的。也就是说，如果你不使用它们，它们的存在不会影响php的功能性——他们都是“透明”的。<br>Error header</p>
+<p>范围：php.ini 选项</p>
+<p>分类：便利性<br>默认情况下，如果被访问的php脚本包含语法错误，用户会收到一个空的“200 ok”页。这是不方便的。Error header 这个 php.ini 选项允许在这种情况下产生一个 HTTP 错误码，比如“HTTP/1.0 550 Server Made Big Boo”，从而中断web server请求并显示一个正确的错误页。<br>如果要实现这样的功能，需要在 php.ini 中添加一条 fastcgi.error_header = “HTTP/1.0 550 Server Made Big Boo”<br>在 php-5.2.4 中添加了类似，但不相同的功能：如果被访问的php脚本包含语法错误，并且 display_errors = off，会立刻返回“HTTP/1.0 500 Internal Server Error”。<br>如果你需要设定一个 503 错误，或者想要使这个行为独立于 display_errors 的设置，那么可以使用fastcgi.error_header。如果你在 php-5.2.5 或以上版本上启用 php-fpm，那么 fastcgi.error_header的优先级更高。<br>优化的上传支持</p>
+<p>实质：web server 支持<br>类型：优化</p>
+<p>这个特性正如名字那样，可以加速对大 POST 请求的处理速度，包括文件上传。优化是通过将请求体已写入一个临时文件，然后 fastcgi 协议传递文件名而不是请求体到来实现的。目前就我所知，只有 nginx0.5.9 以上才支持这个功能。显然，这种模式只在 php 和 web server 在一台机器上的时候才能用。<br>nginx 样例配置：<br>location ~ .php$ {<br>    fastcgi_pass_request_body off;<br>    client_body_in_file_only clean;<br>    fastcgi_param  REQUEST_BODY_FILE   $request_body_file;<br>    …<br>    fastcgi_pass …;<br>} </p>
+<p>在php中不需要配置任何东西。如果php收到了参数REQUEST_BODY_FILE，就读取其中的请求体，如果没有，就自行从fastcgi 协议中读取请求体。<br>结合这个特性，可以考虑对临时文件使用内存文件系统，例如tmpfs(linux)：<br>client_body_temp_path /dev/shm/client_body_temp;<br>fastcgi_finish_request()</p>
+<p>范围：php 函数<br>类型：优化<br>这个特性可以提高一些 php 请求的处理速度。如果有些处理可以在页面生成完后进行，就可以使用这种优化。比如，在 memcached 中保存 session 就可以在页面交给 web server 后进行。fastcgi_finisth_request() ，这一特性可以结束响应输出，web server 可以立即开始交给等不及的客户端，而此刻，php 可以在请求的上下文环境中处理许多事情。比如保存session，转换上传的视频，处理统计等等。<br>fastcgi_finisth_request() 会触发 shutdown 函数运行。<br>request_slowlog_timeout</p>
+<p>范围: php-fpm.conf 选项<br>分类: 方便<br>这个选项能让你跟踪执行缓慢的脚本并把他们连同调用栈一起记录再日志文件中。例如如下设置：<br>5s<br>logs/slow.log<br>记录的 slow.log 可能是这个样子：</p>
+<pre><code>Sep <span class="number">21</span> <span class="number">16</span>:<span class="number">22</span>:<span class="number">19.399162</span> pid <span class="number">29715</span> (pool default)
+script_filename =  /local/www/stable/www/catalogue<span class="preprocessor">.php</span>
+[<span class="number">0x00007fff23618120</span>] mysql_query()  /srv/stable/common/Database/class<span class="preprocessor">.MySQLRequest</span><span class="preprocessor">.php</span>:<span class="number">20</span>
+[<span class="number">0x00007fff23618560</span>]  getResult() /srv/stable/common/Database/class<span class="preprocessor">.Facade</span><span class="preprocessor">.php</span>:<span class="number">106</span>
+[<span class="number">0x00007fff23618aa0</span>] query()  /srv/stable/common/mysite<span class="preprocessor">.com</span>/ORM/class<span class="preprocessor">.UsersMapper</span><span class="preprocessor">.php</span>:<span class="number">99</span>
+[<span class="number">0x00007fff23618d60</span>] resolveByID()  /srv/stable/common/mysite<span class="preprocessor">.com</span>/ORM/class<span class="preprocessor">.User</span><span class="preprocessor">.php</span>:<span class="number">629</span>
+[<span class="number">0x00007fff236193b0</span>]  getData() /srv/stable/common/class<span class="preprocessor">.DataEntity</span><span class="preprocessor">.php</span>:<span class="number">90</span>
+[<span class="number">0x00007fff236195d0</span>]  load() /srv/stable/common/mysite<span class="preprocessor">.com</span>/ORM/class<span class="preprocessor">.User</span><span class="preprocessor">.php</span>:<span class="number">587</span>
+[<span class="number">0x00007fff23619a00</span>] getIsHidden()  /srv/stable/common/mysite<span class="preprocessor">.com</span>/class<span class="preprocessor">.User</span><span class="preprocessor">.php</span>:<span class="number">42</span>
+[<span class="number">0x00007fff2361a470</span>]  getName() /local/www/stable/www/catalogue<span class="preprocessor">.php</span>:<span class="number">41</span>
+</code></pre><p>同时，在 error.log 中保存了如下记录：<br>Sep 21 16:22:19.399031 [WARNING] fpm_request_check_timed_out(), line 135:  child 29715, script ‘/local/www/stable/www/catalogue.php’ (pool default)  executing too slow (5.018002 sec), logging<br>正如你再例子中看到的，脚本运行了 5 秒以上，并很可能是由于 mysql 响应慢造成的（top backtrace）。</p>
+<p>FAQ<br>Q：php-fpm 可以和 ZendOptimize 一起用吗？<br>A：完全可以。</p>
+<p>Q：php-fpm 可以和 ZendPlatform、xcache、eAccelerator、APC 等的优化器一起用吗？<br>A：是的。php-fpm 的架构和任何一种用于高速 opcode 缓存的共享内存都适用。唯一的限制是：所有的 worker 进程只能适用一个缓存，即使它们用不同的 uid/gid 运行</p>
+<p>Q：为什么我要给 php 打补丁呢？spawn-fcgi 不需要这样！<br>A：php-fpm 的创建是为了增强方便管理。没有打过补丁的 php 不能做到：<br>平滑重启 php 而不丢失请求，包括升级 php 二进制文件 以及/或者 扩展。<br>用不同的 uid / gid / chroot 环境运行 worker 进程<br>所有的设置只有一个配置文件<br>根据负载动态请求 （TODO）<br>对 php 请求实时统计性能 （TODO）</p>
+<p>Q：为什么要用 root 运行 php-fpm 呢？这安全吗？<br>A：用 root 启动 php-fpm 只有在你打算用不同 uid/gid 的 php 来处理请求时才有意义。比如，在共享主机上的不同站点。因为只有在 master 进程用 root 运行的时候，才可以建立不同 uid/gid 的子进程。这是相当安全的。master 进程自己从来不会去处理请求。<br>在任何情况下，php- fpm 都不会用 root 身份来处理请求。</p>
+<p>Q：php-fpm 可以加速 php 脚本处理速度吗？<br>A：不，它不会影响处理速度。不过，如果你使用一些特殊特性，对于一些特定的请求还是可以有性能提升的。</p>
+<p>Q：如果我把我的网站从 mod_php 迁移到 php-fpm ，我会得到性能提升吗？<br>A：通常，当有服务器上有大量空闲内存可用时，能从迁移到 php-fpm 中得到的性能提升可能不大。但是如果内存并不充裕，性能提升还是很可观的，在某些情况下可以达到 300-500%。这可能是由于 nginx + php-fpm 一般会比 Apache + mod_php 使用更少的内存。而且 VFS 缓存会由于更多的空余内存而更有效地工作。</p>
+<p>Q：php- fpm 将来会被官方的 php 包含吗？<br>A：我希望如此。目前，php-fpm 代码的协议是 GPL 。所以现在 php-fpm 的代码与 php 协议（类似 bsd）并不匹配。这是临时性措施。这样的选择是为了简化开发过程。一旦代码的功能完备，比如自适应生成子进程和其他一些东西，协议会改为一个相匹配的。 之后，php-fpm 会正式发布给 php 开发团队，并被建议包含。<br>邮件列表<br>如果你有问题的话，请不要犹豫在邮件组里写邮件。<br>English: highload-php-en Russian: highload-php-ru</p>
+<p>文档<br>php-fpm 已经在 Linux、MacOSX、Solaris 和 FreeBSD 上测试通过。<br>确信 libxml2（在某些系统上叫做libxml2-devel）已经安装。</p>
+<p>下载最小的 php 和 php-fpm<br>$ bzip2 -cd php-5.2.5.tar.bz2 | tar xf -<br>$ gzip -cd php-5.2.5-fpm-0.5.7.diff.gz | patch -d php-5.2.5 -p1<br>$ cd php-5.2.5<br>$ ./configure —enable-fastcgi —enable-fpm<br>$ make all install<br>编辑<br>$prefix/etc/php-fpm.conf<br>运行<br>$prefix/bin/php-cgi —fpm<br>仔细检查<br>$prefix/logs/php-fpm.log<br>运行 phpinfo() 检查你的网站是否还正常运行<br>master 进程的 pid 被存放在<br>$prefix/logs/php-fpm.pid<br>master进程可以理解以下信号：<br>SIGINT, SIGTERM<br>立刻终止<br>SIGQUIT<br>平滑终止<br>SIGUSR1<br>重新打开日志文件<br>SIGUSR2<br>平滑重载所有worker进程并重新载入配置和二进制</p>
+<p>关于<br>嗨，我的名字叫 Andrei Nigmatulin， 我是 php-fpm 的作者。<br>从 2004 年开始，我就在等有什么人让 PHP FastCGI 能满足产品环境，但我等不下去了。<br>php-fpm 是在数个项目种使用 PHP 的 FastCGI SAPI 中的知识、经验和想法的产物。<br>php-fpm 可以在 GPL 协议下用在公共用途。和 php-fpm 绑定的修改版的 libevent 是在 BSD 协议下发布的。<br>我需要得到您的反馈——新的想法和建议——来改进和优化 php FastCGI SAPI。 如果您有什么想法、意见、补充和建议，我会很高兴，很原意听取，也许还会实现他们。给给我发邮件吧。（地址在本页的末尾）。</p>
+<p>如果你想支持 php-fpm 的开发，可以作一些捐赠： Paypal Yandex.Money<br>15/05/2007 - 第一次提交到 php-fpm.<br>andrei dot nigmatulin at gmail dot com</p>
+<p>译注：<br>php-fpm还带有一个更方便的脚本，在$prefix/sbin/php-fpm。可以用php-fpm start|graceful|restart|stop来维护。稍编辑一下就可以让它使用配置文件。<br>后记：<br>最开始，php-fpm 只有俄文文档，弄的我很郁闷，于是我先用 google 翻译先弄成英文，然后再人工翻成中文。这当中会难免会在我自己的英文水平引起的错误之外，再多些错误出来。后来终于有了一个英文的 wiki，并邀请我提供中文翻译。同时，距上一次翻译（2008年5月）以后，原来的文档也已经有了更新。于是我就根据英文 wiki ，重新翻译了一遍。</p>
+<p>源文档 <a href="http://www.opendoc.com.cn/webserver/php-fpm%E8%AF%A6%E8%A7%A3.html" target="_blank" rel="external">http://www.opendoc.com.cn/webserver/php-fpm%E8%AF%A6%E8%A7%A3.html</a> </p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/php-fpm/">php-fpm</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Webserver/">Webserver</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/18/php-fpm-explanation/" data-title="php-fpm explain | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/18/tomcat-jk-no-connection/" title="tomcat经常挂 JK无法连接">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  tomcat经常挂 JK无法连接</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/18/centos-yum-nginx-php-fpm-mysql/"  title="Centos Yum Nginx Php-fpm Mysql">
+ <strong>NEXT:</strong><br/> 
+ <span>Centos Yum Nginx Php-fpm Mysql
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

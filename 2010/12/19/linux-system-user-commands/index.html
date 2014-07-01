@@ -1,0 +1,497 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>linux系统管理员常用命令集合 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="本文由linuxtone.org Netseek出品一些命令我用着不是很习惯。对系统，日志等命令进行了补充
+系统连接状态篇：
+1.查看TCP连接状态
+netstat -nat |awk &#39;{print $6}&#39;|sort|uniq -c|sort -rn
+netstat -n | awk &#39;/^tc">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/linux-system-user-commands/" title="linux系统管理员常用命令集合" itemprop="url">linux系统管理员常用命令集合</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-18T22:47:22.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>本文由linuxtone.org Netseek出品<br>一些命令我用着不是很习惯。对系统，日志等命令进行了补充</p>
+<p><strong>系统连接状态篇：</strong></p>
+<p>1.查看TCP连接状态</p>
+<pre><code>netstat -nat |awk <span class="emphasis">'{print $6}'</span>|sort|uniq -c|sort -rn
+netstat -n | awk <span class="emphasis">'/^tcp/ {++S[$NF]};END {for(a in S) print a, S[a]}'</span>
+netstat -n | awk <span class="emphasis">'/^tcp/ {++state[$NF]}; END {for(key in state) print key,"\t",state[key]}'</span>
+netstat -n | awk <span class="emphasis">'/^tcp/ {++arr[$NF]};END {for(k in arr) print k,"\t",arr[k]}'</span>
+netstat -n |awk <span class="emphasis">'/^tcp/ {print $NF}'</span>|sort|uniq -c|sort -rn
+netstat -ant | awk <span class="emphasis">'{print $NF}'</span> | grep -v <span class="emphasis">'[a-z]'</span> | sort | uniq -c
+netstat -ant|awk <span class="emphasis">'/ip:80/{split($5,ip,":");++S[ip[1]]}END{for (a in S) print S[a],a}'</span> |sort -n
+netstat -ant|awk <span class="emphasis">'/:80/{split($5,ip,":");++S[ip[1]]}END{for (a in S) print S[a],a}'</span> |sort -rn|head -n 10
+awk <span class="emphasis">'BEGIN{printf ("http_code\tcount_num\n")}{COUNT[$10]++}END{for (a in COUNT) printf a"\t\t"COUNT[a]"\n"}'</span>
+`&lt;/pre&gt;
+
+2.查找请求数请20个IP（常用于查找攻来源）：
+&lt;pre&gt;<span class="smartquote">`netstat -anlp|grep 80|grep tcp|awk '</span>{print $5}<span class="emphasis">'|awk -F: '</span>{print $1}<span class="emphasis">'|sort|uniq -c|sort -nr|head -n20
+netstat -ant |awk '</span>/:80/{split($5,ip,":");++A[ip[1]]}END{for(i in A) print A[i],i}' |sort -rn|head -n20
+`&lt;/pre&gt;
+
+3.用tcpdump嗅探80端口的访问看看谁最高
+&lt;pre&gt;<span class="smartquote">`tcpdump -i eth0 -tnn dst port 80 -c 1000 | awk -F"." '</span>{print $1"."$2"."$3"."$4}' | sort | uniq -c | sort -nr |head -20
+`&lt;/pre&gt;
+
+4.查找较多time<span class="emphasis">_wait连接
+&lt;pre&gt;`netstat -n|grep TIME_</span>WAIT|awk <span class="emphasis">'{print $5}'</span>|sort|uniq -c|sort -rn|head -n20
+`&lt;/pre&gt;
+
+5.找查较多的SYN连接
+&lt;pre&gt;<span class="smartquote">`netstat -an | grep SYN | awk '</span>{print $5}' | awk -F: <span class="emphasis">'{print $1}'</span> | sort | uniq -c | sort -nr | more
+`&lt;/pre&gt;
+
+6.根据端口列进程
+&lt;pre&gt;<span class="smartquote">`netstat -ntlp | grep 80 | awk '</span>{print $7}' | cut -d/ -f1
+`&lt;/pre&gt;
+
+*<span class="strong">*网站日志分析篇1（Apache）*</span><span class="strong">*：
+1.获得访问前10位的ip地址
+&lt;pre&gt;`cat access.log|awk '{print $1}'|sort|uniq -c|sort -nr|head -10
+cat access.log|awk '{counts[$(11)]+=1}; END {for(url in counts) print counts[url], url}'
+`&lt;/pre&gt;
+
+</span>2.访问次数最多的文件或页面,取前20
+&lt;pre&gt;<span class="smartquote">`cat access.log|awk '</span>{print $11}<span class="emphasis">'|sort|uniq -c|sort -nr|head -20
+`&lt;/pre&gt;
+
+</span>3.列出传输最大的几个exe文件（分析下载站的时候常用）
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>($7~/\.exe/){print $10 " " $1 " " $4 " " $7}<span class="emphasis">'|sort -nr|head -20
+`&lt;/pre&gt;
+
+</span>4.列出输出大于200000byte(约200kb)的exe文件以及对应文件发生次数
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>($10 &gt; 200000 &amp;&amp; $7~/\.exe/){print $7}<span class="emphasis">'|sort -n|uniq -c|sort -nr|head -100
+`&lt;/pre&gt;
+
+</span>5.如果日志最后一列记录的是页面文件传输时间，则有列出到客户端最耗时的页面
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>($7~/\.php/){print $NF " " $1 " " $4 " " $7}<span class="emphasis">'|sort -nr|head -100
+`&lt;/pre&gt;
+
+</span>6.列出最最耗时的页面(超过60秒的)的以及对应页面发生次数
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>($NF &gt; 60 &amp;&amp; $7~/\.php/){print $7}<span class="emphasis">'|sort -n|uniq -c|sort -nr|head -100
+`&lt;/pre&gt;
+
+</span>7.列出传输时间超过 30 秒的文件
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>($NF &gt; 30){print $7}<span class="emphasis">'|sort -n|uniq -c|sort -nr|head -20
+`&lt;/pre&gt;
+
+</span>8.统计网站流量（G)
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>{sum+=$10} END {print sum/1024/1024/1024}'
+`&lt;/pre&gt;
+
+9.统计404的连接
+&lt;pre&gt;<span class="smartquote">`awk '</span>($9 ~/404/)' access.log | awk <span class="emphasis">'{print $9,$7}'</span> | sort
+`&lt;/pre&gt;
+
+10\. 统计http status.
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>{counts[$(9)]+=1}; END {for(code in counts) print code, counts[code]}'
+cat access.log |awk <span class="emphasis">'{print $9}'</span>|sort|uniq -c|sort -rn
+`&lt;/pre&gt;
+
+11.每秒并发：
+&lt;pre&gt;<span class="smartquote">`awk '</span>{if($9~/200|30|404/)COUNT[$4]++}END{for( a in COUNT) print a,COUNT[a]}<span class="emphasis">'|sort -k 2 -nr|head -n10
+`&lt;/pre&gt;
+
+</span>12.带宽统计
+&lt;pre&gt;<span class="smartquote">`cat apache.log |awk '</span>{if($7~/GET/) count++}END{print "client<span class="emphasis">_request="count}'
+cat apache.log |awk '{BYTE+=$11}END{print "client_</span>kbyte<span class="emphasis">_out="BYTE/1024"KB"}'
+`&lt;/pre&gt;
+
+</span>13.统计对象数量及对象平均大小
+&lt;pre&gt;<span class="smartquote">`cat access.log |awk '</span>{byte+=$10}END{ print byte/NR/1024,NR}'
+cat access.log |awk <span class="emphasis">'{if($9~/200|30/)COUNT[$NF]++}END{for( a in COUNT) print a,COUNT
+[a],NR,COUNT[a]/NR*100"%"}
+`&lt;/pre&gt;
+
+</span>14.取5分钟日志
+&lt;pre&gt;`if [ $DATE<span class="emphasis">_MINUTE != $DATE_</span>END<span class="emphasis">_MINUTE ] ;then #则判断开始时间戳与结束时间戳是否相等
+START_</span>LINE=<span class="code">`sed -n "/$DATE_MINUTE/=" $APACHE_LOG|head -n1`</span> #如果不相等，则取出开始时间戳的行号，与结束时间戳的行号
+#END<span class="emphasis">_LINE=`sed -n "/$DATE_</span>END<span class="emphasis">_MINUTE/=" $APACHE_</span>LOG|tail -n1`
+END<span class="emphasis">_LINE=`sed -n "/$DATE_</span>END<span class="emphasis">_MINUTE/=" $APACHE_</span>LOG|head -n1`
+sed -n "${START<span class="emphasis">_LINE},${END_</span>LINE}p" $APACHE<span class="emphasis">_LOG &gt; $MINUTE_</span>LOG ##通过行号，取出5分钟内的日志内容 存放到 临时文件中
+GET<span class="emphasis">_START_</span>TIME=<span class="smartquote">`sed -n "${START_LINE}p" $APACHE_LOG|awk -F '</span>[' <span class="emphasis">'{print $2}'</span> |awk <span class="emphasis">'{print $1}'</span>|
+sed <span class="emphasis">'s#/# #g'</span>|sed <span class="emphasis">'s#:# #'</span>` #通过行号获取取出开始时间戳
+GET<span class="emphasis">_END_</span>TIME=<span class="smartquote">`sed -n "${END_LINE}p" $APACHE_LOG|awk -F '</span>[' <span class="emphasis">'{print $2}'</span> |awk <span class="emphasis">'{print $1}'</span>|sed
+<span class="emphasis">'s#/# #g'</span>|sed <span class="emphasis">'s#:# #'</span>` #通过行号获取结束时间戳
+`&lt;/pre&gt;
+
+10.蜘蛛分析
+查看是哪些蜘蛛在抓取内容。
+&lt;pre&gt;<span class="smartquote">`/usr/sbin/tcpdump -i eth0 -l -s 0 -w - dst port 80 | strings | grep -i user-agent | grep -i -E '</span>bot|crawler|slurp|spider'
+`&lt;/pre&gt;
+
+*<span class="strong">*网站日分析2(Squid篇）*</span>*
+2.按域统计流量
+&lt;pre&gt;<span class="smartquote">`zcat squid_access.log.tar.gz| awk '</span>{print $10,$7}' |awk <span class="emphasis">'BEGIN{FS="[ /]"}{trfc[$4]+=$1}END{for
+(domain in trfc){printf "%s\t%d\n",domain,trfc[domain]}}'</span>
+效率更高的perl版本请到此下载:http://docs.linuxtone.org/soft/tools/tr.pl
+`&lt;/pre&gt;
+
+*<span class="strong">*数据库篇*</span>*
+1.查看数据库执行的sql
+&lt;pre&gt;<span class="smartquote">`/usr/sbin/tcpdump -i eth0 -s 0 -l -w - dst port 3306 | strings | egrep -i '</span>SELECT|UPDATE|DELETE|INSERT|SET|COMMIT|ROLLBACK|CREATE|DROP|ALTER|CALL'
+</code></pre><p><strong>系统Debug分析篇</strong><br>1.调试命令<br>strace -p pid<br>2.跟踪指定进程的PID<br>gdb -p pid<br>更多的请参考：<br><a href="http://bbs.linuxtone.org/forum-14-1.html" target="_blank" rel="external">http://bbs.linuxtone.org/forum-14-1.html</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/awk/">awk</a><a href="/tags/linux/">linux</a><a href="/tags/netstat/">netstat</a><a href="/tags/sed/">sed</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Commands/">Commands</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/linux-system-user-commands/" data-title="linux系统管理员常用命令集合 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/linux-allcommands-1/" title="linux系统管理技巧(一)">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  linux系统管理技巧(一)</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/top-20-mysql-best-practices/"  title="MySQL性能优化的最佳20+条经验">
+ <strong>NEXT:</strong><br/> 
+ <span>MySQL性能优化的最佳20+条经验
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

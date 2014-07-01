@@ -1,0 +1,419 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>给Windows7减肥如何将winsxs放到其他硬盘分区下 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="不知道大家注意过没有，在Vista和Windows 7系统盘的Windows目录下，有一个名为winscs的文件夹，对于整个Windows目录来说，这个文件夹就占用了其一半多的体积（近3GB）不但如此，随着系统使用时间的不断延长，winscs文件夹的体积还会变得更大，我的现在已经4G多了，这真是一块“赘肉”呀！想想看吧！对于系统盘空间本来就不很富裕的朋友来说，这快“赘肉”难免会拖慢系统的运行速度。如果仅仅是因为这个原因，就对硬盘重新分区以让系统盘的空间变得更大，接着重装系统，这也实在是太麻烦了！其实，我们可以采取一个更简单的方法，将winscs这一块“赘肉”扔到其他硬盘分区下，为系统盘腾出更大的未用空间从而让系统跑得更快。下面，笔者就以 Windows 7为例子，给大家介绍一下具体的操作步骤。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/windows7-winsxs/" title="给Windows7减肥如何将winsxs放到其他硬盘分区下" itemprop="url">给Windows7减肥如何将winsxs放到其他硬盘分区下</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T09:57:32.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>不知道大家注意过没有，在Vista和Windows 7系统盘的Windows目录下，有一个名为winscs的文件夹，对于整个Windows目录来说，这个文件夹就占用了其一半多的体积（近3GB）不但如此，随着系统使用时间的不断延长，winscs文件夹的体积还会变得更大，我的现在已经4G多了，这真是一块“赘肉”呀！想想看吧！对于系统盘空间本来就不很富裕的朋友来说，这快“赘肉”难免会拖慢系统的运行速度。如果仅仅是因为这个原因，就对硬盘重新分区以让系统盘的空间变得更大，接着重装系统，这也实在是太麻烦了！其实，我们可以采取一个更简单的方法，将winscs这一块“赘肉”扔到其他硬盘分区下，为系统盘腾出更大的未用空间从而让系统跑得更快。下面，笔者就以 Windows 7为例子，给大家介绍一下具体的操作步骤。</p>
+<a id="more"></a>
+
+<p>Tips：</p>
+<p>winscs文件夹的作用</p>
+<p>winscs是Vista/Windows 7的Windows目录下一个非常重要的文件夹，该文件夹里边有很多重要的组件，版本也很复杂，为了保证</p>
+<p>Windows的正常运行，里面的文件是不可删除的，这些文件夹支撑着mscorwks.dll，没有它们mscorwks也无法加载。如果强行删除后，</p>
+<p>可能只能以安全模式能勉强进入Windows，Windows也就“挂”了。</p>
+<p><strong>第一步：建立链接。</strong></p>
+<p>先从 <a href="http://technet.microsoft.com/zh-cn/bb897556.aspx" target="_blank" rel="external">http://technet.microsoft.com/zh-cn/bb897556.aspx</a></p>
+<p>下载 “PendMoves 和 MoveFile”，然后将下载的名为“PendMoves”的</p>
+<p>ZIP格式压缩包解压到“c:\Windows\System32”目录下（c是系统盘，下同）；再单击菜单“开始—运行”，接着在弹出的“运行”对</p>
+<p>话框中出入Cmd并按下“Ctrl+Shift+Enter”快捷键，以管理员身份运行 Cmd，打开“命令提示符”窗口；最后窗口的光标处依次执行</p>
+<p>以下两条命令（每输入一条命令都要按下回车键，下同）</p>
+<p>cd \windows</p>
+<p>mklink winscs.link winscs.moved</p>
+<p>Tips：</p>
+<p>DOS命令“mklink /c winscs.link winscs.moved”的含义是建立一个指向winscs.moved的名为winscs.link的链接。</p>
+<p><strong>第二步：获取对winscs文件夹的完全控制权限。</strong></p>
+<p>双击桌面的“计算机”图标，依次定位到“c:\Windows”目录下；接着右击该目录下的“winscs”文件夹，选择“属性”，打开</p>
+<p>winscs属性的对话框的“安全”选项卡并单击该选项卡的“高级”按钮，然后在新弹出的“winscs的高级安全设置”对话框中切换到</p>
+<p>“所有者”选项卡并单击该选项卡的“编辑”按钮；再在弹出的对话框中选中“Administrators”选项并勾选“替换子容器和对象的</p>
+<p>所有者”复选框，最后单击“确定”按钮即可。</p>
+<p><strong>第三步：重命名和复制文件。</strong></p>
+<p>执行完第一步操作中的两条DOS命令后，接着在“命令提示符”窗口光标处依次执行以下两条命令：</p>
+<p>movefile c:\Windows\winscs c:\Windows\winscs.moved</p>
+<p>movefile c:\Windows\winscs.link c:\Windows\winscs</p>
+<p>Tips：</p>
+<p>这两条DOS命令的含义分别是：将“c:\Windows”目录下的“winscs”文件夹重命名为“winscs.moved”、将 “c:\Windows”目录下</p>
+<p>的“winscs.link”重命名为winscs。</p>
+<p>完成文件夹及文件的重命名工作后，接着重新启动系统，</p>
+<p>再将“c:\Windows”目录下的“winscs.moved”文件夹下的所有内容复制到系统盘以外某个硬盘分区的“Windows\winscs”目录下（</p>
+<p>如“D:\Windows\winscs”）即可。</p>
+<p><strong>第四步：建立关联及删除“winscs.moved”文件夹。</strong>再一次以管理员身份运行Cmd，然后在光标处依次执行以下三条命令：</p>
+<p>cd \windows</p>
+<p>rmdir winscs</p>
+<p>mklink /c winscs D:\windows\winscs</p>
+<p>后两条DOS命令的含义是：删除“c:\Windows”目录下名为“winscs”的链接，然后在新建一个与之同名的链接，指向 “D:\windows</p>
+<p>\winscs“目录下。</p>
+<p>完成指向“D:\windows\winscs”目录的名为 winscs 的新链接的创建工作后，接着再重启系统，最后将“c:\Windows”目录下的名为</p>
+<p>winscs.moved 的文件夹删除就可以了。</p>
+<p>将“赘肉”winscs文件夹扔到系统盘以外的其他分区下，从而为系统盘腾出更大的未用空间，Windows 7能够跑得更快这当然是理所当</p>
+<p>然的事情了。有此需要的朋友不妨一试。</p>
+<p>如果不小心把winscs删除了，可以这样恢复</p>
+<p>拿个系统盘然后在开始运行栏里输入sfc /scannow就可以进行修复</p>
+<p>参考：<a href="http://aspoc.net/archives/2007/12/05/how-to-move-the-winsxs-directory-in-vista/" target="_blank" rel="external">http://aspoc.net/archives/2007/12/05/how-to-move-the-winsxs-directory-in-vista/</a></p>
+<p>其实官方也有。一时没有找到！</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/windows7/">windows7</a><a href="/tags/winsxs/">winsxs</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Lives/">Lives</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/windows7-winsxs/" data-title="给Windows7减肥如何将winsxs放到其他硬盘分区下 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/squid-log-detailed/" title="squid 日志详解">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  squid 日志详解</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/sedline/"  title="SED单行脚本快速参考">
+ <strong>NEXT:</strong><br/> 
+ <span>SED单行脚本快速参考
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

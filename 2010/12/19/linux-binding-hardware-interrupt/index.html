@@ -1,0 +1,443 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Linux 绑定制定硬件中断到不同 CPU | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="硬件中断发生频繁，是件很消耗 CPU 资源的事情，在多核 CPU 条件下如果有办法把大量硬件中断分配给不同的 CPU (core) 处理显然能很好的平衡性能。现在的服务器上动不动就是多 CPU 多核、多网卡、多硬盘，如果能让网卡中断独占1个 CPU (core)、磁盘 IO 中断独占1个 CPU 的">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/linux-binding-hardware-interrupt/" title="Linux 绑定制定硬件中断到不同 CPU" itemprop="url">Linux 绑定制定硬件中断到不同 CPU</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T08:16:45.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>  硬件中断发生频繁，是件很消耗 CPU 资源的事情，在多核 CPU 条件下如果有办法把大量硬件中断分配给不同的 CPU (core) 处理显然能很好的平衡性能。现在的服务器上动不动就是多 CPU 多核、多网卡、多硬盘，如果能让网卡中断独占1个 CPU (core)、磁盘 IO 中断独占1个 CPU 的话将会大大减轻单一 CPU 的负担、提高整体处理效率。VPSee 前天收到一位网友的邮件提到了 SMP IRQ Affinity，引发了今天的话题：D，以下操作在 SUN FIre X2100 M2 服务器＋ 64位版本 CentOS 5.5 + Linux 2.6.18-194.3.1.el5 上执行。</p>
+<p>什么是中断<br>      中文教材上对 “中断” 的定义太生硬了，简单的说就是，每个硬件设备（如：硬盘、网卡等）都需要和 CPU 有某种形式的通信以便 CPU 及时知道发生了什么事情，这样 CPU 可能就会放下手中的事情去处理应急事件，硬件设备主动打扰 CPU 的现象就可称为硬件中断，就像你正在工作的时候受到 QQ 干扰一样，一次 QQ 摇头就可以被称为中断。</p>
+<pre><code>  中断是一种比较好的 CPU 和硬件沟通的方式，还有一种方式叫做轮询（polling），就是让 CPU 定时对硬件状态进行查询然后做相应处理，就好像你每隔<span class="number">5</span>分钟去检查一下 QQ 看看有没有人找你一样，这种方式是不是很浪费你（CPU）的时间？所以中断是硬件主动的方式，比轮询（CPU 主动）更有效一些。
+
+  好了，这里又有了一个问题，每个硬件设备都中断，那么如何区分不同硬件呢？不同设备同时中断如何知道哪个中断是来自硬盘、哪个来自网卡呢？这 个很容易，不是每个 QQ 号码都不相同吗？同样的，系统上的每个硬件设备都会被分配一个 IRQ 号，通过这个唯一的 IRQ 号就能区别张三和李四了。
+
+  在计算机里，中断是一种电信号，由硬件产生，并直接送到中断控制器（如 <span class="number">8259</span><span class="literal">A</span>）上，然后再由中断控制器向 CPU 发送信号，CPU 检测到该信号后，就中断当前的工作转而去处理中断。然后，处理器会通知操作系统已经产生中断，这样操作系统就会对这个中断进行适当的处理。现在来看一下中 断控制器，常见的中断控制器有两种：可编程中断控制器 <span class="number">8259</span><span class="literal">A</span> 和高级可编程中断控制器（APIC），中断控制器应该在大学的硬件接口和计算机体系结构的相关课程中都学过。传统的 <span class="number">8259</span><span class="literal">A</span> 只适合单 CPU 的情况，现在都是多 CPU 多核的 SMP 体系，所以为了充分利用 SMP 体系结构、把中断传递给系统上的每个 CPU 以便更好实现并行和提高性能，Intel 引入了高级可编程中断控制器（APIC）。
+
+  光有高级可编程中断控制器的硬件支持还不够，Linux 内核还必须能利用到这些硬件特质，所以只有 kernel <span class="number">2.4</span> 以后的版本才支持把不同的硬件中断请求（IRQs）分配到特定的 CPU 上，这个绑定技术被称为 SMP IRQ Affinity. 更多介绍请参看 Linux 内核源代码自带的文档：linux-<span class="number">2.6</span>.<span class="number">31.8</span>/Documentation/IRQ-affinity.txt
+</code></pre><p>如何使用<br>     先看看系统上的中断是怎么分配在 CPU 上的，很显然 CPU0 上处理的中断多一些：</p>
+<pre><code># cat /proc/interrupts
+           CPU0       CPU1
+<span class="label">  0:</span>  <span class="number">918926335</span>          <span class="number">0</span>    IO-APIC-edge  timer
+<span class="label">  1:</span>          <span class="number">2</span>          <span class="number">0</span>    IO-APIC-edge  i8042
+<span class="label">  8:</span>          <span class="number">0</span>          <span class="number">0</span>    IO-APIC-edge  rtc
+<span class="label">  9:</span>          <span class="number">0</span>          <span class="number">0</span>   IO-APIC-level  acpi
+<span class="number">12</span>:          <span class="number">4</span>          <span class="number">0</span>    IO-APIC-edge  i8042
+<span class="number">14</span>:    <span class="number">8248017</span>          <span class="number">0</span>    IO-APIC-edge  ide0
+<span class="number">50</span>:        <span class="number">194</span>          <span class="number">0</span>   IO-APIC-level  ohci_hcd:usb2
+<span class="number">58</span>:      <span class="number">31673</span>          <span class="number">0</span>   IO-APIC-level  sat<span class="built_in">a_nv</span>
+<span class="number">90</span>:    <span class="number">1070374</span>          <span class="number">0</span>         PCI-MSI  eth0
+<span class="number">233</span>:         <span class="number">10</span>          <span class="number">0</span>   IO-APIC-level  ehci_hcd:usb1
+<span class="label">NMI:</span>       <span class="number">5077</span>       <span class="number">2032</span>
+<span class="label">LOC:</span>  <span class="number">918809969</span>  <span class="number">918809894</span>
+<span class="label">ERR:</span>          <span class="number">0</span>
+<span class="label">MIS:</span>          <span class="number">0</span><span class="escape">`&lt;</span>/pre&gt;
+
+     为了不让 CPU0 很累怎么把部分中断转移到 CPU1 上呢？或者说如何把 eth0 网卡的中断转到 CPU1 上呢？先查看一下 IRQ <span class="number">90</span> 中断的 smp affinity，看看当前中断是怎么分配在不同 CPU 上的（ffffffff 意味着分配在所有可用 CPU 上）：
+
+&lt;pre&gt;<span class="escape">`#</span> cat /proc/irq/<span class="number">90</span>/smp_affinity
+<span class="number">7</span>fffffff,ffffffff,ffffffff,ffffffff,ffffffff,ffffffff,ffffffff,ffffffff<span class="escape">`&lt;</span>/pre&gt;
+
+在进一步动手之前我们需要先停掉 IRQ 自动调节的服务进程，这样才能手动绑定 IRQ 到不同 CPU，否则自己手动绑定做的更改将会被自动调节进程给覆盖掉。如果想修改 IRQ <span class="number">90</span> 的中断处理，绑定到第<span class="number">2</span>个 CPU（CPU1）：
+&lt;pre&gt;<span class="escape">`#</span> /etc/init.d/irqbalance stop<span class="escape">`&lt;</span>/pre&gt;
+# echo <span class="string">"2"</span> &gt; /proc/irq/<span class="number">90</span>/smp_affinity
+      （上面的 echo “<span class="number">2</span>″ 是怎么来的？为什么是 ”<span class="number">2</span>“？）
+
+这 其实是个二进制数字，代表 <span class="number">00000010</span>，<span class="number">00000001</span> 代表 CPU0 的话，<span class="number">00000010</span> 就代表 CPU0， “echo <span class="number">2</span> &gt; /proc/irq/<span class="number">90</span>/smp_affinity” 的意思就是说把 <span class="number">90</span> 中断绑定到 <span class="number">00000010</span>（CPU1）上。所以各个 CPU 用二进制和十六进制表示就是：
+&lt;pre&gt;<span class="escape">` </span>              Binary       Hex
+   [separator] CPU <span class="number">0</span>    <span class="number">00000001</span>         <span class="number">1</span>
+    CPU <span class="number">1</span>    <span class="number">00000010</span>         <span class="number">2</span>
+    CPU <span class="number">2</span>    <span class="number">00000100</span>         <span class="number">4</span>
+    CPU <span class="number">3</span>    <span class="number">00001000</span>         <span class="number">8</span><span class="escape">`&lt;</span>/pre&gt;
+
+如果我想把 IRQ 绑定到 CPU2 上就是 <span class="number">00000100</span>＝<span class="number">4</span>：
+&lt;pre&gt;<span class="escape">`#</span> echo <span class="string">"4"</span> &gt; /proc/irq/<span class="number">90</span>/smp_affinity<span class="escape">`&lt;</span>/pre&gt;
+
+如果我想把 IRQ 同时平衡到 CPU0 和 CPU2 上就是 <span class="number">00000001</span>＋<span class="number">00000100</span>＝<span class="number">00000101</span>＝<span class="number">5</span>
+&lt;pre&gt;<span class="escape">`#</span> echo <span class="string">"5"</span> &gt; /proc/irq/<span class="number">90</span>/smp_affinity<span class="escape">`&lt;</span>/pre&gt;
+
+需要注意的是，在手动绑定 IRQ 到 CPU 之前需要先停掉 irqbalance 这个服务，irqbalance 是个服务进程、是用来自动绑定和平衡 IRQ 的：
+&lt;pre&gt;<span class="escape">` </span>/etc/init.d/irqbalance stop<span class="escape">`&lt;</span>/pre&gt;
+
+<span class="label">过段时间在看 /proc/interrupts，是不是 90:</span>eth0 在 CPU1 上的中断增加了（<span class="number">145</span>）、在 CPU0 上的中断没变？不断打印 /proc/interrupts 就会发现 eth0 在 CPU0 上的中断数始终保持不变，而在 CPU1 上的中断数是持续增加的，这正是我们想要的结果：
+&lt;pre&gt;<span class="escape">`#</span> cat /proc/interrupts
+           CPU0       CPU1
+<span class="label">  0:</span>  <span class="number">922506515</span>          <span class="number">0</span>    IO-APIC-edge  timer
+<span class="label">  1:</span>          <span class="number">2</span>          <span class="number">0</span>    IO-APIC-edge  i8042
+<span class="label">  8:</span>          <span class="number">0</span>          <span class="number">0</span>    IO-APIC-edge  rtc
+<span class="label">  9:</span>          <span class="number">0</span>          <span class="number">0</span>   IO-APIC-level  acpi
+<span class="number">12</span>:          <span class="number">4</span>          <span class="number">0</span>    IO-APIC-edge  i8042
+<span class="number">14</span>:    <span class="number">8280147</span>          <span class="number">0</span>    IO-APIC-edge  ide0
+<span class="number">50</span>:        <span class="number">194</span>          <span class="number">0</span>   IO-APIC-level  ohci_hcd:usb2
+<span class="number">58</span>:      <span class="number">31907</span>          <span class="number">0</span>   IO-APIC-level  sat<span class="built_in">a_nv</span>
+<span class="number">90</span>:    <span class="number">1073399</span>        <span class="number">145</span>         PCI-MSI  eth0
+<span class="number">233</span>:         <span class="number">10</span>          <span class="number">0</span>   IO-APIC-level  ehci_hcd:usb1
+<span class="label">NMI:</span>       <span class="number">5093</span>       <span class="number">2043</span>
+<span class="label">LOC:</span>  <span class="number">922389696</span>  <span class="number">922389621</span>
+<span class="label">ERR:</span>          <span class="number">0</span>
+<span class="label">MIS:</span>          <span class="number">0</span> 
+</code></pre><p>有什么用<br>      在网络非常 heavy 的情况下，对于文件服务器、高流量 Web 服务器这样的应用来说，把不同的网卡 IRQ 均衡绑定到不同的 CPU 上将会减轻某个 CPU 的负担，提高多个 CPU 整体处理中断的能力；对于数据库服务器这样的应用来说，把磁盘控制器绑到一个 CPU、把网卡绑定到另一个 CPU 将会提高数据库的响应时间、优化性能。合理的根据自己的生产环境和应用的特点来平衡 IRQ 中断有助于提高系统的整体吞吐能力和性能。<br>      VPSee 经常收到网友来信问到如何优化 Linux、优化 VPS、这个问题不太好回答，要记住的是性能优化是一个过程而不是结果，不是看了些文档改了改参数就叫优化了，后面还需要大量的测试、监测以及持续的观察和改进。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/binding/">binding</a><a href="/tags/linux/">linux</a><a href="/tags/硬件中断/">硬件中断</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Faq/">Faq</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/linux-binding-hardware-interrupt/" data-title="Linux 绑定制定硬件中断到不同 CPU | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/linux-acl/" title="linux acl">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  linux acl</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/howto-only-use-epel-with-yum/"  title="Howto only use epel with yum?">
+ <strong>NEXT:</strong><br/> 
+ <span>Howto only use epel with yum?
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

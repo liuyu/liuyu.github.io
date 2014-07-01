@@ -1,0 +1,456 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>centos puppet  foreman install | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="foreman 和 dashboard 一样。可以直观地查看puppet client 同步状态等。详细情况看官方的截图：http://theforeman.org/projects/foreman/wiki/Screenshots
+简单说下安装的顺序：1. 安装puppet2. 升级ruby 至 ">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2011/01/27/centos-puppet-foreman-instal/" title="centos puppet  foreman install" itemprop="url">centos puppet  foreman install</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2011-01-27T09:45:39.000Z" itemprop="datePublished">1月 27 2011</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>foreman 和 dashboard 一样。可以直观地查看puppet client 同步状态等。详细情况看官方的截图：<br><a href="http://theforeman.org/projects/foreman/wiki/Screenshots" target="_blank" rel="external">http://theforeman.org/projects/foreman/wiki/Screenshots</a></p>
+<p>简单说下安装的顺序：<br>1. 安装puppet<br>2. 升级ruby 至 1.8.6<br>3. 安装相关的依赖 gem rake  rails i18n<br>4. 创建库和用户并授权<br>5. 安装foreman<br>6. 修改database.yml<br>7. 创建foreman表<br>8. 配置 foreman.rb 文件，并放至puppet reports目录<br>9. 配置 puppet server client 配置文件<br>10. 启动</p>
+<p>注意版本的要求。特别是ruby 只能是1.8 升级ruby 参考： <a href="http://bubbyroom.com/2011/01/centos-yum-update-ruby/" target="_blank" rel="external">http://bubbyroom.com/2011/01/centos-yum-update-ruby/</a></p>
+<pre><code><span class="xml">Ruby 1.9 is not supported yet. You have to use Ruby 1.8.x as stated above.
+RubyGems 1.3.1 or higher is required
+Rake 0.8.3 or higher is required
+Rack 1.0.1 is required. If you don't have this exact version, database migration would fail.
+I18n 0.4.2 is required for Redmine &amp;gt;= 1.0.5 `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`yum install -y mysql mysql-devel mysql-server ruby ruby-devel ruby-irb ruby-mysql ruby-rdoc ruby-ri `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+如果MYSQL 是源码包安装则：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`yum install -y ruby ruby-devel ruby-irb ruby-mysql ruby-rdoc ruby-ri `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+安装rubygem 1.3.5
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`http://production.cf.rubygems.org/rubygems/rubygems-1.3.5.tgz
+tar xfz rubygems-1.3.5.tgz
+cd rubygems-1.3.5
+ruby setup.rb `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+安装rails 和rack
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`gem install rails -v=2.3.5 `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`gem install rack -v=1.0.1 `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`gem install -v=0.4.2 i18n `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+下载foreman
+地址：http://www.redmine.org/projects/redmine/wiki/Download
+
+我喜欢用GIT下载：
+有人问过我git 怎么安装：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`yum -y install git `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`git clone git://github.com/edavis10/redmine.git `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+源码包地址：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`wget http://rubyforge.org/frs/download.php/73900/redmine-1.1.0.tar.gz `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+下载 后解压。可以放在/usr/local/redmine 目录
+
+Mysql 配置： 创建库和用户
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`create database redmine character set utf8;
+create user 'redmine'@'localhost' identified by 'my_password';
+grant all privileges on redmine.* to 'redmine'@'localhost'; `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+mysql 5 以上
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`grant all privileges on redmine.* to 'redmine'@'localhost' identified by 'my_password'; `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+进去foreman配置 database.yml
+config/database.yml
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`production:
+adapter: mysql
+database: redmine
+host: localhost
+username: redmine
+password: my_password `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+建表：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`RAILS_ENV=production rake db:migrate `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+启动：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`ruby script/server webrick -e production `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+库备份：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`/usr/bin/mysqldump-u  -p
+  |gzip &amp;gt; /path/to/backup/db/redmine_`date +%y_%m_%d`.gz `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+puppet master配置
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`reports=log, foreman `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+puppet client 配置
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`report = true `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+
+配置puppet 提交至foreman
+# cp extras/puppet/foreman/files/foreman-report.rb /usr/lib/ruby/site_ruby/1.8/puppet/reports/foreman.rb
+# chmod 644 /usr/lib/ruby/site_ruby/1.8/puppet/reports/foreman.rb
+# vim /usr/lib/ruby/site_ruby/1.8/puppet/reports/foreman.rb
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`# URL of your Foreman installation
+$foreman_url="http://" + `hostname`.strip + ":8000"`<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+
+cron 清数据：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`rake reports:expire days=7 RAILS_ENV="production" `<span class="tag">&lt;/<span class="title">pre</span>&gt;</span>
+
+###########################################################
+
+foreman 可以采用yum 安装
+
+配置源：
+<span class="tag">&lt;<span class="title">pre</span>&gt;</span>`cat &gt; /etc/yum.repos.d/foreman.repo <span class="tag">&lt;&lt; <span class="attribute">EOF</span>
+[<span class="attribute">foreman</span>]
+<span class="attribute">name</span>=<span class="value">Foreman</span> <span class="attribute">Repo</span>
+<span class="attribute">baseurl</span>=<span class="value">http:</span>//<span class="attribute">theforeman.org</span>/<span class="attribute">repo</span>
+<span class="attribute">gpgcheck</span>=<span class="value">0</span>
+<span class="attribute">enabled</span>=<span class="value">1</span>
+<span class="attribute">EOF</span></span></span>
+</code></pre><p>yum install foreman<br>使用yum 安装后会产生/etc/init.d/foreman  配置文件也在/etc/foreman 目录 。其它的配置一样。</p>
+<p>我在安装时遇到过一些错误，但主要是ruby 版本  和mysql 依赖 建议都用yum 来安装 </p>
+<p>参考： 还是国外的文档给力。<br><a href="http://www.how2centos.com/installing-puppet-master-with-foreman-frontend-on-centos-5-5/" target="_blank" rel="external">http://www.how2centos.com/installing-puppet-master-with-foreman-frontend-on-centos-5-5/</a><br><a href="http://miao5.blogspot.com/2010/01/setup-puppetmaster-foreman.html" target="_blank" rel="external">http://miao5.blogspot.com/2010/01/setup-puppetmaster-foreman.html</a><br><a href="http://www.redmine.org/projects/redmine/wiki/RedmineInstall" target="_blank" rel="external">http://www.redmine.org/projects/redmine/wiki/RedmineInstall</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/cdn/">cdn</a><a href="/tags/foreman/">foreman</a><a href="/tags/puppet/">puppet</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Puppet/">Puppet</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2011/01/27/centos-puppet-foreman-instal/" data-title="centos puppet  foreman install | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2011/01/29/puppet-kick/" title="puppet puppetrun kick config">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  puppet puppetrun kick config</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/01/27/centos-yum-update-ruby/"  title="centos yum 升级ruby 1.8.6 ">
+ <strong>NEXT:</strong><br/> 
+ <span>centos yum 升级ruby 1.8.6 
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

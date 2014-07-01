@@ -1,0 +1,373 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>ganglia metric 默认监控项翻译 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="监控项说明监控值Load_oneOne minute load average每分钟的系统平均负载load_one=0.0Load_fiveFive minute load average每5分钟的系统平均负载load_five=0.0Load_fifteenFifteen minute load ">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2011/01/20/ganglia-metric-translate/" title="ganglia metric 默认监控项翻译" itemprop="url">ganglia metric 默认监控项翻译</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2011-01-20T15:37:12.000Z" itemprop="datePublished">1月 20 2011</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<table border="1" cellspacing="0" cellpadding="0"><br><tbody><br><tr><br><td width="111" valign="top">监控项</td><br><td width="246" valign="top">说明</td><br><td width="123" valign="top">监控值</td><br></tr><br><tr><br><td width="111" valign="top">Load_one</td><br><td width="246" valign="top">One minute load average<br><br>每分钟的系统平均负载</td><br><td width="123" valign="top">load_one=0.0</td><br></tr><br><tr><br><td width="111" valign="top">Load_five</td><br><td width="246" valign="top">Five minute load average<br><br>每5分钟的系统平均负载</td><br><td width="123" valign="top">load_five=0.0</td><br></tr><br><tr><br><td width="111" valign="top">Load_fifteen</td><br><td width="246" valign="top">Fifteen minute load average<br><br>每15分钟的系统平均负载</td><br><td width="123" valign="top">load_fifteen=0.0</td><br></tr><br><tr><br><td width="111" valign="top">mem_total</td><br><td width="246" valign="top">Total amount of memory displayed in KBs<br><br>物理内存总量（KBs显示）</td><br><td width="123" valign="top">mem_total=2075288.0</td><br></tr><br><tr><br><td width="111" valign="top">mem_cached</td><br><td width="246" valign="top">Amount of cached memory<br><br>缓存内存大小</td><br><td width="123" valign="top">mem_cached=470732.0</td><br></tr><br><tr><br><td width="111" valign="top">mem_free</td><br><td width="246" valign="top">Amount of available memory<br><br>空闲内存大小</td><br><td width="123" valign="top">mem_free=1128860.0</td><br></tr><br><tr><br><td width="111" valign="top">mem_buffers</td><br><td width="246" valign="top">Amount of buffered memory<br><br>内核缓存的内存总量</td><br><td width="123" valign="top">mem_buffers=353264.0</td><br></tr><br><tr><br><td width="111" valign="top">swap_total</td><br><td width="246" valign="top">Total amount of swap space displayed in   KBs<br><br>交换分区总量（KBs显示）</td><br><td width="123" valign="top">swap_total=8289532.0</td><br></tr><br><tr><br><td width="111" valign="top">swap_free</td><br><td width="246" valign="top">Amount of available swap memory<br><br>空闲交换分区大小</td><br><td width="123" valign="top">swap_free=8289532.0</td><br></tr><br><tr><br><td width="111" valign="top">mem_shared</td><br><td width="246" valign="top">Amount of shared memory<br><br>共享内存大小</td><br><td width="123" valign="top">mem_shared=0.0</td><br></tr><br><tr><br><td width="111" valign="top">proc_run</td><br><td width="246" valign="top">Total number of running processes<br><br>运行的进程总数</td><br><td width="123" valign="top">proc_run=0.0</td><br></tr><br><tr><br><td width="111" valign="top">proc_total</td><br><td width="246" valign="top">Total number of processes<br><br>进程总数</td><br><td width="123" valign="top">proc_total=65.0</td><br></tr><br><tr><br><td width="111" valign="top">cpu_idle</td><br><td width="246" valign="top">Percentage of time that the CPU or CPUs   were idle and the system did not<br>have an outstanding disk I/O request<br><br>空闲CPU百分比</td><br><td width="123" valign="top">cpu_idle=99.6</td><br></tr><br><tr><br><td width="111" valign="top">cpu_aidle</td><br><td width="246" valign="top">Percent of time since boot idle CPU<br><br>启动的空闲CPU百分比</td><br><td width="123" valign="top">cpu_aidle=99.8</td><br></tr><br><tr><br><td width="111" valign="top">cpu_user</td><br><td width="246" valign="top">Percentage of CPU utilization that   occurred while executing at the user level<br><br>用户空间占用CPU百分比</td><br><td width="123" valign="top">cpu_user=0.2</td><br></tr><br><tr><br><td width="111" valign="top">cpu_nice</td><br><td width="246" valign="top">Percentage of CPU utilization that   occurred while executing at the user level with nice priority<br><br>用户进程空间内改变过优先级的进程占用CPU百分比</td><br><td width="123" valign="top">cpu_nice=0.0</td><br></tr><br><tr><br><td width="111" valign="top">cpu_system</td><br><td width="246" valign="top">Percentage of CPU utilization that   occurred while executing at the<br>system level<br><br>内核空间占用CPU百分比</td><br><td width="123" valign="top">cpu_system=0.1</td><br></tr><br><tr><br><td width="111" valign="top">cpu_num</td><br><td width="246" valign="top">Total number of CPUs<br><br>CPU线程总数</td><br><td width="123" valign="top">cpu_num=2.0</td><br></tr><br><tr><br><td width="111" valign="top">cpu_speed</td><br><td width="246" valign="top">CPU Speed in terms of MHz<br><br>CPU速度（MHz）</td><br><td width="123" valign="top">cpu_speed=2993.0</td><br></tr><br><tr><br><td width="111" valign="top">cpu_wio</td><br><td width="246" valign="top">Percentage of time that the CPU or CPUs   were idle during which the<br>system had an outstanding disk I/O request<br><br>Cpu空闲时的最大I/O请求</td><br><td width="123" valign="top">cpu_wio=0.2</td><br></tr><br><tr><br><td width="111" valign="top">part_max_used</td><br><td width="246" valign="top">Maximum percent used for all partitions</td><br><td width="123" valign="top">part_max_used=21.2</td><br></tr><br><tr><br><td width="111" valign="top">disk_total</td><br><td width="246" valign="top">Total available disk space<br><br>磁盘总大小</td><br><td width="123" valign="top">disk_total=133.991</td><br></tr><br><tr><br><td width="111" valign="top">disk_free</td><br><td width="246" valign="top">Total free disk space<br><br>剩余磁盘空间</td><br><td width="123" valign="top">disk_free=124.707</td><br></tr><br><tr><br><td width="111" valign="top">boottime</td><br><td width="246" valign="top">The last time that the system was started<br><br>系统启动时间</td><br><td width="123" valign="top">boottime=1285905983.0</td><br></tr><br><tr><br><td width="111" valign="top">pkts_in</td><br><td width="246" valign="top">Packets in per second<br><br>每秒进来的包</td><br><td width="123" valign="top">pkts_in=10.5</td><br></tr><br><tr><br><td width="111" valign="top">pkts_out</td><br><td width="246" valign="top">Packets out per second<br><br>每秒出去的包</td><br><td width="123" valign="top">pkts_out=2.85</td><br></tr><br><tr><br><td width="111" valign="top">bytes_in</td><br><td width="246" valign="top">Number of bytes in per second<br><br>每秒进来字节数</td><br><td width="123" valign="top">bytes_in=769.35</td><br></tr><br><tr><br><td width="111" valign="top">bytes_out</td><br><td width="246" valign="top">Number of bytes out per second<br><br>每秒出去字节数</td><br><td width="123" valign="top">bytes_out=3674.02</td><br></tr><br><tr><br><td width="111" valign="top">machine_type</td><br><td width="246" valign="top">System architecture<br><br>系统版本（X86或64）</td><br><td width="123" valign="top">machine_type=x86</td><br></tr><br><tr><br><td width="111" valign="top">os_name</td><br><td width="246" valign="top">系统名字</td><br><td width="123" valign="top">os_name=Linux</td><br></tr><br><tr><br><td width="111" valign="top">os_release</td><br><td width="246" valign="top">系统版本</td><br><td width="123" valign="top">os_release=2.6.18-164.el5PAE</td><br></tr><br><tr><br><td width="111" valign="top">gexec</td><br><td width="246" valign="top">gexec available</td><br><td width="123" valign="top">gexec=OFF</td><br></tr><br><tr><br><td width="111" valign="top">disk_free_rootfs</td><br><td width="246" valign="top">Disk space available on</td><br><td width="123" valign="top">WARN: ‘ disk_free_rootfs ‘</td><br></tr><br></tbody><br></table>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/ganglia/">ganglia</a><a href="/tags/metric/">metric</a><a href="/tags/分布式监控/">分布式监控</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Monitoring/">Monitoring</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2011/01/20/ganglia-metric-translate/" data-title="ganglia metric 默认监控项翻译 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2011/01/21/mysql-master-slave-config/" title="mysql master-slave replication">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  mysql master-slave replication</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/01/20/puppet-dashboard/"  title="puppet dashboard config">
+ <strong>NEXT:</strong><br/> 
+ <span>puppet dashboard config
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

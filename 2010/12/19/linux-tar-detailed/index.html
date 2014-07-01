@@ -1,0 +1,494 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>linux tar command explain | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="tar -c|x|u|r|t[z|j][v] -f &amp;lt;归档文件&amp;gt; [未打包文件]
+将多个文件打包为一个归档文件，可以在打包的同时进行压缩。支持的格式为tar（归档）、gz（压缩）、bz2（压缩率更高，比较耗时）
+ -c 创建
+-x 解包
+-u 更新
+-r 添加
+-t 查看
+-d 比较压缩">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/linux-tar-detailed/" title="linux tar command explain" itemprop="url">linux tar command explain</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T08:48:09.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>tar -c|x|u|r|t[z|j][v] -f &lt;归档文件&gt; [未打包文件]</p>
+<p>将多个文件打包为一个归档文件，可以在打包的同时进行压缩。支持的格式为tar（归档）、gz（压缩）、bz2（压缩率更高，比较耗时）</p>
+<pre><code> -<span class="ruby">c 创建
+</span>-<span class="ruby">x 解包
+</span>-<span class="ruby">u 更新
+</span>-<span class="ruby">r 添加
+</span>-<span class="ruby">t 查看
+</span>-<span class="ruby">d 比较压缩包内文件和文件
+</span>-<span class="ruby"><span class="constant">A</span> 将tar文件添加到归档文件中
+</span>-<span class="ruby">z 使用gz压缩格式
+</span>-<span class="ruby">j 使用bz2压缩格式
+</span>-<span class="ruby">v 显示过程
+</span>-<span class="ruby">f &lt;文件名&gt; 归档文件的文件名
+</span>-<span class="ruby"><span class="constant">C</span> &lt;解压路径&gt; 将压缩包中的文件解压到指定目录`&lt;<span class="regexp">/pre&gt;
+</span></span>[未打包文件] 创建、更新时必须填写
+
+示例：
+&lt;pre&gt;` tar -zcvf xxx.tar.gz xxx/ xxx1 xxx2 xxx3 多个待打包文件以空格分隔
+tar -zxvf xxx.tar.gz 按相对路径解包到当前目录下，或按绝对路径解包
+tar -zcvf xxx.tar.gz xxx | split -b 1m 打包后，使用split分割为1m大小的多个文件`&lt;/pre&gt;
+
+**其它参数**
+&lt;pre&gt;` -P 使用绝对路径压缩时，保留根目录“/”
+-<span class="ruby"><span class="constant">W</span> 校验
+</span>-<span class="ruby">p 还原文件权限
+</span>-<span class="ruby">w 询问用户
+</span>-<span class="ruby">-totals 统计
+</span>-<span class="ruby"><span class="constant">T</span> &lt;表达式&gt; 处理符合条件的文件
+</span>-<span class="ruby"><span class="constant">X</span> &lt;表达式&gt; 排除符合条件的文件`&lt;<span class="regexp">/pre&gt;
+</span></span>**
+通过ssh传输文件**
+Code block 
+&lt;pre&gt;` scp -rp /path/filename username@remoteIP:/path #将本地文件拷贝到服务器上
+scp -rp username@remoteIP:/path/filename /path #将远程文件从服务器下载到本地
+tar cvzf - /path/ | ssh username@remoteip "cd /some/path/; cat - &gt; path.tar.gz" #压缩传输
+tar cvzf - /path/ | ssh username@remoteip "cd /some/path/; tar xvzf -" #压缩传输一个目录并解压缩`&lt;/pre&gt;
+
+##直接命令行输入不需要双引号
+
+功能说明：备份文件。
+**语　　法**：tar [-ABcdgGhiklmMoOpPrRsStuUvwWxzZ][-b &lt;区块数目&gt;][-C &lt;目的目录&gt;][-f &lt;备份文件&gt;][-F ][-K &lt;文件&gt;][-L &lt;媒体容量&gt;][-N &lt;日期时间&gt;][-T &lt;范本文件&gt;][-V &lt;卷册名称&gt;][-X &lt;范本文件&gt;][-&lt;设备编号&gt;&lt;存储密 度&gt;][--after-date=&lt;日期时间&gt;][--atime-preserve][--backuup=&lt;备份方式&amp; amp; gt;][--checkpoint][--concatenate][--confirmation][--delete][--exclude=&amp; lt;范本样式&gt;][--force-local][--group=&lt;群组名称&gt;][--help][--ignore- failed-read][--new-volume-script=][--newer-mtime][--no- recursion][--null][--numeric-owner][--owner=&lt;用户名称&gt;][--posix] [--erve][--preserve-order][--preserve-permissions][--record-size=&lt;区块数 目&gt;][--recursive-unlink][--remove-files][--rsh-command=&lt;执行指令&gt;] [--same-owner][--suffix=&lt;备份字尾字符串&gt;][--totals][--use-compress- program=&lt;执行指令&gt;][--version][--volno-file=&lt;编号文件&gt;][文件或目录...]
+补充说明：tar是用来建立，还原备份文件的工具程序，它可以加入，解开备份文件内的文件。
+
+**参　　数**：
+&lt;pre&gt;` -A或--catenate 新增温暖件到已存在的备份文件。
+-<span class="ruby">b&lt;区块数目&gt;或--blocking-factor=&lt;区块数目&gt; 设置每笔记录的区块数目，每个区块大小为<span class="number">12</span>Bytes。
+</span>-<span class="ruby"><span class="constant">B</span>或--read-full-records 读取数据时重设区块大小。
+</span>-<span class="ruby">c或--create 建立新的备份文件。
+</span>-<span class="ruby"><span class="constant">C</span>&lt;目的目录&gt;或--directory=&lt;目的目录&gt; 切换到指定的目录。
+</span>-<span class="ruby">d或--diff或--compare 对比备份文件内和文件系统上的文件的差异。
+</span>-<span class="ruby">f&lt;备份文件&gt;或--file=&lt;备份文件&gt; 指定备份文件。
+</span>-<span class="ruby"><span class="constant">F</span>或--info-script= 每次更换磁带时，就执行指定的<span class="constant">Script</span>文件。
+</span>-<span class="ruby">g或--listed-incremental 处理<span class="constant">GNU</span>格式的大量备份。
+</span>-<span class="ruby"><span class="constant">G</span>或--incremental 处理旧的<span class="constant">GNU</span>格式的大量备份。
+</span>-<span class="ruby">h或--dereference 不建立符号连接，直接复制该连接所指向的原始文件。
+</span>-<span class="ruby">i或--ignore-zeros 忽略备份文件中的<span class="number">0</span> <span class="constant">Byte</span>区块，也就是<span class="constant">EOF</span>。
+</span>-<span class="ruby">k或--keep-old-files 解开备份文件时，不覆盖已有的文件。
+</span>-<span class="ruby"><span class="constant">K</span>&lt;文件&gt;或--starting-file=&lt;文件&gt; 从指定的文件开始还原。
+</span>-<span class="ruby">l或--one-file-system 复制的文件或目录存放的文件系统，必须与tar指令执行时所处的文件系统相同，否则不予复制。
+</span>-<span class="ruby"><span class="constant">L</span>&lt;媒体容量&gt;或-tape-length=&lt;媒体容量&gt; 设置存放每体的容量，单位以<span class="number">1024</span> <span class="constant">Bytes</span>计算。
+</span>-<span class="ruby">m或--modification-time 还原文件时，不变更文件的更改时间。
+</span>-<span class="ruby"><span class="constant">M</span>或--multi-volume 在建立，还原备份文件或列出其中的内容时，采用多卷册模式。
+</span>-<span class="ruby"><span class="constant">N</span>&lt;日期格式&gt;或--newer=&lt;日期时间&gt; 只将较指定日期更新的文件保存到备份文件里。
+</span>-<span class="ruby">o或--old-archive或--portability 将资料写入备份文件时使用<span class="constant">V7</span>格式。
+</span>-<span class="ruby"><span class="constant">O</span>或--stdout 把从备份文件里还原的文件输出到标准输出设备。
+</span>-<span class="ruby">p或--same-permissions 用原来的文件权限还原文件。
+</span>-<span class="ruby"><span class="constant">P</span>或--absolute-names 文件名使用绝对名称，不移除文件名称前的<span class="string">"/"</span>号。
+</span>-<span class="ruby">r或--append 新增文件到已存在的备份文件的结尾部分。
+</span>-<span class="ruby"><span class="constant">R</span>或--block-number 列出每个信息在备份文件中的区块编号。
+</span>-<span class="ruby">s或--same-order 还原文件的顺序和备份文件内的存放顺序相同。
+</span>-<span class="ruby"><span class="constant">S</span>或--sparse 倘若一个文件内含大量的连续<span class="number">0</span>字节，则将此文件存成稀疏文件。
+</span>-<span class="ruby">t或--list 列出备份文件的内容。
+</span>-<span class="ruby"><span class="constant">T</span>&lt;范本文件&gt;或--files-from=&lt;范本文件&gt; 指定范本文件，其内含有一个或多个范本样式，让tar解开或建立符合设置条件的文件。
+</span>-<span class="ruby">u或--update 仅置换较备份文件内的文件更新的文件。
+</span>-<span class="ruby"><span class="constant">U</span>或--unlink-first 解开压缩文件还原文件之前，先解除文件的连接。
+</span>-<span class="ruby">v或--verbose 显示指令执行过程。
+</span>-<span class="ruby"><span class="constant">V</span>&lt;卷册名称&gt;或--label=&lt;卷册名称&gt; 建立使用指定的卷册名称的备份文件。
+</span>-<span class="ruby">w或--interactive 遭遇问题时先询问用户。
+</span>-<span class="ruby"><span class="constant">W</span>或--verify 写入备份文件后，确认文件正确无误。
+</span>-<span class="ruby">x或--extract或--get 从备份文件中还原文件。
+</span>-<span class="ruby"><span class="constant">X</span>&lt;范本文件&gt;或--exclude-from=&lt;范本文件&gt; 指定范本文件，其内含有一个或多个范本样式，让ar排除符合设置条件的文件。
+</span>-<span class="ruby">z或--gzip或--ungzip 通过gzip指令处理备份文件。
+</span>-<span class="ruby"><span class="constant">Z</span>或--compress或--uncompress 通过compress指令处理备份文件。
+</span>-<span class="ruby">&lt;设备编号&gt;&lt;存储密度&gt; 设置备份用的外围设备编号及存放数据的密度。
+</span>-<span class="ruby">-after-date=&lt;日期时间&gt; 此参数的效果和指定<span class="string">"-N"</span>参数相同。
+</span>-<span class="ruby">-atime-preserve 不变更文件的存取时间。
+</span>-<span class="ruby">-backup=&lt;备份方式&gt;或--backup 移除文件前先进行备份。
+</span>-<span class="ruby">-checkpoint 读取备份文件时列出目录名称。
+</span>-<span class="ruby">-concatenate 此参数的效果和指定<span class="string">"-A"</span>参数相同。
+</span>-<span class="ruby">-confirmation 此参数的效果和指定<span class="string">"-w"</span>参数相同。
+</span>-<span class="ruby">-delete 从备份文件中删除指定的文件。
+</span>-<span class="ruby">-exclude=&lt;范本样式&gt; 排除符合范本样式的问家。
+</span>-<span class="ruby">-group=&lt;群组名称&gt; 把加入设备文件中的文件的所属群组设成指定的群组。
+</span>-<span class="ruby">-help 在线帮助。
+</span>-<span class="ruby">-ignore-failed-read 忽略数据读取错误，不中断程序的执行。
+</span>-<span class="ruby">-new-volume-script= 此参数的效果和指定<span class="string">"-F"</span>参数相同。
+</span>-<span class="ruby">-newer-mtime 只保存更改过的文件。
+</span>-<span class="ruby">-no-recursion 不做递归处理，也就是指定目录下的所有文件及子目录不予处理。
+</span>-<span class="ruby">-null 从null设备读取文件名称。
+</span>-<span class="ruby">-numeric-owner 以用户识别码及群组识别码取代用户名称和群组名称。
+</span>-<span class="ruby">-owner=&lt;用户名称&gt; 把加入备份文件中的文件的拥有者设成指定的用户。
+</span>-<span class="ruby">-posix 将数据写入备份文件时使用<span class="constant">POSIX</span>格式。
+</span>-<span class="ruby">-preserve 此参数的效果和指定<span class="string">"-ps"</span>参数相同。
+</span>-<span class="ruby">-preserve-order 此参数的效果和指定<span class="string">"-A"</span>参数相同。
+</span>-<span class="ruby">-preserve-permissions 此参数的效果和指定<span class="string">"-p"</span>参数相同。
+</span>-<span class="ruby">-record-size=&lt;区块数目&gt; 此参数的效果和指定<span class="string">"-b"</span>参数相同。
+</span>-<span class="ruby">-recursive-unlink 解开压缩文件还原目录之前，先解除整个目录下所有文件的连接。
+</span>-<span class="ruby">-remove-files 文件加入备份文件后，就将其删除。
+</span>-<span class="ruby">-rsh-command=&lt;执行指令&gt; 设置要在远端主机上执行的指令，以取代rsh指令。
+</span>-<span class="ruby">-same-owner 尝试以相同的文件拥有者还原问家你。
+</span>-<span class="ruby">-suffix=&lt;备份字尾字符串&gt; 移除文件前先行备份。
+</span>-<span class="ruby">-totals 备份文件建立后，列出文件大小。
+</span>-<span class="ruby">-use-compress-program=&lt;执行指令&gt; 通过指定的指令处理备份文件。
+</span>-<span class="ruby">-version 显示版本信息。
+</span>-<span class="ruby">-volno-file=&lt;编号文件&gt; 使用指定文件内的编号取代预设的卷册编号。</span>
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/tar/">tar</a><a href="/tags/command/">command</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Commands/">Commands</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/linux-tar-detailed/" data-title="linux tar command explain | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/linux-diff/" title="linux diff command explain">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  linux diff command explain</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/linux-acl/"  title="linux acl">
+ <strong>NEXT:</strong><br/> 
+ <span>linux acl
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

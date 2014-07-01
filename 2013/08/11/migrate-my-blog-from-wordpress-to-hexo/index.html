@@ -1,0 +1,524 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Migrate My blog from WordPress to Hexo | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="正式将Blog从WordPress迁移至Hexo，并从VPS托管至Github。整个组合模式为：hexo+github+vim+markdown.由于文档很多，并且很详细，这里只是列出相关的参考文档链接。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/08/11/migrate-my-blog-from-wordpress-to-hexo/" title="Migrate My blog from WordPress to Hexo" itemprop="url">Migrate My blog from WordPress to Hexo</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2013-08-11T07:14:17.000Z" itemprop="datePublished">8月 11 2013</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hexo"><span class="toc-number">1.</span> <span class="toc-text">Hexo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Markdown"><span class="toc-number">2.</span> <span class="toc-text">Markdown</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#我的配置"><span class="toc-number">3.</span> <span class="toc-text">我的配置</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#WordPress"><span class="toc-number">3.1.</span> <span class="toc-text">WordPress</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导航添加about"><span class="toc-number">3.2.</span> <span class="toc-text">导航添加about</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSS"><span class="toc-number">3.3.</span> <span class="toc-text">RSS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新浪微博秀"><span class="toc-number">3.4.</span> <span class="toc-text">新浪微博秀</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#_友情链接"><span class="toc-number">4.</span> <span class="toc-text">  友情链接</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#增加多说评论"><span class="toc-number">4.1.</span> <span class="toc-text">增加多说评论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插入代码的用法"><span class="toc-number">4.2.</span> <span class="toc-text">插入代码的用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#友情链接"><span class="toc-number">4.3.</span> <span class="toc-text">友情链接</span></a></li></ol>
+		</div>
+		
+		<p>正式将Blog从WordPress迁移至Hexo，并从VPS托管至Github。整个组合模式为：hexo+github+vim+markdown.由于文档很多，并且很详细，这里只是列出相关的参考文档链接。</p>
+<a id="more"></a>
+
+<h2 id="Hexo">Hexo</h2>
+<ul>
+<li><a href="http://zipperary.com/2013/05/28/hexo-guide-1/" target="_blank" rel="external">Hexo介绍</a></li>
+<li><a href="http://zipperary.com/2013/05/29/hexo-guide-3/" target="_blank" rel="external">Hexo安装配置</a></li>
+<li><a href="http://zipperary.com/2013/05/30/hexo-guide-4/" target="_blank" rel="external">Hexo优化</a></li>
+<li><a href="https://github.com/tommy351/hexo/wiki/Plugins" target="_blank" rel="external">Hexo插件列表</a></li>
+<li><a href="https://github.com/tommy351/hexo-plugins/tree/master/migrator/wordpress" target="_blank" rel="external">WordPress迁移插件</a></li>
+</ul>
+<h2 id="Markdown">Markdown</h2>
+<ul>
+<li><a href="http://upwith.me/?p=503" target="_blank" rel="external">Markdown基本语法</a></li>
+<li><a href="http://zipperary.com/2013/05/22/introduction-to-markdown/" target="_blank" rel="external">Markdown指南</a></li>
+<li><a href="https://github.com/volca/markdown-preview" target="_blank" rel="external">实时预览插件</a></li>
+<li><a href="https://github.com/plasticboy/vim-markdown" target="_blank" rel="external">vim语法高亮</a></li>
+</ul>
+<h2 id="我的配置">我的配置</h2>
+<h3 id="WordPress">WordPress</h3>
+<ol>
+<li>安装插件<code>npm install hexo-migrator-wordpress</code></li>
+<li>登录WordPress后台，选择”工具”—&gt;”导出” 导出所有文章至本地XML</li>
+<li>运行如下命令，\<source>为你本地的XML文件路径<code>hexo migrate wordpress \&lt;source&gt;</code></li>
+</ol>
+<h3 id="导航添加about">导航添加about</h3>
+<ol>
+<li><code>hexo new page &quot;about&quot;</code></li>
+<li>编辑<code>source/about/index.md</code></li>
+<li><code>themes/light/_config.yml</code>中，添加如下：</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="keyword">menu</span>:
+  关于: /<span class="keyword">about</span>
+</pre></td></tr></table></figure>
+
+<h3 id="RSS">RSS</h3>
+<ol>
+<li>安装插件<code>npm install hexo-generator-feed</code></li>
+<li>编辑<code>hexo/_config.yml</code>添加如下代码:</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>plugins:
+<span class="subst">-</span> hexo<span class="attribute">-generator</span><span class="attribute">-feed</span>
+</pre></td></tr></table></figure><br>3. 编辑<code>themes/light/_config.yml</code> 添加RSS链接<code>rss: /atom.xml</code><br>4. 编辑<code>themes/light/layout/_partial/header.ejs</code> 在<code>&lt;ul&gt;&lt;/ul&gt;</code> 之间添加<code>&lt;li&gt; &lt;a href=&quot;/atom.xml&quot;&gt;RSS&lt;/a&gt; &lt;/li&gt;</code><br><br>### 搜索引擎sitemap<br>1. 安装插件<code>npm install hexo-generator-sitemap</code><br>2. 编辑<code>hexo/_config.yml</code>添加如下代码:<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>plugins:
+<span class="subst">-</span> hexo<span class="attribute">-generator</span><span class="attribute">-sitemap</span>
+</pre></td></tr></table></figure><br>### Baidu Analytics<br>1. 获取网站的相关代码<a href="http://tongji.baidu.com/web/welcome/login" target="_blank" rel="external">百度统计</a><br>2. 可以直接插入在Baidu Analytics中，编辑<code>themes/light/layout/_partial/baidu_analytics.ejs</code>插入代码<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="vbscript">&lt;% <span class="keyword">if</span> (theme.baidu_analytics){ %&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript">
+#你的百度统计代码
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="vbscript">&lt;% } %&gt;</span>
+</pre></td></tr></table></figure><br>3. 修改<code>themes/light/_config.yml</code>,增加<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="attribute">baidu_analytics</span>: <span class="string">true</span>
+</pre></td></tr></table></figure><br>4. 修改<code>themes/light/layout/_partial/head.ejs</code> 在/head前增加：<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>&lt;<span class="variable">%-</span> partial(<span class="string">'baidu_analytics'</span>) <span class="variable">%&gt;</span>
+</pre></td></tr></table></figure>
+
+<h3 id="新浪微博秀">新浪微博秀</h3>
+<ol>
+<li>修改<code>themes/light/_config.yml</code>增加 weibo </li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>widgets:
+-<span class="ruby"> search
+</span>-<span class="ruby"> category
+</span>-<span class="ruby"> tagcloud
+</span>-<span class="ruby"> weibo</span>
+</pre></td></tr></table></figure>
+
+<ol>
+<li>增加文件<code>themes/light/layout/_widget/weibo.ejs</code> 从微博获取</li>
+</ol>
+<h2 id="7"><figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">iframe</span> <span class="attribute">width</span>=<span class="value">"100%"</span> <span class="attribute">height</span>=<span class="value">"550"</span> <span class="attribute">class</span>=<span class="value">"share_self"</span>  <span class="attribute">frameborder</span>=<span class="value">"0"</span> <span class="attribute">scrolling</span>=<span class="value">"no"</span> <span class="attribute">src</span>=<span class="value">"http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=3&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1054764633&verifier=8fd6ea04&dpc=1"</span>&gt;</span><span class="tag">&lt;/<span class="title">iframe</span>&gt;</span>
+</pre></td></tr></table></figure></h2>
+<p>Update 2013-12-30 22:06<br>ADD:<br>  多说</p>
+<h2 id="_友情链接">  友情链接</h2>
+<h3 id="增加多说评论">增加多说评论</h3>
+<ol>
+<li>多说注册<a href="http://duoshuo.com/" target="_blank" rel="external">多说官网</a></li>
+<li>修改 <code>themes\light\layout\_partial\comment.ejs</code> ，<section> </section>插入如下代码<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="code"><pre><span class="comment">&lt;!-- Duoshuo Comment BEGIN --&gt;</span>
+<span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"ds-thread"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript">
+<span class="keyword">var</span> duoshuoQuery = {short_name:<span class="string">"liuyu105"</span>};
+  (<span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+    <span class="keyword">var</span> ds = document.createElement(<span class="string">'script'</span>);
+    ds.type = <span class="string">'text/javascript'</span>;ds.async = <span class="literal">true</span>;
+    ds.src = <span class="string">'http://static.duoshuo.com/embed.js'</span>;
+    ds.charset = <span class="string">'UTF-8'</span>;
+    (document.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>]
+    || document.getElementsByTagName(<span class="string">'body'</span>)[<span class="number">0</span>]).appendChild(ds);
+  })();
+ </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="comment">&lt;!-- Duoshuo Comment END --&gt;</span>
+</pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="插入代码的用法">插入代码的用法</h3>
+<ol>
+<li>直接使用 ``包围</li>
+<li><img src="http://m3.img.libdd.com/farm5/2012/0913/15/73D9410B78B12835FE79BEC176AB49EE19D57A05049E_500_244.PNG" alt="image"></li>
+<li>或者不输入语言名</li>
+</ol>
+<h3 id="友情链接">友情链接</h3>
+<ol>
+<li>修改 <code>themes/light/_config.yml</code> ，在widgets增加： <code>-blogroll</code></li>
+<li>新增文件 <code>themes/light/layout/_widget/blogroll.ejs</code> ，内容如下:</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="code"><pre><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"widget tag"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">h3</span> <span class="attribute">class</span>=<span class="value">"title"</span>&gt;</span>友情链接<span class="tag">&lt;/<span class="title">h3</span>&gt;</span>
+<span class="tag">&lt;<span class="title">ul</span> <span class="attribute">class</span>=<span class="value">"entry"</span>&gt;</span>
+<span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"http://zipperary.com/"</span> <span class="attribute">title</span>=<span class="value">"Zippera's Blog"</span>&gt;</span>Zippera<span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span>
+<span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"http://chenlinux.com/"</span> <span class="attribute">title</span>=<span class="value">"年年风雨's Blog"</span>&gt;</span>三斗室<span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span>
+<span class="tag">&lt;<span class="title">li</span>&gt;</span><span class="tag">&lt;<span class="title">a</span> <span class="attribute">href</span>=<span class="value">"http://kisspuppet.com/"</span> <span class="attribute">title</span>=<span class="value">"KissPuppet's blog"</span>&gt;</span>KissPuppet<span class="tag">&lt;/<span class="title">a</span>&gt;</span><span class="tag">&lt;/<span class="title">li</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">ul</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+</pre></td></tr></table></figure>
+
+<ol>
+<li>每次增加友情链接时需要修改此文件</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/hexo/">hexo</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2013/08/11/migrate-my-blog-from-wordpress-to-hexo/" data-title="Migrate My blog from WordPress to Hexo | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2013/09/21/puppet-3x-new-feature/" title="">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  (no title)</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2011/11/18/centos-yum-puppet-2-7-puppetabs-repo/"  title="centos yum puppet 2.7 puppetabs.repo">
+ <strong>NEXT:</strong><br/> 
+ <span>centos yum puppet 2.7 puppetabs.repo
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hexo"><span class="toc-number">1.</span> <span class="toc-text">Hexo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Markdown"><span class="toc-number">2.</span> <span class="toc-text">Markdown</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#我的配置"><span class="toc-number">3.</span> <span class="toc-text">我的配置</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#WordPress"><span class="toc-number">3.1.</span> <span class="toc-text">WordPress</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#导航添加about"><span class="toc-number">3.2.</span> <span class="toc-text">导航添加about</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RSS"><span class="toc-number">3.3.</span> <span class="toc-text">RSS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#新浪微博秀"><span class="toc-number">3.4.</span> <span class="toc-text">新浪微博秀</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#_友情链接"><span class="toc-number">4.</span> <span class="toc-text">  友情链接</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#增加多说评论"><span class="toc-number">4.1.</span> <span class="toc-text">增加多说评论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#插入代码的用法"><span class="toc-number">4.2.</span> <span class="toc-text">插入代码的用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#友情链接"><span class="toc-number">4.3.</span> <span class="toc-text">友情链接</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

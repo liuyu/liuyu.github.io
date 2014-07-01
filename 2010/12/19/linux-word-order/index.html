@@ -1,0 +1,583 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Linux一句话命令 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="原文链接：http://bbs.linuxtone.org/thread-16-1-1.html IT运维专家网—“自由平等，互助分享！”作者:NetSeek原文加我的补充，以后会更加详细！
+1.删除0字节文件
+find -type f -size 0 -exec rm -rf {} \;`&amp;lt;">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/linux-word-order/" title="Linux一句话命令" itemprop="url">Linux一句话命令</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-18T22:59:00.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>原文链接：<a href="http://bbs.linuxtone.org/thread-16-1-1.html" target="_blank" rel="external">http://bbs.linuxtone.org/thread-16-1-1.html</a> IT运维专家网—“自由平等，互助分享！”<br>作者:NetSeek<br>原文加我的补充，以后会更加详细！</p>
+<p>1.删除0字节文件</p>
+<pre><code>find -type f -size 0 -exec rm -rf {} \;`&lt;/pre&gt;
+
+2.查看进程
+&lt;pre&gt;`按内存从大到小排列
+ps -e -o "%C : %p : %z : %a"|sort -k5 -nr`&lt;/pre&gt;
+
+3.按cpu利用率从大到小排列
+&lt;pre&gt;<span class="code">`ps -e -o "%C : %p : %z : %a"|sort -nr`</span>&lt;/pre&gt;
+
+4.打印说cache里的URL
+&lt;pre&gt;<span class="smartquote">`grep -r -a jpg /data/cache/* | strings | grep "http:" | awk -F'</span>http:' <span class="emphasis">'{print "http:"$2;}'</span>`&lt;/pre&gt;
+
+5.查看http的并发请求数及其TCP连接状态：
+&lt;pre&gt;<span class="smartquote">`netstat -n | awk '</span>/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}<span class="emphasis">'`&lt;/pre&gt;
+
+</span>6.&lt;pre&gt;<span class="smartquote">` sed -i '</span>/Root/s/no/yes/' /etc/ssh/sshd<span class="emphasis">_config sed`&lt;/pre&gt;
+在这个文里 Root的一行，匹配Root一行，将no替换成yes.
+
+</span>7.1.如何杀掉mysql进程：
+&lt;pre&gt;<span class="smartquote">`ps aux|grep mysql|grep -v grep|awk '</span>{print $2}<span class="emphasis">'|xargs kill -9 (从中了解到awk的用途)
+pgrep mysql |xargs kill -9 [网友:&amp;FROST]
+killall -TERM mysqld
+kill -9 `cat /usr/local/apache2/logs/httpd.pid` 试试查杀进程PID`&lt;/pre&gt;
+
+</span>8.显示运行3级别开启的服务:
+&lt;pre&gt;<span class="code">`ls /etc/rc3.d/S* |cut -c 15- (从中了解到cut的用途，截取数据)`</span>&lt;/pre&gt;
+
+9.如何在编写SHELL显示多个信息，用EOF
+<span class="header">&lt;pre&gt;`cat &lt;&lt; EOF
++--------------------------------------------------------------+</span>
+<span class="header">| === Welcome to Tunoff services === |
++--------------------------------------------------------------+</span>
+EOF`&lt;/pre&gt;
+
+10\. for 的巧用(如给mysql建软链接)
+&lt;pre&gt;`cd /usr/local/mysql/bin
+for i in *
+do ln /usr/local/mysql/bin/$i /usr/bin/$i
+done`&lt;/pre&gt;
+
+11\. 取IP地址：
+&lt;pre&gt;<span class="smartquote">`ifconfig eth0|sed -n '</span>2p'|awk <span class="emphasis">'{print $2}'</span>|cut -c 6-30 或者:
+ifconfig eth0 |grep "inet addr:" |awk <span class="emphasis">'{print $2}'</span>|cut -c 6- 或者
+ifconfig | grep <span class="emphasis">'inet addr:'</span>| grep -v <span class="emphasis">'127.0.0.1'</span> | cut -d: -f2 | awk <span class="emphasis">'{ print $1}'</span>
+或者：
+ifconfig eth0 | sed -n <span class="emphasis">'/inet /{s/.*addr://;s/ .*//;p}'</span>`&lt;/pre&gt;
+Perl实现获取IP的方法:
+ifconfig -a | perl -ne <span class="emphasis">'if ( m/^\s*inet (?:addr:)?([\d.]+).*?cast/ ) { print qq($1\n); exit 0; }'</span>&lt;/code&gt;&lt;/pre&gt;
+
+12.内存的大小:
+&lt;pre&gt;<span class="smartquote">`free -m |grep "Mem" | awk '</span>{print $2}<span class="emphasis">'`&lt;/pre&gt;
+
+</span>13.
+&lt;pre&gt;<span class="smartquote">`netstat -an -t | grep ":80" | grep ESTABLISHED | awk '</span>{printf "%s %s\n",$5,$6}' | sort`&lt;/pre&gt;
+
+14.查看Apache的并发请求数及其TCP连接状态：
+&lt;pre&gt;<span class="smartquote">`netstat -n | awk '</span>/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}<span class="emphasis">'`&lt;/pre&gt;
+
+</span>15.因为同事要统计一下服务器下面所有的jpg的文件的大小,写了个shell给他来统计.原来用xargs实现,但他一次处理一部分,搞的有多个总和....,下面的命令就能解决啦.
+&lt;pre&gt;<span class="smartquote">`find / -name *.jpg -exec wc -c {} \;|awk '</span>{print $1}<span class="emphasis">'|awk '</span>{a+=$1}END{print a}<span class="emphasis">'`&lt;/pre&gt;
+CPU的数量（多核算多个CPU，cat /proc/cpuinfo |grep -c processor）越多，系统负载越低，每秒能处理的请求数也越多。
+--------------------------------------------------------------------------------------------------------------------
+
+</span>16 CPU负载 # cat /proc/loadavg
+检查前三个输出值是否超过了系统逻辑CPU的4倍。
+
+18 CPU负载 #mpstat 1 1
+检查%idle是否过低(比如小于5%)
+
+19 内存空间 # free
+检查free值是否过低 也可以用 # cat /proc/meminfo
+
+20 swap空间 # free
+检查swap used值是否过高 如果swap used值过高，进一步检查swap动作是否频繁：
+# vmstat 1 5
+观察si和so值是否较大
+
+21 磁盘空间 # df -h
+检查是否有分区使用率(Use%)过高(比如超过90%) 如发现某个分区空间接近用尽，可以进入该分区的挂载点，用以下命令找出占用空间最多的文件或目录：
+# du -cks * | sort -rn | head -n 10
+
+22 磁盘I/O负载 # iostat -x 1 2
+检查I/O使用率(%util)是否超过100%
+
+23 网络负载 # sar -n DEV
+检查网络流量(rxbyt/s, txbyt/s)是否过高
+
+24 网络错误 # netstat -i
+检查是否有网络错误(drop fifo colls carrier) 也可以用命令：# cat /proc/net/dev
+
+25 网络连接数目&lt;pre&gt;<span class="code">` # netstat -an | grep -E “^(tcp)” | cut -c 68- | sort | uniq -c | sort -n`</span>&lt;/pre&gt;
+
+26 进程总数 # ps aux | wc -l
+检查进程个数是否正常 (比如超过250)
+
+27 可运行进程数目 # vmwtat 1 5
+列给出的是可运行进程的数目，检查其是否超过系统逻辑CPU的4倍
+
+28 进程 # top -id 1
+观察是否有异常进程出现
+
+29 网络状态 检查DNS, 网关等是否可以正常连通
+
+30 用户 # who | wc -l
+检查登录用户是否过多 (比如超过50个) 也可以用命令：# uptime
+
+31 系统日志 # cat /var/log/rflogview/<span class="strong">*errors
+检查是否有异常错误记录 也可以搜寻一些异常关键字，例如：
+&lt;pre&gt;`# grep -i error /var/log/messages
+# grep -i fail /var/log/messages
+# egrep -i 'error|warn' /var/log/messages 查看系统异常`&lt;/pre&gt;
+
+</span>32 核心日志 # dmesg
+检查是否有异常错误记录
+
+33 系统时间 # date
+检查系统时间是否正确
+
+34 打开文件数目 # lsof | wc -l
+检查打开文件总数是否过多
+
+35 日志 # logwatch –print 配置/etc/log.d/logwatch.conf，将 Mailto 设置为自己的email 地址，启动mail服务 (sendmail或者postfix)，这样就可以每天收到日志报告了。
+缺省logwatch只报告昨天的日志，可以用# logwatch –print –range all 获得所有的日志分析结果。
+可以用# logwatch –print –detail high 获得更具体的日志分析结果(而不仅仅是出错日志)。
+
+36.杀掉80端口相关的进程
+&lt;pre&gt;<span class="smartquote">`lsof -i :80|grep -v "PID"|awk '</span>{print "kill -9",$2}<span class="emphasis">'|sh`&lt;/pre&gt;
+
+</span>37.清除僵死进程。
+&lt;pre&gt;<span class="smartquote">`ps -eal | awk '</span>{ if ($2 == "Z") {print $4}}' | kill -9`&lt;/pre&gt;
+
+38.tcpdump 抓包 ，用来防止80端口被人攻击时可以分析数据
+&lt;pre&gt;<span class="code">`# tcpdump -c 10000 -i eth0 -n dst port 80 &gt; /root/pkts`</span>&lt;/pre&gt;
+
+39.然后检查IP的重复数 并从小到大排序 注意 "-t\ +0" 中间是两个空格
+&lt;pre&gt;<span class="smartquote">`# less pkts | awk {'</span>printf $3"\n"<span class="emphasis">'} | cut -d. -f 1-4 | sort | uniq -c | awk {'</span>printf $1" "$2"\n"<span class="emphasis">'} | sort -n -t\ +0`&lt;/pre&gt;
+
+</span>40.查看有多少个活动的php-cgi进程
+&lt;pre&gt;<span class="code">`netstat -anp | grep php-cgi | grep ^tcp | wc -l`</span>&lt;/pre&gt;
+
+41.利用iptables对应简单攻击
+&lt;pre&gt;<span class="code">`netstat -an | grep -v LISTEN | awk ‘{print $5}’ |grep -v 127.0.0.1|grep -v 本机ip|sed “s/::ffff://g”|awk ‘BEGIN { FS=”:” } { Num[$1]++ } END { for(i in Num) if(Num&gt;8) { print i} }’ |grep ‘[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}’| xargs -i[] iptables -I INPUT -s [] -j DROP`</span>&lt;/pre&gt;
+Num&gt;8部分设定值为阀值，这条句子会自动将netstat -an 中查到的来自同一ＩＰ的超过一定量的连接的列入禁止范围。 基中本机ip改成你的服务器的ip地址
+
+42\. 怎样知道某个进程在哪个CPU上运行？
+&lt;pre&gt;<span class="code">`# ps -eo pid,args,psr`</span>&lt;/pre&gt;
+
+43\. 查看硬件制造商
+&lt;pre&gt;<span class="code">`dmidecode -s system-product-name`</span>&lt;/pre&gt;
+
+44.perl如何编译成字节码，这样在处理复杂项目的时候会更快一点？
+&lt;pre&gt;<span class="code">`perlcc -B -o webseek webseek.pl`</span>&lt;/pre&gt;
+###补充
+在当前目录及子目录下搜索所有后缀为 .php 的文件，并且将 字符串 baidu.com 替换成 opendoc.com.cn
+find -name <span class="strong">*.php |xargs perl -pi -e 's|baidu.com|opendoc.com.cn|g';
+sed -i "s/baidu.com/opendoc.com.cn/g" `grep baidu.com -rl ./`&lt;/code&gt;&lt;/pre&gt;
+
+</span>vim 颜色
+&lt;pre&gt;`if [ -n "$BASH<span class="emphasis">_VERSION" -o -n "$KSH_</span>VERSION" -o -n "$ZSH<span class="emphasis">_VERSION" ]; then
+[ -x /usr/bin/id ] || return
+alias vi &gt;/dev/null 2&gt;&amp;1 || alias vi=vim
+fi`&lt;/pre&gt;
+
+</span>1.按内存从大到小排列进程:
+&lt;pre&gt;<span class="code">`ps -eo "%C : %p : %z : %a"|sort -k5 -nr`</span>&lt;/pre&gt;
+
+2.查看当前有哪些进程；查看进程打开的文件:
+&lt;pre&gt;<span class="code">`ps -A ；lsof -p PID`</span>&lt;/pre&gt;
+
+3.获取当前IP地址（从中学习grep,awk,cut的作用）
+&lt;pre&gt;<span class="smartquote">`ifconfig eth0 |grep "inet addr:" |awk '</span>{print $2}<span class="emphasis">'|cut -c 6-`&lt;/pre&gt;
+
+</span>4.统计每个单词出现的频率，并排序
+&lt;pre&gt;<span class="smartquote">`awk '</span>{arr[$1]+=1 }END{for(i in arr){print arr"\t"i}}' 文件名 | sort -rn`&lt;/pre&gt;
+
+5.显示10条最常用的命令
+&lt;pre&gt;<span class="smartquote">`sed -e "s/| /\n/g" ~/.bash_history | cut -d '</span> ' -f 1 | sort | uniq -c | sort -nr | head`&lt;/pre&gt;
+
+6.杀死Nginx进程(杀死某一进程)
+&lt;pre&gt;<span class="smartquote">`ps -ef|grep -v grep |grep nginx|awk '</span>{print $2}' 或
+for i in <span class="smartquote">`ps aux | grep nginx | grep -v grep | awk {'</span>print $2'}<span class="code">` ; do kill $i; done`</span>&lt;/pre&gt;
+
+7.列出当前文件夹目录大小，以G，M，K显示。
+&lt;pre&gt;<span class="smartquote">`du -b --max-depth 1 | sort -nr | perl -pe '</span>s{([0-9]+)}{sprintf"%.1f%s", $1&gt;=2*<span class="strong">*30? ($1/2*</span><span class="strong">*30, "G"): $1&gt;=2*</span><span class="strong">*20? ($1/2*</span><span class="strong">*20, "M"):$1&gt;=2*</span><span class="strong">*10? ($1/2*</span><span class="strong">*10, "K"): ($1, "")}e'
+shaw答案 ：du -hs $(du -sk ./`ls -F |grep /` |sort -nr |awk '{print $NF}')
+也可 以实现，不过不是特别完美。但好记。`&lt;/pre&gt;
+
+</span>8.清空linux buffer cache
+&lt;pre&gt;<span class="code">`sync &amp;&amp; echo 3 &gt; /proc/sys/vm/drop_caches`</span>&lt;/pre&gt;
+
+9.将当前目录文件名全部转换成小写
+&lt;pre&gt;<span class="code">`for i in *; do mv "$i" "$(echo $i|tr A-Z a-z)"; done`</span>&lt;/pre&gt;
+
+10.消除vim中的^M的几种方法
+&lt;pre&gt;`1)dos2uninx filename
+2)sed -e <span class="emphasis">'s/^M//'</span> filename
+3)vim中 :s/^M//gc
+4)col -bx &lt; dosfile &gt; newfile
+5)tr -s "\r\n" "\n" &lt; file &gt; newfile`&lt;/pre&gt;
+
+11\. 清除所有arp缓存
+&lt;pre&gt;<span class="smartquote">`arp -n|awk '</span>/^[1-9]/ {print "arp -d "$1}<span class="emphasis">'|sh`&lt;/pre&gt;
+
+</span>12\. 绑定已知机器的arp地址
+&lt;pre&gt;<span class="smartquote">`cat /proc/net/arp | awk '</span>{print $1 " " $4}' |sort -t. -n +3 -4 &gt; /etc/ethers`&lt;/pre&gt;
+
+13\. &lt;pre&gt;<span class="smartquote">`perl -ne '</span>m/^([^#][^\s=]+)\s*(=.<span class="strong">*|)/ &amp;&amp; printf("%-35s%s\n", $1, $2)' /etc/my.cnf</span>
+</code></pre>  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/arp/">arp</a><a href="/tags/awk/">awk</a><a href="/tags/du/">du</a><a href="/tags/for/">for</a><a href="/tags/ifconfig/">ifconfig</a><a href="/tags/iostat/">iostat</a><a href="/tags/linux/">linux</a><a href="/tags/netstat/">netstat</a><a href="/tags/ps/">ps</a><a href="/tags/sar/">sar</a><a href="/tags/sed/">sed</a><a href="/tags/tcpdump/">tcpdump</a><a href="/tags/tree/">tree</a><a href="/tags/vim/">vim</a><a href="/tags/vmstat/">vmstat</a><a href="/tags/一句话命令/">一句话命令</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Commands/">Commands</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/linux-word-order/" data-title="Linux一句话命令 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/linux-find-commands/" title="linux find command explain">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  linux find command explain</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/linux-allcommands-1/"  title="linux系统管理技巧(一)">
+ <strong>NEXT:</strong><br/> 
+ <span>linux系统管理技巧(一)
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

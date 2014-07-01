@@ -1,0 +1,424 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>tomcat经常挂 JK无法连接 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="解决tomcat死掉JK无法连接故障
+近日，发现网站jsp部分无法访问，或者访问速度极其缓慢。经过近二天的时间，问题得到了解决，现在把这解决步骤及思考方法详细的记录下来。其中也走了不少弯路。其结果也是让人无法琢磨！发现问题时处理思路：
+
+检查服务器是否正常连接。掉网、死机啥的。－－－SSH登录正常
+检查负载情况，load是否超高,vmstat 检查资源占用率 —－只有mysql占少量资源，起初以为是mysql导致（检查mysql 状态后发现并没有锁表及DDL语句堆积，执行sql语句速度也很快。因此判断出不是mysql导致）
+查看tcp连接状态。是不是并发太大被拖死了－－－其中ESTABLISHED大约有1000左右。TIME_WAIT CLOSE_WAIT 在40左右。看样子tomcat是被拖死了。并发这么大？
+重启了tomcat 访问正常了。先观察一段时间。
+查看分析日志，希望能从这里面找出一点蛛丝马迹来。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/18/tomcat-jk-no-connection/" title="tomcat经常挂 JK无法连接" itemprop="url">tomcat经常挂 JK无法连接</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-17T23:51:58.000Z" itemprop="datePublished">12月 18 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>解决tomcat死掉JK无法连接故障</p>
+<p>近日，发现网站jsp部分无法访问，或者访问速度极其缓慢。经过近二天的时间，问题得到了解决，现在把这解决步骤及思考方法详细的记录下来。其中也走了不少弯路。其结果也是让人无法琢磨！<br>发现问题时处理思路：</p>
+<ol>
+<li>检查服务器是否正常连接。掉网、死机啥的。－－－SSH登录正常</li>
+<li>检查负载情况，load是否超高,vmstat 检查资源占用率 —－只有mysql占少量资源，起初以为是mysql导致（检查mysql 状态后发现并没有锁表及DDL语句堆积，执行sql语句速度也很快。因此判断出不是mysql导致）</li>
+<li>查看tcp连接状态。是不是并发太大被拖死了－－－其中ESTABLISHED大约有1000左右。TIME_WAIT CLOSE_WAIT 在40左右。看样子tomcat是被拖死了。并发这么大？</li>
+<li>重启了tomcat 访问正常了。先观察一段时间。</li>
+<li>查看分析日志，希望能从这里面找出一点蛛丝马迹来。</li>
+</ol>
+<a id="more"></a>
+
+<p>tomcat日志如下：</p>
+<pre><code><span class="keyword">error</span>:All threads (<span class="number">150</span>) are currently busy, waiting. Increase maxThreads (<span class="number">150</span>) <span class="keyword">or</span> check <span class="keyword">the</span> servlet status
+</code></pre><p>提示我最大的线程数设置小了。那就按日志提示先加大点吧。</p>
+<p>从网上找到如下一段：<a href="http://tech.163.com/05/0711/10/1OCH7J2000091589_3.html" target="_blank" rel="external">http://tech.163.com/05/0711/10/1OCH7J2000091589_3.html</a><br>web server允许的最大连接数还受制于操作系统的内核参数设置，通常Windows是2000个左右，Linux是1000个左右。<br>那我先加到999再说。</p>
+<p>修改server.xml</p>
+<p>改后重启tomcat</p>
+<p>漫长的等待！ F5 刷新，结果还是让我很失望。tomcat还是不行。</p>
+<p>登录服务器查看，情况与半小时前一样。<br>先重启了,保证页面能访问再说，上google也没有找到解决方案，继续查看日志，tomcat 就是些死掉的日志，没有其它的用处，这时查看到jk2的日志。发现了N多的问题。我想问题应该出在这。JK2无法连接到tomcat了。然后显示tomcat已经over了</p>
+<p>日志如下：</p>
+<pre><code>[<span class="keyword">error</span>] ajp_connection_tcp_get_message::jk_ajp_common.c (<span class="number">951</span>): (ajp13) can't receive <span class="keyword">the</span> response message <span class="keyword">from</span> tomcat, network problems <span class="keyword">or</span> tomcat (<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8009</span>) <span class="keyword">is</span> down (errno=<span class="number">104</span>)
+[<span class="keyword">error</span>] ajp_get_reply::jk_ajp_common.c (<span class="number">1592</span>): (ajp13) Tomcat <span class="keyword">is</span> down <span class="keyword">or</span> refused connection. No response has been sent <span class="keyword">to</span> <span class="keyword">the</span> client (yet)
+Connecting <span class="keyword">to</span> tomcat failed. Tomcat <span class="keyword">is</span> probably <span class="keyword">not</span> started <span class="keyword">or</span> <span class="keyword">is</span> listening <span class="function_start"><span class="keyword">on</span></span> <span class="keyword">the</span> wrong port
+</code></pre><p> 带着问题G了一下，有一些优化配置方案：</p>
+<p> 官网的如下：</p>
+<pre><code>worker<span class="preprocessor">.worker</span>2<span class="preprocessor">.lbfactor</span>=<span class="number">50</span>
+worker<span class="preprocessor">.worker</span>2<span class="preprocessor">.cachesize</span>=<span class="number">10</span>
+worker<span class="preprocessor">.worker</span>2<span class="preprocessor">.cache</span>_timeout=<span class="number">600</span>
+worker<span class="preprocessor">.worker</span>2<span class="preprocessor">.socket</span>_keepalive=<span class="number">1</span>
+worker<span class="preprocessor">.worker</span>2<span class="preprocessor">.socket</span>_timeout=<span class="number">300</span>
+</code></pre><p>别的文章可以不信，官网总得信呀。因此马上修改了</p>
+<pre><code>worker<span class="preprocessor">.properties</span> 配置文件。
+</code></pre><p>再一次重启tomcat</p>
+<p>结果过了一段时间，问题又来了。tomcat还是down。如此再次修改worker.properties 配置文件，还是没有任何效果。<br>难道问题不是出在JK2？<br>此后就一直被此问题困扰。后来经理给了些信息。</p>
+<pre><code>#worker.ajp13.lbfactor=<span class="number">1</span>
+lbfactor  <span class="keyword">property</span> <span class="keyword">is</span> used <span class="keyword">when</span> working <span class="keyword">with</span> a load balancer worker, this <span class="keyword">is</span> the load-balancing factor <span class="keyword">for</span> the worker. We<span class="attribute">'ll</span> see more <span class="keyword">on</span> this <span class="keyword">in</span> the lb worker section.
+#worker.loadbalancer.<span class="keyword">type</span>=lb
+#worker.loadbalancer.balance_workers=ajp13
+# The loadbalancer (<span class="keyword">type</span> lb) workers perform wighted round-robin
+# load balancing <span class="keyword">with</span> sticky sessions.
+# Note:
+#  <span class="comment">----&amp;gt; If a worker dies, the load balancer will check its state</span>
+#        once <span class="keyword">in</span> a <span class="keyword">while</span>. <span class="keyword">Until</span> <span class="keyword">then</span> <span class="keyword">all</span> work <span class="keyword">is</span> redirected <span class="keyword">to</span> peer
+#        workers.
+</code></pre><p>也就是说先去掉tomcat集群配置选项，多余的选项一个都不要。免得造成轮循。<br>此后问题没有像之前那样频繁发生。相对稳定了许多。<br>目前tomcat已经稳定下来了。可量还是没有下来。因此还是需要做tomcat集群，以解决高端并发的问题。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/tomcat/">tomcat</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Webserver/">Webserver</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/18/tomcat-jk-no-connection/" data-title="tomcat经常挂 JK无法连接 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/18/tomcat-optimization-sending-end-packet/" title="Tomcat 优化sending end packet">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Tomcat 优化sending end packet</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/18/php-fpm-explanation/"  title="php-fpm explain">
+ <strong>NEXT:</strong><br/> 
+ <span>php-fpm explain
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

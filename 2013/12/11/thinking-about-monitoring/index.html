@@ -1,0 +1,473 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Thinking about monitoring | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="关于监控的一点点思考
+  大家都在谈监控，也一直在做监控，监控也是每个系统管理员的必修课。不管是采用开源软件实现，或是在此基础上进行二次研发，还是完全自主研发一套。其实现的目的都相同，运用的手法也大相径庭。目前大多数公司都会选择采用开源监控软件来实现自己的需求，因为开源世界里这些软件越来越多且功能越来越完善。在这些开源软件中使用最多的数：Nagios，Zabbix。并不是说Ganglia、Zenoss、Cacti等并不好用，而是热度不够高。笔者最近在使用监控软件去实现一些功能时，有感而法，想讲讲自己多年来对监控的一点点思考。或许本篇谈的一无事处，你就当饭后茶点吧。
+说明  本篇同时发表于CSDN《程序员》杂志2013年第12月刊。">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/12/11/thinking-about-monitoring/" title="Thinking about monitoring" itemprop="url">Thinking about monitoring</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2013-12-11T15:40:34.000Z" itemprop="datePublished">12月 11 2013</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#关于监控的一点点思考"><span class="toc-number">1.</span> <span class="toc-text">关于监控的一点点思考</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、监控的目的"><span class="toc-number">1.1.</span> <span class="toc-text">一、监控的目的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、工具选型的重要性"><span class="toc-number">1.2.</span> <span class="toc-text">二、工具选型的重要性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、监控软件实现的特征"><span class="toc-number">1.3.</span> <span class="toc-text">三、监控软件实现的特征</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、How_to_do_?"><span class="toc-number">1.4.</span> <span class="toc-text">四、How to do ?</span></a></li></ol>
+		</div>
+		
+		<h1 id="关于监控的一点点思考">关于监控的一点点思考</h1>
+<p>  大家都在谈监控，也一直在做监控，监控也是每个系统管理员的必修课。不管是采用开源软件实现，或是在此基础上进行二次研发，还是完全自主研发一套。其实现的目的都相同，运用的手法也大相径庭。目前大多数公司都会选择采用开源监控软件来实现自己的需求，因为开源世界里这些软件越来越多且功能越来越完善。在这些开源软件中使用最多的数：Nagios，Zabbix。并不是说Ganglia、Zenoss、Cacti等并不好用，而是热度不够高。笔者最近在使用监控软件去实现一些功能时，有感而法，想讲讲自己多年来对监控的一点点思考。或许本篇谈的一无事处，你就当饭后茶点吧。</p>
+<p><strong>说明</strong><br>  本篇同时发表于CSDN《程序员》杂志2013年第12月刊。</p>
+<a id="more"></a>
+
+<p>在谈之前，先问问读者朋友监控的目的到底是什么？</p>
+<h2 id="一、监控的目的">一、监控的目的</h2>
+<p>  对于大多数人而言，都是在遇到故障或处理问题后，才发现监控并没有添加，要不就是说监控没有添加到位，再有甚者说监控并没有报出来。作为领导，是并不关心这些，他们更多的是注重结果。这事就这么发生了。这个时候很多人也会跳出来说，为什么非要结果导向？我这么辛苦努力处理故障，我有错吗？ </p>
+<p>事实上都没有错，结果导向没有什么问题，处理故障也很辛苦，而做为一线工程师，乃至一名优秀的工程师更多的是需要思考：</p>
+<ul>
+<li>为什么？</li>
+<li>为什么我没有提前添加呢？</li>
+<li>为什么我之前就没有考虑到呢？</li>
+<li>是因为我的问题，还是团队协作的问题？如果是因为你的问题，那你应该好好反思了；如果是因为协作的问题，研发或其他人在交付给你时，就是一团浆糊，那么你是否尝试做过改善？没有改善，你是否想到过反馈等？；反馈了也没有结果，这说明你做得还不够。不断地总结，才能提高。</li>
+</ul>
+<p>为此：不管在什么状态，你是否已经想明白监控的目的是什么呢？</p>
+<p>我尝试把这个问题抛给群里，结果没有多少人回答，或者说没有概括性回答。其实监控的目的可以简单地用一句话来概括：描述一个完整生命周期的事物，当出现异常时汇报，以保证生命周期的完整性。</p>
+<h2 id="二、工具选型的重要性">二、工具选型的重要性</h2>
+<p>当我们知道要做什么的时候，就需要一把利刃来帮助我们实现。选择好一把利器能让我们事半功倍。我们可以从最为热门的Zabbix和Nagios中做出选择。对于两者的特色功能个人总结如下：</p>
+<p><strong>Zabbix特色功能：</strong></p>
+<ol>
+<li>分布式监控，原生态</li>
+<li>自动化功能，自动发现，自动注册，自动添加模板，自动添加分组</li>
+<li>自定义监控，支持变量，支持low level discovery</li>
+<li>触发器，多重判断机制，多重自定义</li>
+<li>支持多种监控方式</li>
+<li>丰富的API，方便用户定制</li>
+<li>与Puppet部署结合，可以说如鱼得水</li>
+</ol>
+<p><strong>Nagios特色功能：</strong></p>
+<ol>
+<li>框架化</li>
+<li>插件化，并提供丰富的插件</li>
+<li>灵活的自定义</li>
+</ol>
+<p>就应用场景而言，笔者认为Zabbix提供了丰富的报表功能，而Nagios需要通过插件来完成且图表不太好看。因此Zabbix适合一站式，而Nagios适合自主式。</p>
+<p>为此在挑选监控工具时，需要根据自己的应用场景进选择，但需要明确的是选择并利用好工具只是手段，并不是目的。</p>
+<p>那么，监控软件它要实现的特征都有什么呢？</p>
+<h2 id="三、监控软件实现的特征">三、监控软件实现的特征</h2>
+<p>  监控软件都应该满足且具备如下特征，我才认为它是一个合格的，而更多的是需要我们系统管理员来实现，而不是一味的依赖于工具。</p>
+<ol>
+<li>良好的扩展性和弹性，能应对突发网络中断</li>
+<li>自动化，部署与数据同步自动化</li>
+<li>模块与智能关联，定义各组件功能等，并能自动建立服务间的关系</li>
+<li>传感和汇聚模块，收集指标数据，并进行数据的转换、处理、汇总等</li>
+<li>状态与存储，跟踪事件的变化自动根据相关信息分析，并存储相关数据</li>
+<li>通知与可视化，根据状态发送报警消息，并通过仪表板提供可视化界面</li>
+<li>丰富的API，提供各项功能及多种接口，可通过接口进行数据定义 </li>
+<li>业务形态的结合，与业务的生命周期完美的结合</li>
+</ol>
+<p>再次问读者朋友：采用什么样的工具来解决一个或多个问题真的那么重要吗？</p>
+<p>  答案是肯定的。一个好的工具能让你的工作事半功倍，但它不是万能的。带着目的去思考，应该如何去实现，且能具备一个监控软件应该具备的特征。那么你将会明白，应该将更多的时间花在实现上，利用工具实现你的需求达到你的目的，而不是将时间花在工具。<br>为此当我们知道工具能实现什么功能后，深入挖掘它，马上根据业务特征进行生命周期性监控，以达到我们的目的；根据业务及产品形态进行分解，这个分解的过程是很痛苦的，但结果一定是可观的。</p>
+<p>在分解时，需要多换位思考，如果我是产品经理或研发人员，我需要什么样的数据来支持我呢？</p>
+<ol>
+<li>产品经理需要产品的数据报表，定期将数据汇报给上层</li>
+<li>研发人员需要调试代码，在出现bug时能及时发现</li>
+</ol>
+<p>多从别人的角度思考问题，相信监控给我们的工作带来的不只是无修止的报警，而是更好的数据报告。</p>
+<p>要做到这些，我们到底应该如何去做？</p>
+<h2 id="四、How_to_do_?">四、How to do ?</h2>
+<p>在谈到监控的目的是，或许还有读者没有理解。从系统管理员的角度来看，也可以简单概括为：</p>
+<ol>
+<li>提供可靠的数据，用以推论系统的承载瓶颈</li>
+<li>可以从多个维度分析用户与系统压力的关系</li>
+<li>快速有效的实时监控，并按规则做出预警</li>
+<li>有详细的故障分析，用以分析历史数据并总结经验</li>
+</ol>
+<p>简单吧？要是这么简单就好了。我们以以一个产品上线开始为一个生命周期，来看下监控具体需要做什么：</p>
+<ol>
+<li>基础监控（给产品提供孵化室）    <ul>
+<li>网络监控（网络延迟与丢包、包大小、坏包流量、端口、路由表等）</li>
+<li>服务器监控（CPU、MEM、DISK、IO、等）</li>
+<li>应用监控（吞吐、服务状态、响应时间等）</li>
+<li>数据监控（死锁、错误日志、性能等）</li>
+<li>硬件监控（硬件错误、硬件故障、风扇、温度等）</li>
+<li>日志监控（错误日志，状态日志等）</li>
+</ul>
+</li>
+<li>产品监控（保证产品孵化成功）<ul>
+<li>测试环境（产品稳定性、产品研发调试等）</li>
+<li>生产环境（并发度、容错、异常等）</li>
+</ul>
+</li>
+<li>良好的报表（发现规律，解决问题）<ul>
+<li>通过趋势来发现规律（提前找出规律，规避潜在故障）</li>
+<li>业务形态的完整展示（给相关部门提供有力的数据保障）</li>
+</ul>
+</li>
+<li>报警策略（减少误报，多报）<ul>
+<li>不同时段</li>
+<li>不同人群</li>
+<li>不同业务</li>
+<li>合并报警</li>
+</ul>
+</li>
+</ol>
+<p>有些人可能会说了：好简单啊，也不是那么复杂嘛。是的，其实监控并没有我们想像中的那么复杂，监控一定不能脱离业务，在实施时根据业务的整个周期所需进行监控。同时也需要根据产品、业务、环境等不同而随时变化。世界的变化尚有轨迹和规律可寻，日常生活中我们也将这些规律奉为圭臬，道理很简单，因为我们遵照此规律可以获得好处或利益，违反它则要付出代价。何况监控呢？</p>
+<p>  一名优秀的工程师经常做的就是根据环境做出调整，同时一次又一次地熟悉业务、熟悉开发、熟悉产品。再根据历史经验，一些教训进行总结，但一定要规避能加而未加的知识。其次还需要多测试，以验证监控的各种稳定性与风险。做完这些，或许你就可以高枕无优了。</p>
+<p>  这里只是聊一些我关于监控的思考，而做为监控的同胞兄弟：报警，却没有多谈。因为报警有着不同的策略，有些是很暴力的，等哪天想写了，就跟大伙再次聊聊报警的一些思考吧。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Monitoring/">Monitoring</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Monitoring/">Monitoring</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2013/12/11/thinking-about-monitoring/" data-title="Thinking about monitoring | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2014/01/03/diff-puppet-action/" title="diff buy puppet action">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  diff buy puppet action</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2013/12/09/custom-404-pages/"  title="custom 404 pages">
+ <strong>NEXT:</strong><br/> 
+ <span>custom 404 pages
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#关于监控的一点点思考"><span class="toc-number">1.</span> <span class="toc-text">关于监控的一点点思考</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、监控的目的"><span class="toc-number">1.1.</span> <span class="toc-text">一、监控的目的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、工具选型的重要性"><span class="toc-number">1.2.</span> <span class="toc-text">二、工具选型的重要性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、监控软件实现的特征"><span class="toc-number">1.3.</span> <span class="toc-text">三、监控软件实现的特征</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、How_to_do_?"><span class="toc-number">1.4.</span> <span class="toc-text">四、How to do ?</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

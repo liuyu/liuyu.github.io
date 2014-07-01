@@ -1,0 +1,675 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>squid 日志详解 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="安装配置完squid，通过日志来看看squid的一些基本的运行状态
+
+access.log
+
+访问日志，位于squid/var/logs/access.log，常用的记录格式如下
+remotehost rfc931 authuser [date] “method URL” status bytes ">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/squid-log-detailed/" title="squid 日志详解" itemprop="url">squid 日志详解</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T15:26:04.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PS:官方文档中关于Result_Codes的说明"><span class="toc-number">1.</span> <span class="toc-text">PS:官方文档中关于Result Codes的说明</span></a></li></ol>
+		</div>
+		
+		<p>安装配置完squid，通过日志来看看squid的一些基本的运行状态</p>
+<ol>
+<li>access.log</li>
+</ol>
+<p>访问日志，位于squid/var/logs/access.log，常用的记录格式如下</p>
+<pre><code>remotehost rfc931 authuser [<span class="built_in">date</span>] “method <span class="built_in">URL</span>” status <span class="keyword">bytes</span> [Result Codes]:[Hierarchy Codes] `&lt;/pre&gt;
+</code></pre><p>看一些具体的</p>
+<pre><code>cd /opt/squid/var/logs
+head access<span class="preprocessor">.log</span>
+
+<span class="number">221.222</span><span class="number">.213</span><span class="number">.64</span> - - [<span class="number">15</span>/Nov/<span class="number">2006</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">03</span> +<span class="number">0800</span>] “GET http://bbs<span class="preprocessor">.ci</span>123<span class="preprocessor">.com</span>/sample<span class="preprocessor">.jpg</span> HTTP/<span class="number">1.1</span>″ <span class="number">200</span> <span class="number">240673</span> TCP_MEM_HIT:NONE
+</code></pre><p>可以通过脚本查看一些统计信息，如各种反应状态所占的比例，通常较好的情况下HIT所占的比例（应该就是所谓的命中率）可以在70%~80%</p>
+<pre><code>cat access.<span class="built_in">log</span>|gawk ‘{print $<span class="number">11</span>}’|<span class="built_in">sort</span>|uniq -c|<span class="built_in">sort</span> -nr
+cat access.<span class="built_in">log</span>|grep “<span class="keyword">http</span>://blog”|gawk ‘{print $<span class="number">11</span>}’|<span class="built_in">sort</span>|uniq -c|<span class="built_in">sort</span> -nr
+
+<span class="number">154389</span> TCP_MEM_HIT:<span class="constant">NONE</span>
+<span class="number">81330</span> TCP_IMS_HIT:<span class="constant">NONE</span>
+<span class="number">66991</span> TCP_HIT:<span class="constant">NONE</span>
+<span class="number">32413</span> TCP_MISS:FIRST_UP_PARENT
+<span class="number">19900</span> TCP_NEGATIVE_HIT:<span class="constant">NONE</span>
+<span class="number">1437</span> TCP_CLIENT_REFRESH_MISS:FIRST_UP_PARENT
+<span class="number">1368</span> TCP_REFRESH_HIT:FIRST_UP_PARENT
+<span class="number">245</span> TCP_MISS:ANY_PARENT
+<span class="number">200</span> TCP_SWAPFAIL_MISS:FIRST_UP_PARENT
+<span class="number">64</span> TCP_REFRESH_MISS:FIRST_UP_PARENT
+<span class="number">23</span> TCP_IMS_HIT:FIRST_UP_PARENT
+<span class="number">7</span> TCP_REFRESH_HIT:ANY_PARENT
+<span class="number">7</span> TCP_CLIENT_REFRESH_MISS:ANY_PARENT
+<span class="number">6</span> TCP_MISS:<span class="constant">NONE</span>
+<span class="number">2</span> TCP_SWAPFAIL_MISS:ANY_PARENT
+</code></pre><h1 id="PS:官方文档中关于Result_Codes的说明">PS:官方文档中关于Result Codes的说明</h1>
+<pre><code>TCP_HIT
+
+A valid <span class="keyword">copy</span> <span class="keyword">of</span> <span class="keyword">the</span> requested object was <span class="keyword">in</span> <span class="keyword">the</span> cache.
+TCP_MISS
+
+The requested object was <span class="keyword">not</span> <span class="keyword">in</span> <span class="keyword">the</span> cache.
+TCP_REFRESH_HIT
+
+The requested object was cached <span class="keyword">but</span> STALE. The IMS query <span class="keyword">for</span> <span class="keyword">the</span> object resulted <span class="keyword">in</span> “<span class="number">304</span> <span class="keyword">not</span> modified”.
+TCP_REF_FAIL_HIT
+
+The requested object was cached <span class="keyword">but</span> STALE. The IMS query failed <span class="keyword">and</span> <span class="keyword">the</span> stale object was delivered.
+TCP_REFRESH_MISS
+
+The requested object was cached <span class="keyword">but</span> STALE. The IMS query returned <span class="keyword">the</span> new content.
+TCP_CLIENT_REFRESH_MISS
+
+The client issued a “no-cache” pragma, <span class="keyword">or</span> <span class="keyword">some</span> analogous cache control command along <span class="keyword">with</span> <span class="keyword">the</span> request. Thus, <span class="keyword">the</span> cache
+
+has <span class="keyword">to</span> refetch <span class="keyword">the</span> object.
+TCP_IMS_HIT
+
+The client issued an IMS request <span class="keyword">for</span> an object which was <span class="keyword">in</span> <span class="keyword">the</span> cache <span class="keyword">and</span> fresh.
+TCP_SWAPFAIL_MISS
+
+The object was believed <span class="keyword">to</span> be <span class="keyword">in</span> <span class="keyword">the</span> cache, <span class="keyword">but</span> could <span class="keyword">not</span> be accessed.
+TCP_NEGATIVE_HIT
+
+Request <span class="keyword">for</span> a negatively cached object, e.g. “<span class="number">404</span> <span class="keyword">not</span> found”, <span class="keyword">for</span> which <span class="keyword">the</span> cache believes <span class="keyword">to</span> know <span class="keyword">that</span> <span class="keyword">it</span> <span class="keyword">is</span>
+
+inaccessible. Also refer <span class="keyword">to</span> <span class="keyword">the</span> explainations <span class="keyword">for</span> negative_ttl <span class="keyword">in</span> your squid.conf <span class="type">file</span>.
+TCP_MEM_HIT
+
+A valid <span class="keyword">copy</span> <span class="keyword">of</span> <span class="keyword">the</span> requested object was <span class="keyword">in</span> <span class="keyword">the</span> cache <span class="keyword">and</span> <span class="keyword">it</span> was <span class="keyword">in</span> memory, thus avoiding disk accesses.
+TCP_DENIED
+
+Access was denied <span class="keyword">for</span> this request.
+TCP_OFFLINE_HIT
+
+The requested object was retrieved <span class="keyword">from</span> <span class="keyword">the</span> cache during offline mode. The offline mode never validates any object, see
+
+offline_mode <span class="keyword">in</span> squid.conf <span class="type">file</span>.
+UDP_HIT
+
+A valid <span class="keyword">copy</span> <span class="keyword">of</span> <span class="keyword">the</span> requested object was <span class="keyword">in</span> <span class="keyword">the</span> cache.
+UDP_MISS
+
+The requested object <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">in</span> this cache.
+UDP_DENIED
+
+Access was denied <span class="keyword">for</span> this request.
+UDP_INVALID
+
+An invalid request was received.
+UDP_MISS_NOFETCH
+
+During “-Y” startup, <span class="keyword">or</span> during frequent failures, a cache <span class="keyword">in</span> hit only mode will <span class="constant">return</span> either UDP_HIT <span class="keyword">or</span> this code.
+
+Neighbours will thus only fetch hits.
+NONE
+
+Seen <span class="keyword">with</span> errors <span class="keyword">and</span> cachemgr requests.
+
+The following codes are no longer available <span class="keyword">in</span> Squid-<span class="number">2</span>:
+
+ERR_*
+
+Errors are now contained <span class="keyword">in</span> <span class="keyword">the</span> status code.
+TCP_CLIENT_REFRESH
+
+See: TCP_CLIENT_REFRESH_MISS.
+TCP_SWAPFAIL
+
+See: TCP_SWAPFAIL_MISS.
+TCP_IMS_MISS
+
+Deleted, TCP_IMS_HIT used instead.
+UDP_HIT_OBJ
+
+Hit objects are no longer available.
+UDP_RELOADING
+
+See: UDP_MISS_NOFETCH.
+</code></pre><p> 后面找到了中文版，补充全一些：</p>
+<pre><code>access<span class="built_in">.</span><span class="keyword">log</span>结果编码
+
+相应于HTTP请求，下列标签可能出现在access<span class="built_in">.</span><span class="keyword">log</span>文件的第四个域。
+
+TCP_HIT
+Squid发现请求资源的貌似新鲜的拷贝，并将其立即发送到客户端。
+
+TCP_MISS
+Squid没有请求资源的<span class="keyword">cache</span>拷贝。
+
+TCP_REFRESH_HIT
+Squid发现请求资源的貌似陈旧的拷贝，并发送确认请求到原始服务器。原始服务器返回<span class="number">304</span>（未修改）响应，指示squid的拷贝仍旧是新鲜的。
+
+TCP_REF_FAIL_HIT
+Squid发现请求资源的貌似陈旧的拷贝，并发送确认请求到原始服务器。然而，原始服务器响应失败，或者返回的响应Squid不能理解。在此情形下，squid发送现有<span class="keyword">cache</span>拷贝（很可能是陈旧的）到客户端。
+
+TCP_REFRESH_MISS
+Squid发现请求资源的貌似陈旧的拷贝，并发送确认请求到原始服务器。原始服务器响应新的内容，指示这个<span class="keyword">cache</span>拷贝确实是陈旧的。
+
+TCP_CLIENT_REFRESH_MISS
+Squid发现了请求资源的拷贝，但客户端的请求包含了<span class="keyword">Cache</span><span class="attribute">-Control</span>: no<span class="attribute">-cache</span>指令。Squid转发客户端的请求到原始服务器，强迫<span class="keyword">cache</span>确认。
+
+TCP_IMS_HIT
+客户端发送确认请求，Squid发现更近来的、貌似新鲜的请求资源的拷贝。Squid发送更新的内容到客户端，而不联系原始服务器。
+
+TCP_SWAPFAIL_MISS
+Squid发现请求资源的有效拷贝，但从磁盘装载它失败。这时squid发送请求到原始服务器，就如同这是个<span class="keyword">cache</span>丢失一样。
+
+TCP_NEGATIVE_HIT
+在对原始服务器的请求导致HTTP错误时，Squid也会<span class="keyword">cache</span>这个响应。在短时间内对这些资源的重复请求，导致了否命中。negative_ttl指令控制这些错误被<span class="keyword">cache</span>的时间数量。请注意这些错误只在内存<span class="keyword">cache</span>，不会写往磁盘。下列HTTP状态码可能导致否定<span class="keyword">cache</span>（也遵循于其他约束）： <span class="number">204</span>, <span class="number">305</span>, <span class="number">400</span>, <span class="number">403</span>, <span class="number">404</span>, <span class="number">405</span>, <span class="number">414</span>, <span class="number">500</span>, <span class="number">501</span>, <span class="number">502</span>, <span class="number">503</span>, <span class="number">504</span>。
+
+TCP_MEM_HIT
+Squid在内存<span class="keyword">cache</span>里发现请求资源的有效拷贝，并将其立即发送到客户端。注意这点并非精确的呈现了所有从内存服务的响应。例如，某些<span class="keyword">cache</span>在内存里，但要求确认的响应，会以TCP_REFRESH_HIT, TCP_REFRESH_MISS等形式记录。
+
+TCP_DENIED
+因为http_access或http_reply_access规则，客户端的请求被拒绝了。注意被http_access拒绝的请求在第<span class="number">9</span>域的值是<span class="literal">NONE</span><span class="subst">/</span><span class="subst">-</span>，然而被http_reply_access拒绝的请求，在相应地方有一个有效值。
+
+TCP_OFFLINE_HIT
+当offline_mode激活时，Squid对任何<span class="keyword">cache</span>响应返回<span class="keyword">cache</span>命中，而不用考虑它的新鲜程度。
+
+TCP_REDIRECT
+重定向程序告诉Squid产生一个HTTP重定向到新的URI（见<span class="number">11.1</span>节）。正常的，Squid不会记录这些重定向。假如要这样做，必须在编译squid前，手工定义LOG_TCP_REDIRECTS预处理指令。
+
+<span class="literal">NONE</span>
+无分类的结果用于特定错误，例如无效主机名。
+
+相应于ICP查询，下列标签可能出现在access<span class="built_in">.</span><span class="keyword">log</span>文件的第四域。
+
+UDP_HIT
+Squid在<span class="keyword">cache</span>里发现请求资源的貌似新鲜的拷贝。
+
+UDP_MISS
+Squid没有在<span class="keyword">cache</span>里发现请求资源的貌似新鲜的拷贝。假如同一目标通过HTTP请求，就可能是个<span class="keyword">cache</span>丢失。请对比UDP_MISS_NOFETCH。
+
+UDP_MISS_NOFETCH
+跟UDP_MISS类似，不同的是这里也指示了Squid不愿去处理相应的HTTP请求。假如使用了<span class="attribute">-Y</span>命令行选项，Squid在启动并编译其内存索引时，会返回这个标签而不是UDP_MISS。
+
+UDP_DENIED
+因为icp_access规则，ICP查询被拒绝。假如超过<span class="number">95</span><span class="subst">%</span>的到某客户端的ICP响应是UDP_DENIED，并且客户端数据库激活了（见附录A），Squid在<span class="number">1</span>小时内，停止发送任何ICP响应到该客户端。若这点发生，你也可在<span class="keyword">cache</span><span class="built_in">.</span><span class="keyword">log</span>里见到一个警告。
+
+UDP_INVALID
+Squid接受到无效查询（例如截断的消息、无效协议版本、URI里的空格等）。Squid发送UDP_INVALID响应到客户端。
+
+<span class="number">13.2</span><span class="number">.2</span> HTTP响应状态码
+</code></pre><p>Table 13-1列出了数字HTTP响应CODE和理由短句。注意Squid和其他HTTP客户端仅仅关注这些数字值。理由短句是纯解释性的，不会影响响应的意义。对每个状态码，也提供了一个到RFC 2616的具体节的索引。注意状态码0和600是squid使用的非标准的值，不会在RFC里提到。<br>    Table 13-1. HTTP response status codes</p>
+<pre><code>Code    Reason phrase    RFC <span class="number">2616</span> section
+<span class="number">0</span>    No Response Received (Squid-specific)    <span class="keyword">N</span>/A
+<span class="number">1</span>xx    Informational    <span class="number">10.1</span>
+<span class="number">100</span>    <span class="keyword">Continue</span>    <span class="number">10.1</span><span class="number">.1</span>
+<span class="number">101</span>    Switching Protocols    <span class="number">10.1</span><span class="number">.2</span>
+<span class="number">2</span>xx    Successful    <span class="number">10.2</span>
+<span class="number">200</span>    OK    <span class="number">10.2</span><span class="number">.1</span>
+<span class="number">201</span>    Created    <span class="number">10.2</span><span class="number">.2</span>
+<span class="number">202</span>    Accepted    <span class="number">10.2</span><span class="number">.3</span>
+<span class="number">203</span>    Non-Authoritative <span class="keyword">Information</span>    <span class="number">10.2</span><span class="number">.4</span>
+<span class="number">204</span>    No Content    <span class="number">10.2</span><span class="number">.5</span>
+<span class="number">205</span>    Reset Content    <span class="number">10.2</span><span class="number">.6</span>
+<span class="number">206</span>    Partial Content    <span class="number">10.2</span><span class="number">.7</span>
+<span class="number">3</span>xx    Redirection    <span class="number">10.3</span>
+<span class="number">300</span>    Multiple Choices    <span class="number">10.3</span><span class="number">.1</span>
+<span class="number">301</span>    Moved Permanently    <span class="number">10.3</span><span class="number">.2</span>
+<span class="number">302</span>    Found    <span class="number">10.3</span><span class="number">.3</span>
+<span class="number">303</span>    See Other    <span class="number">10.3</span><span class="number">.4</span>
+<span class="number">304</span>    <span class="keyword">Not</span> Modified    <span class="number">10.3</span><span class="number">.5</span>
+<span class="number">305</span>    Use Proxy    <span class="number">10.3</span><span class="number">.6</span>
+<span class="number">306</span>    (Unused)    <span class="number">10.3</span><span class="number">.7</span>
+<span class="number">307</span>    <span class="keyword">Temporary</span> Redirect    <span class="number">10.3</span><span class="number">.8</span>
+<span class="number">4</span>xx    Client Error    <span class="number">10.4</span>
+<span class="number">400</span>    Bad Request    <span class="number">10.4</span><span class="number">.1</span>
+<span class="number">401</span>    Unauthorized    <span class="number">10.4</span><span class="number">.2</span>
+<span class="number">402</span>    Payment Required    <span class="number">10.4</span><span class="number">.3</span>
+<span class="number">403</span>    Forbidden    <span class="number">10.4</span><span class="number">.4</span>
+<span class="number">404</span>    <span class="keyword">Not</span> Found    <span class="number">10.4</span><span class="number">.5</span>
+<span class="number">405</span>    <span class="keyword">Method</span> <span class="keyword">Not</span> Allowed    <span class="number">10.4</span><span class="number">.6</span>
+<span class="number">406</span>    <span class="keyword">Not</span> Acceptable    <span class="number">10.4</span><span class="number">.7</span>
+<span class="number">407</span>    Proxy Authentication Required    <span class="number">10.4</span><span class="number">.8</span>
+<span class="number">408</span>    Request Timeout    <span class="number">10.4</span><span class="number">.9</span>
+<span class="number">409</span>    Conflict    <span class="number">10.4</span><span class="number">.10</span>
+<span class="number">410</span>    Gone    <span class="number">10.4</span><span class="number">.11</span>
+<span class="number">411</span>    <span class="keyword">Length</span> Required    <span class="number">10.4</span><span class="number">.12</span>
+<span class="number">412</span>    Precondition Failed    <span class="number">10.4</span><span class="number">.13</span>
+<span class="number">413</span>    Request Entity Too <span class="keyword">Large</span>    <span class="number">10.4</span><span class="number">.14</span>
+<span class="number">414</span>    Request-URI Too Long    <span class="number">10.4</span><span class="number">.15</span>
+<span class="number">415</span>    Unsupported Media Type    <span class="number">10.4</span><span class="number">.16</span>
+<span class="number">416</span>    Requested <span class="keyword">Range</span> <span class="keyword">Not</span> Satisfiable    <span class="number">10.4</span><span class="number">.17</span>
+<span class="number">417</span>    <span class="keyword">Expectation</span> Failed    <span class="number">10.4</span><span class="number">.18</span>
+<span class="number">5</span>xx    Server Error    <span class="number">10.5</span>
+<span class="number">500</span>    Internal Server Error    <span class="number">10.5</span><span class="number">.1</span>
+<span class="number">501</span>    <span class="keyword">Not</span> Implemented    <span class="number">10.5</span><span class="number">.2</span>
+<span class="number">502</span>    Bad Gateway    <span class="number">10.5</span><span class="number">.3</span>
+<span class="number">503</span>    Service Unavailable    <span class="number">10.5</span><span class="number">.4</span>
+<span class="number">504</span>    Gateway Timeout    <span class="number">10.5</span><span class="number">.5</span>
+<span class="number">505</span>    HTTP <span class="keyword">Version</span> <span class="keyword">Not</span> Supported    <span class="number">10.5</span><span class="number">.6</span>
+<span class="number">6</span>xx    Proxy Error    <span class="keyword">N</span>/A
+<span class="number">600</span>    Unparseable Response Headers (Squid-specific)    <span class="keyword">N</span>/A
+</code></pre><p>假如Squid从原始服务器没有接受到任何响应，你可在access.log里看到状态码0。假如Squid接受到的响应没有包含HTTP头部，就会出现状态码600。在少数情况下，某些原始服务器仅发送响应body，而忽略了任何头部。</p>
+<p>13.2.3 access.log对端编码</p>
+<pre><code>下列编码可能出现在access<span class="built_in">.</span><span class="keyword">log</span>的第<span class="number">9</span>域。请参考<span class="number">10.10</span>节关于Squid如何对<span class="keyword">cache</span>丢失情况，选择有效的下一跳。
+
+<span class="literal">NONE</span>
+这指明Squid对本次请求，不会与任何其他服务器（邻居或原始服务器）通信。它通常与<span class="keyword">cache</span>命中、拒绝请求、<span class="keyword">cache</span>管理请求、错误、和所有的ICP查询这些类型联合出现。
+
+DIRECT
+Squid直接转发请求到原始服务器。该域的第<span class="number">2</span>半部分显示原始服务器的IP地址，或主机名–假如禁止了log_ip_on_direct。
+
+SIBLING_HIT
+在姐妹<span class="keyword">cache</span>返回ICP或HTCP命中后，Squid发送请求到姐妹<span class="keyword">cache</span>。
+
+PARENT_HIT
+在父<span class="keyword">cache</span>返回ICP或HTCP命中后，Squid发送请求到父<span class="keyword">cache</span>。
+
+DEFAULT_PARENT
+Squid选择该父<span class="keyword">cache</span>，因为其在squid<span class="built_in">.</span>conf的cache_peer行里被标志为default。
+
+FIRST_UP_PARENT
+Squid转发请求到该父<span class="keyword">cache</span>，因为它是位于已知活跃列表里的第一个父<span class="keyword">cache</span>。
+
+FIRST_PARENT_MISS
+Squid转发请求到该父<span class="keyword">cache</span>，它第一个响应ICP/HTCP丢失消息。换句话说，对这个特殊的ICP/HTCP查询，在这个特殊时刻，被选中的父<span class="keyword">cache</span>有最佳的往返时间（RTT）。注意标准RTT可能被人工矫正过，取决于cache_peer指令的weight选项。
+
+CLOSEST_PARENT_MISS
+Squid选择该父<span class="keyword">cache</span>，因为它报告到原始服务器的RTT最低。这点仅在<span class="number">2</span>个<span class="keyword">cache</span>都激活了netdb，并且原始服务器（或在同一子网内的其他server）返回ICMP ping消息。
+
+CLOSEST_PARENT
+这点类似CLOSEST_PARENT_MISS，除了RTT计算不是来自ICP/HTCP响应消息外。代替的，它们来自Squid保留的更老的计算方式，例如netdb交换功能。
+
+CLOSEST_DIRECT
+Squid基于netdb算法，转发请求到原始服务器。这点在满足下述任何条件时发生：
+
+<span class="number">1</span>）在Squid和原始服务器之间的RTT小于配置的minimum_direct_rtt值。
+<span class="number">2</span>）在Squid和原始服务器之间的标准路由跳数少于配置的minimum_direct_hops值。
+<span class="number">3</span>）在ICP/HTCP响应里返回的RTT值，指示Squid离原始服务器近于任何其他邻居。
+ROUNDROBIN_PARENT
+Squid转发请求到该父<span class="keyword">cache</span>，因为设置了round<span class="attribute">-robin</span>选项，并且它有最低的使用计数器。
+
+CD_PARENT_HIT
+Squid基于<span class="keyword">cache</span>摘要算法（见<span class="number">10.7</span>节）转发请求到该父<span class="keyword">cache</span>。
+
+CD_SIBLING_HIT
+Squid基于<span class="keyword">cache</span>摘要算法转发请求到该姐妹<span class="keyword">cache</span>。
+
+CARP
+Squid选择该父<span class="keyword">cache</span>，基于<span class="keyword">cache</span>数组路由协议算法（见<span class="number">10.9</span>节）。
+
+ANY_PARENT
+作为最后的手段，Squid选择该父<span class="keyword">cache</span>，因为没有其他方法能选择可行的下一跳。
+
+注意大部分上述编码可能以TIMEOUT_开头，这表明在等待ICP/HTCP响应时发生超时。例如：
+
+<span class="number">1066038165.382</span>    <span class="number">345</span> <span class="number">193.233</span><span class="number">.46</span><span class="number">.21</span> TCP_MISS/<span class="number">200</span> <span class="number">2836</span>          GET http:<span class="comment">//www.caida.org/home/../images/home.jpg          TIMEOUT_CLOSEST_DIRECT/213.219.122.19 image/jpeg</span>
+可使用icp_query_timeout指令来调整超时。
+</code></pre><p>事例：</p>
+<pre><code>cat access<span class="built_in">.</span><span class="keyword">log</span><span class="subst">|</span>gawk ‘{print $<span class="number">11</span>}’<span class="subst">|</span>sort<span class="subst">|</span>uniq <span class="attribute">-c</span><span class="subst">|</span>sort <span class="attribute">-nr</span>
+  <span class="number">15508</span> TCP_NEGATIVE_HIT:<span class="literal">NONE</span> 在对原始服务器的请求导致HTTP错误时，Squid也会<span class="keyword">cache</span>这个响应。在短时间内对这些资源的重复请求，导致了否命中。
+   <span class="number">8212</span> TCP_IMS_HIT:<span class="literal">NONE</span>  客户端发送确认请求，Squid发现更近来的、貌似新鲜的请求资源的拷贝。Squid发送更新的内容到客户端，而不联系原始服务器。（这指明Squid对本次请求，不会与任何其他服务器（邻居或原始服务器）通信。）
+   <span class="number">3771</span> TCP_HIT:<span class="literal">NONE</span> Squid发现请求资源的貌似新鲜的拷贝，并将其立即发送到客户端。
+   <span class="number">3468</span> TCP_MISS:DIRECT Squid没有请求资源的<span class="keyword">cache</span>拷贝。（Squid直接转发请求到原始服务器）
+   <span class="number">2379</span> TCP_MEM_HIT:<span class="literal">NONE</span>  从内存的响应
+   <span class="number">1876</span> TCP_DENIED:<span class="literal">NONE</span> 因为http_access或http_reply_access规则，客户端的请求被拒绝了   全是错误地址链接
+   <span class="number">1732</span> TCP_REFRESH_HIT:DIRECT Squid发现请求资源的貌似陈旧的拷贝，并发送确认请求到原始服务器。原始服务器返回<span class="number">304</span>（未修改）响应，指示squid的拷贝仍旧是新鲜的。（Squid直接转发请求到原始服务器）
+    <span class="number">708</span> TCP_CLIENT_REFRESH_MISS:DIRECT Squid发现了请求资源的拷贝，但客户端的请求包含了<span class="keyword">Cache</span><span class="attribute">-Control</span>: no<span class="attribute">-cache</span>指令。Squid转发客户端的请求到原始服务器，强迫<span class="keyword">cache</span>确认。 （Squid直接转发请求到原始服务器）
+      <span class="number">7</span> TCP_MISS:<span class="literal">NONE</span> Squid没有请求资源的<span class="keyword">cache</span>拷贝。（这指明Squid对本次请求，不会与任何其他服务器（邻居或原始服务器）通信）
+</code></pre><p> 原文地址 h<a href="http://callaly.net/blog/archives/category/%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF/ttp://" target="_blank" rel="external">http://callaly.net/blog/archives/category/%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF/ttp://</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/squid/">squid</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Webserver/">Webserver</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/squid-log-detailed/" data-title="squid 日志详解 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/20/howto-install-puppet-on-centos5/" title="Centos5 yum install puppet 2.6">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Centos5 yum install puppet 2.6</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/windows7-winsxs/"  title="给Windows7减肥如何将winsxs放到其他硬盘分区下">
+ <strong>NEXT:</strong><br/> 
+ <span>给Windows7减肥如何将winsxs放到其他硬盘分区下
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PS:官方文档中关于Result_Codes的说明"><span class="toc-number">1.</span> <span class="toc-text">PS:官方文档中关于Result Codes的说明</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,653 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>浏览器缓存机制 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="Cache-Control
+Cache-Control 是最重要的规则。这个字段用于指定所有缓存机制在整个请求/响应链中必须服从的指令。这些指令指定用于阻止缓存对请求或响应造成不利干扰的行为。这些指令通常覆盖默认缓存算法。缓存指令是单向的，即请求中存在一个指令并不意味着响应中将存在同一个指令。
+ca">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/21/browser-cache/" title="浏览器缓存机制" itemprop="url">浏览器缓存机制</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-21T02:05:17.000Z" itemprop="datePublished">12月 21 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p><strong>Cache-Control</strong></p>
+<p>Cache-Control 是最重要的规则。这个字段用于指定所有缓存机制在整个请求/响应链中必须服从的指令。这些指令指定用于阻止缓存对请求或响应造成不利干扰的行为。这些指令通常覆盖默认缓存算法。缓存指令是单向的，即请求中存在一个指令并不意味着响应中将存在同一个指令。</p>
+<p>cache-control 定义是：Cache-Control = “Cache-Control” “:” cache-directive。表 1 展示了适用的值。</p>
+<p><table><caption>表 1. 常用 cache-directive 值<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th>Cache-directive</th></p>
+<p><th>说明</th><br></p>
+<p><tr></tr></p>
+<p><td>public</td></p>
+<p><td>所有内容都将被缓存</td><br></p>
+<p><tr></tr></p>
+<p><td>private</td></p>
+<p><td>内容只缓存到私有缓存中</td><br></p>
+<p><tr></tr></p>
+<p><td>no-cache</td></p>
+<p><td>所有内容都不会被缓存</td><br></p>
+<p><tr></tr></p>
+<p><td>no-store</td></p>
+<p><td>所有内容都不会被缓存到缓存或 Internet 临时文件中</td><br></p>
+<p><tr></tr></p>
+<p><td>must-revalidation/proxy-revalidation</td></p>
+<p><td>如果缓存的内容失效，请求必须发送到服务器/代理以进行重新验证</td><br></p>
+<p><tr></tr></p>
+<p><td>max-age=xxx (xxx is numeric)</td></p>
+<p><td>缓存的内容将在 xxx 秒后失效, 这个选项只在HTTP 1.1可用, 并如果和Last-Modified一起使用时, 优先级较高</td><br><br><br><br>表 2 表明在不同的情形下，浏览器是将请求重新发送到服务器还是使用缓存的内容。</p>
+<p><table><caption>表 2. 对 cache-directive 值的浏览器响应<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th>Cache-directive</th></p>
+<p><th>打开一个新的浏览器窗口</th></p>
+<p><th>在原窗口中单击 Enter 按钮</th></p>
+<p><th>刷新</th></p>
+<p><th>单击 Back 按钮</th><br></p>
+<p><tr></tr></p>
+<p><td>public</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>浏览器呈现来自缓存的页面</td><br></p>
+<p><tr></tr></p>
+<p><td>private</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>第一次，浏览器重新发送请求到服务器；此后，浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>浏览器呈现来自缓存的页面</td><br></p>
+<p><tr></tr></p>
+<p><td>no-cache/no-store</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>浏览器重新发送请求到服务器</td><br></p>
+<p><tr></tr></p>
+<p><td>must-revalidation/proxy-revalidation</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>第一次，浏览器重新发送请求到服务器；此后，浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>浏览器呈现来自缓存的页面</td><br></p>
+<p><tr></tr></p>
+<p><td>max-age=xxx (xxx is numeric)</td></p>
+<p><td>在 xxx 秒后，浏览器重新发送请求到服务器</td></p>
+<p><td>在 xxx 秒后，浏览器重新发送请求到服务器</td></p>
+<p><td>浏览器重新发送请求到服务器</td></p>
+<p><td>在 xxx 秒后，浏览器重新发送请求到服务器</td><br><br><br><br>Cache-Control是关于浏览器缓存的最重要的设置，因为它覆盖其他设置，比如 Expires 和 Last-Modified。另外，由于浏览器的行为基本相同，这个属性是处理跨浏览器缓存问题的最有效的方法。</p>
+<p><strong>失效</strong></p>
+<p>Expires 头部字段提供一个日期和时间，响应在该日期和时间后被认为失效。失效的缓存条目通常不会被缓存（无论是代理缓存还是用户代理缓存）返回，除非首先通过原始服务器（或者拥有该实体的最新副本的中介缓存）验证。（注意：cache-control max-age 和 s-maxage 将覆盖 Expires 头部。）</p>
+<p>Expires 字段接收以下格式的值：“Expires: Sun, 08 Nov 2009 03:37:26 GMT”。如果查看内容时的日期在给定的日期之前，则认为该内容没有失效并从缓存中提取出来。反之，则认为该内容失效，缓存将采取一些措施。表 3-6 表明针对不同用户操作的不同浏览器的行为。</p>
+<p><table><caption>表 3. 当用户打开一个新的浏览器窗口时的失效操作<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容没有失效</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td><br></p>
+<p><tr></tr></p>
+<p><td>内容失效</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br></p>
+<p><table><caption>表 4. 当用户在原始浏览器窗口中单击 Enter 按钮时的失效操作<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容没有失效</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td><br></p>
+<p><tr></tr></p>
+<p><td>内容失效</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br></p>
+<p><table><caption>表 5. 当用户按 F5 键刷新页面时的失效操作<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容没有失效</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td><br></p>
+<p><tr></tr></p>
+<p><td>内容失效</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br></p>
+<p><table><caption>表 6. 当用户单击 Back 或 Forward 按钮时的失效操作<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容没有失效</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td><br></p>
+<p><tr></tr></p>
+<p><td>内容失效</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br><br>注意：所有浏览器都假定为使用默认设置运行。</p>
+<p><strong>Last-Modified/E-Tag</strong></p>
+<p>Last-Modified 实体头部字段值通常用作一个缓存验证器。简单来说，如果实体值在 Last-Modified 值之后没有被更改，则认为该缓存条目有效。ETag 响应头部字段值是一个实体标记，它提供一个 “不透明” 的缓存验证器。这可能在以下几种情况下提供更可靠的验证：不方便存储修改日期；HTTP 日期值的 one-second 解决方案不够用；或者原始服务器希望避免由于使用修改日期而导致的某些冲突。</p>
+<p>不同的浏览器有不同的配置行为。表 7-10 表明针对不同用户操作的不同浏览器的行为。</p>
+<p><table><caption>表 7. 当用户打开一个新的浏览器窗口时的 Last-Modified E-Tag 操作<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来没有被修改</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来已经被修改</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br></p>
+<p><table><caption>表 8. 当用户在原始浏览器窗口中单击 Enter 按钮时的 Last-Modified E-Tag 操作<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来没有被修改</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来已经被修改</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br></p>
+<p><table><caption>表 9. 当用户按 F5 键刷新页面时的 Last-Modified E-Tag 操作<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来没有被修改</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 304</td><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来已经被修改</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br></p>
+<p><table><caption>表 10. 没有缓存设置且用户单击 Back 或 Forward 按钮<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来没有被修改</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td><br></p>
+<p><tr></tr></p>
+<p><td>内容自上次访问以来已经被修改</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器呈现来自缓存的页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br><br>注意：所有浏览器都假定使用默认设置运行。</p>
+<p>不进行任何缓存相关设置</p>
+<p>如果您不定义任何缓存相关设置，则不同的浏览器有不同的行为。有时，同一个浏览器在相同的情形下每次运行时的行为都是不同的。情况可能很复杂。另外，有些不该缓存的内容如果被缓存，将会导致安全问题。<br>不同的浏览器有不同的行为。表 11 展示了不同的浏览器行为。</p>
+<p><table><caption>表 11. 没有缓存设置且用户打开一个新的浏览器窗口<br></caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><th></th></p>
+<p><th>Firefox 3.5</th></p>
+<p><th>IE 8</th></p>
+<p><th>Chrome 3</th></p>
+<p><th>Safari 4</th><br></p>
+<p><tr></tr></p>
+<p><td>打开一个新页面</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br></p>
+<p><tr></tr></p>
+<p><td>在原始窗口中单击 Enter 按钮</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器呈现来自缓存的页面。</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br></p>
+<p><tr></tr></p>
+<p><td>按 F5 键刷新</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br></p>
+<p><tr></tr></p>
+<p><td>单击 Back 或 Forward 按钮</td></p>
+<p><td>浏览器呈现来自缓存的页面。</td></p>
+<p><td>浏览器呈现来自缓存的页面。</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td></p>
+<p><td>浏览器重新发送请求到服务器。返回代码是 200</td><br><br><br><br>注意：所有浏览器都假定使用默认设置运行。</p>
+<p>最后, 概括下关键的结论:</p>
+<p><table><caption>关键结论</caption></table></p>
+<p><tbody></tbody></p>
+<p><tr></tr></p>
+<p><td width="12%">打开新窗口</td></p>
+<p><td>如果指定cache-control的值为private、no-cache、must-revalidate,那么打开新窗口访问时都会重新访问服务器。而如果指定了max-age值,那么在此值内的时间里就不会重新访问服务器,例如：Cache-control: max-age=5 表示当访问此网页后的5秒内再次访问不会去服务器.</td><br></p>
+<p><tr></tr></p>
+<p><td>在地址栏回车</td></p>
+<p><td>如果值为private或must-revalidate,则只有第一次访问时会访问服务器,以后就不再访问。如果值为no-cache,那么每次都会访问。如果值为max-age,则在过期之前不会重复访问。</td><br></p>
+<p><tr></tr></p>
+<p><td>按后退按扭</td></p>
+<p><td>如果值为private、must-revalidate、max-age,则不会重访问,而如果为no-cache,则每次都重复访问.</td><br></p>
+<p><tr></tr></p>
+<p><td>按刷新按扭</td></p>
+<p><td>无论为何值,都会重复访问.</td><br><br><br><br>via: <a href="http://harry.javaeye.com/blog/605749" target="_blank" rel="external">http://harry.javaeye.com/blog/605749</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/browser/">browser</a><a href="/tags/cache/">cache</a><a href="/tags/Cache-control/">Cache-control</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/cdn/">cdn</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/21/browser-cache/" data-title="浏览器缓存机制 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/21/ubuntu-apache-proxy-tomcat/" title="ubuntu 配置apache 代理tomcat">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  ubuntu 配置apache 代理tomcat</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/20/dell-r410-r710-update-bnx2-on-centos/"  title="DELL R410 R710 centos5.5 64bit 升级网卡驱动">
+ <strong>NEXT:</strong><br/> 
+ <span>DELL R410 R710 centos5.5 64bit 升级网卡驱动
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

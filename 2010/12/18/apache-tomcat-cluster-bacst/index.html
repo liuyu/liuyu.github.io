@@ -1,0 +1,662 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Apache Tomcat Cluster-bacst config | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="关于Apache+Tomcat的Cluster的郁闷问题，终于得到解决
+此类话题已经很多，可以参考的文档也不少，我是参考这个blog的文档做的：
+http://blogger.org.cn/blog/blog.asp?name=lhwork
+1）环境和版本：
+Apache2.0.59+Tomcat5">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/18/apache-tomcat-cluster-bacst/" title="Apache Tomcat Cluster-bacst config" itemprop="url">Apache Tomcat Cluster-bacst config</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-17T23:56:54.000Z" itemprop="datePublished">12月 18 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#add_by_zhengxq"><span class="toc-number">1.</span> <span class="toc-text">add by zhengxq</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Defines_a_load_balancer_named_lb-_Use_even_if_you_only_have_one_machine-"><span class="toc-number">2.</span> <span class="toc-text">Defines a load balancer named lb. Use even if you only have one machine.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Example_socket_channel,_override_port_and_host-"><span class="toc-number">3.</span> <span class="toc-text">Example socket channel, override port and host.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#define_the_worker"><span class="toc-number">4.</span> <span class="toc-text">define the worker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Example_socket_channel,_override_port_and_host--1"><span class="toc-number">5.</span> <span class="toc-text">Example socket channel, override port and host.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#define_the_worker-1"><span class="toc-number">6.</span> <span class="toc-text">define the worker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Map_the_Tomcat_examples_webapp_to_the_Web_server_uri_space"><span class="toc-number">7.</span> <span class="toc-text">Map the Tomcat examples webapp to the Web server uri space</span></a></li></ol>
+		</div>
+		
+		<p>关于Apache+Tomcat的Cluster的郁闷问题，终于得到解决</p>
+<p>此类话题已经很多，可以参考的文档也不少，我是参考这个blog的文档做的：</p>
+<p><a href="http://blogger.org.cn/blog/blog.asp?name=lhwork" target="_blank" rel="external">http://blogger.org.cn/blog/blog.asp?name=lhwork</a></p>
+<p>1）环境和版本：</p>
+<p>Apache2.0.59+Tomcat5.5.15（两个），一开始用的是Tomcat5.0.28，一直有问题（在后面总结），就升级到5.5去做试验了，冤枉5.0.28兄弟了:)</p>
+<p>步骤小结为：</p>
+<p>1、安装（忽略）；</p>
+<p>2、配置Tomcat：</p>
+<p>1）第一个Tomcat：</p>
+<p>A.启用jvmRoute</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;!— You should set jvmRoute to support load-balancing via AJP ie :—&gt;</p>
+<p>&lt;Engine name=”Standalone” defaultHost=”localhost” jvmRoute=”tomcat1”&gt;</p>
+<p>&lt;!— Define the top level container in our container hierarchy</p>
+<p>&lt;Engine name=”Catalina” defaultHost=”localhost”&gt;—&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>B.启用原来禁用的Cluster设置</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;Cluster className=”org.apache.catalina.cluster.tcp.SimpleTcpCluster”</p>
+<p>managerClassName=”org.apache.catalina.cluster.session.DeltaManager”</p>
+<p>expireSessionsOnShutdown=”false”</p>
+<p>useDirtyFlag=”true”</p>
+<p>notifyListenersOnReplication=”true”&gt;</p>
+<p>&lt;Membership</p>
+<p>className=”org.apache.catalina.cluster.mcast.McastService”</p>
+<p>mcastBindAddress=”127.0.0.1”</p>
+<p>mcastAddr=”224.1.2.3”</p>
+<p>mcastPort=”2525”</p>
+<p>mcastFrequency=”500”</p>
+<p>mcastDropTime=”3000”/&gt;</p>
+<p>&lt;Receiver</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationListener”</p>
+<p>tcpListenAddress=”auto”</p>
+<p>tcpListenPort=”4001”</p>
+<p>tcpSelectorTimeout=”100”</p>
+<p>tcpThreadCount=”6”/&gt;</p>
+<p>&lt;Sender</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationTransmitter”</p>
+<p>replicationMode=”pooled”</p>
+<p>ackTimeout=”15000”/&gt;</p>
+<p>&lt;Valve className=”org.apache.catalina.cluster.tcp.ReplicationValve”</p>
+<p>filter=”.<em>.gif;.</em>.js;.<em>.jpg;.</em>.png;.<em>.htm;.</em>.html;.<em>.css;.</em>.txt;”/&gt;</p>
+<p>&lt;Deployer className=”org.apache.catalina.cluster.deploy.FarmWarDeployer”</p>
+<p>tempDir=”/tmp/war-temp/“</p>
+<p>deployDir=”/tmp/war-deploy/“</p>
+<p>watchDir=”/tmp/war-listen/“</p>
+<p>watchEnabled=”false”/&gt;</p>
+<p>&lt;ClusterListener className=”org.apache.catalina.cluster.session.ClusterSessionListener”/&gt;</p>
+<p>&lt;/Cluster&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>C.搞定</p>
+<p>2）配置第二个Tomcat（要注意端口冲突了）：</p>
+<p>A.变更端口</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;Server port=”8005” shutdown=”SHUTDOWN”&gt;</p>
+<p>＝》</p>
+<p>&lt;Server port=”8004” shutdown=”SHUTDOWN”&gt;</p>
+<p>B.变更端口</p>
+<p>&lt;Connector port=”8009”</p>
+<p>enableLookups=”false” redirectPort=”8443” protocol=”AJP/1.3” /&gt;</p>
+<p>＝》</p>
+<p>&lt;Connector port=”9009”</p>
+<p>enableLookups=”false” redirectPort=”8443” protocol=”AJP/1.3” /&gt;</p>
+<p>C.启用jvmRoute</p>
+<p>&lt;!— You should set jvmRoute to support load-balancing via AJP ie :—&gt;</p>
+<p>&lt;Engine name=”Standalone” defaultHost=”localhost” jvmRoute=”tomcat2”&gt;</p>
+<p>&lt;!— Define the top level container in our container hierarchy</p>
+<p>&lt;Engine name=”Catalina” defaultHost=”localhost”&gt;—&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>D.启用原来禁用的Cluster设置</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;Cluster className=”org.apache.catalina.cluster.tcp.SimpleTcpCluster”</p>
+<p>managerClassName=”org.apache.catalina.cluster.session.DeltaManager”</p>
+<p>expireSessionsOnShutdown=”false”</p>
+<p>useDirtyFlag=”true”</p>
+<p>notifyListenersOnReplication=”true”&gt;</p>
+<p>&lt;Membership</p>
+<p>className=”org.apache.catalina.cluster.mcast.McastService”</p>
+<p>mcastBindAddress=”127.0.0.1”</p>
+<p>mcastAddr=”224.1.2.3”</p>
+<p>mcastPort=”2525”</p>
+<p>mcastFrequency=”500”</p>
+<p>mcastDropTime=”3000”/&gt;</p>
+<p>&lt;Receiver</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationListener”</p>
+<p>tcpListenAddress=”auto”</p>
+<p>tcpListenPort=”4002”</p>
+<p>tcpSelectorTimeout=”100”</p>
+<p>tcpThreadCount=”6”/&gt;</p>
+<p>&lt;Sender</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationTransmitter”</p>
+<p>replicationMode=”pooled”</p>
+<p>ackTimeout=”15000”/&gt;</p>
+<p>&lt;Valve className=”org.apache.catalina.cluster.tcp.ReplicationValve”</p>
+<p>filter=”.<em>.gif;.</em>.js;.<em>.jpg;.</em>.png;.<em>.htm;.</em>.html;.<em>.css;.</em>.txt;”/&gt;</p>
+<p>&lt;Deployer className=”org.apache.catalina.cluster.deploy.FarmWarDeployer”</p>
+<p>tempDir=”/tmp/war-temp/“</p>
+<p>deployDir=”/tmp/war-deploy/“</p>
+<p>watchDir=”/tmp/war-listen/“</p>
+<p>watchEnabled=”false”/&gt;</p>
+<p>&lt;ClusterListener className=”org.apache.catalina.cluster.session.ClusterSessionListener”/&gt;</p>
+<p>&lt;/Cluster&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>E.搞定</p>
+<p>3、配置apache：</p>
+<p>1）修订conf/httpd.conf</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<h1 id="add_by_zhengxq">add by zhengxq</h1>
+<p>LoadModule jk2_module modules/mod_jk2.so</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>2）新增worders2.properties并放到conf下</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>[shm]</p>
+<p>info=Scoreboard. Requried for reconfiguration and status with multiprocess servers.</p>
+<p>file=anon</p>
+<h1 id="Defines_a_load_balancer_named_lb-_Use_even_if_you_only_have_one_machine-">Defines a load balancer named lb. Use even if you only have one machine.</h1>
+<p>[lb:lb]</p>
+<p>worker=ajp13:tomcat1</p>
+<p>worker=ajp13:tomcat2</p>
+<h1 id="Example_socket_channel,_override_port_and_host-">Example socket channel, override port and host.</h1>
+<p>[channel.socket:localhost:9009]</p>
+<p>port=9009</p>
+<p>host=127.0.0.1</p>
+<h1 id="define_the_worker">define the worker</h1>
+<p>[ajp13:localhost:9009]</p>
+<p>channel=channel.socket:localhost:9009</p>
+<p>group=lb</p>
+<h1 id="Example_socket_channel,_override_port_and_host--1">Example socket channel, override port and host.</h1>
+<p>[channel.socket:localhost:8009]</p>
+<p>port=8009</p>
+<p>host=127.0.0.1</p>
+<h1 id="define_the_worker-1">define the worker</h1>
+<p>[ajp13:localhost:8009]</p>
+<p>channel=channel.socket:localhost:8009</p>
+<p>group=lb</p>
+<h1 id="Map_the_Tomcat_examples_webapp_to_the_Web_server_uri_space">Map the Tomcat examples webapp to the Web server uri space</h1>
+<p>[uri:/clusterapp/*]</p>
+<p>group=lb</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>3）搞定</p>
+<p>3.测试程序，请参考上述参考文档，如下：</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;%@ page contentType=”text/html; charset=GBK” import=”java.util.*”%&gt;</p>
+<p>&lt;html&gt;&lt;head&gt;&lt;title&gt;Cluster App Test&lt;/title&gt;&lt;/head&gt;</p>
+<p>&lt;body&gt;</p>
+<p>Server Info: &lt;%out.print(request.getLocalAddr() + “ : “ + request.getLocalPort());%&gt;</p>
+<p>&lt;%</p>
+<p>out.println(“&lt;br&gt; ID “ + session.getId());</p>
+<p>// 如果有新的 Session 属性设置</p>
+<p>String dataName = request.getParameter(“dataName”);</p>
+<p>if (dataName != null &amp;&amp; dataName.length() &gt; 0) {</p>
+<p>String dataValue = request.getParameter(“dataValue”);</p>
+<p>session.setAttribute(dataName, dataValue);</p>
+<p>}</p>
+<p>out.print(“&lt;b&gt;Session 列表&lt;/b&gt;”);</p>
+<p>Enumeration e = session.getAttributeNames();</p>
+<p>while (e.hasMoreElements()) {</p>
+<p>String name = (String)e.nextElement();</p>
+<p>String value = session.getAttribute(name).toString();</p>
+<p>out.println( name + “ = “ + value);</p>
+<p>}</p>
+<p>%&gt;</p>
+<p>&lt;form action=”index.jsp” method=”POST”&gt;</p>
+<p>名称:&lt;input type=text size=20 name=”dataName”&gt;</p>
+<p>&lt;br&gt;</p>
+<p>值:&lt;input type=text size=20 name=”dataValue”&gt;</p>
+<p>&lt;br&gt;</p>
+<p>&lt;input type=submit&gt;</p>
+<p>&lt;/form&gt;</p>
+<p>&lt;/body&gt;</p>
+<p>&lt;/html&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>所需要注意的是：</p>
+<p>1、测试应用的web.xml必须加上：</p>
+<p>2、我搞了很久，发现三个东西起来后，可以访问，但只能做到负载均衡，不能session复制，这点我重复配置了一次，就是不行，郁闷之下找了tomcat的邮件列表，这样做：</p>
+<p>1）测试广播是否正常</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>A. download this jar</p>
+<p><a href="http://cvs.apache.org/~fhanik/tomcat-replication.jar" target="_blank" rel="external">http://cvs.apache.org/~fhanik/tomcat-replication.jar</a></p>
+<p>B. Open two terminals</p>
+<p>a) Terminal one run</p>
+<p>java -cp tomcat-replication.jar MCaster 239.255.10.10 2525 Terminal1</p>
+<p>b) Terminal two run</p>
+<p>java -cp tomcat-replication.jar MCaster 239.255.10.10 2525 Terminal2</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>发现结果如下：</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>C:\&gt;java -cp tomcat-replication.jar MCaster 224.1.2.3 2525 Terminal1</p>
+<p>Usage MCaster [address port message]</p>
+<p>BEGIN TO RECEIVE</p>
+<p>SENT:Terminal11</p>
+<p>SENT:Terminal12</p>
+<p>SENT:Terminal13</p>
+<p>SENT:Terminal14</p>
+<p>SENT:Terminal15</p>
+<p>SENT:Terminal16</p>
+<p>SENT:Terminal17</p>
+<p>SENT:Terminal18</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>表明广播有问题，气死了，难怪Tomcat总是在启动的时候提示：</p>
+<p>信息: Manager [/clusterapp]: skipping state transfer. No members active in cluster group.</p>
+<p>后来终于发现猫腻，必须注意在server.xml的</p>
+<p>为什么呢？很简单，因为我安装了VPN，这家伙会设置一个虚拟网卡，导致绑定失败（没地方责怪了，只好让它垫背）？！这是通过邮件列表里面所描述的多网卡绑定问题举一反三得到的判断。</p>
+<p>具体请参考：<a href="http://www.servlets.com/archive/servlet/ReadMsg?msgId=475067&amp;listName=tomcat-user" target="_blank" rel="external">http://www.servlets.com/archive/servlet/ReadMsg?msgId=475067&amp;listName=tomcat-user</a></p>
+<p>三、tomcat集群配置，session 同步配置：</p>
+<p>1、tomca1 tomcat 2 在同一台机器</p>
+<p>Tomcat 1 （IP: 192.168.19.199）</p>
+<p>A、修改Engine节点信息：</p>
+<p>B、去掉 &lt;\Cluster&gt; 的注释符</p>
+<p>C、修改Cluster 节点信息</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;Membership</p>
+<p>className=”org.apache.catalina.cluster.mcast.McastService”                mcastBindAddress=”192.168.19.199”</p>
+<p>mcastAddr=”224.0.0.1”</p>
+<p>mcastPort=”45564”</p>
+<p>mcastFrequency=”500”</p>
+<p>mcastDropTime=”3000”/&gt;</p>
+<p>&lt;Receiver</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationListener”                tcpListenAddress=”192.168.19.199”</p>
+<p>tcpListenPort=”4001”</p>
+<p>tcpSelectorTimeout=”100”</p>
+<p>tcpThreadCount=”6”/&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>Tomcat 2 （IP: 192.168.19.81）</p>
+<p>A、修改Engine节点信息：</p>
+<p>B、去掉 &lt;\Cluster&gt; 的注释符</p>
+<p>C、修改Cluster 节点信息</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;Membership</p>
+<p>className=”org.apache.catalina.cluster.mcast.McastService”</p>
+<p>mcastBindAddress=”192.168.19.199”</p>
+<p>mcastAddr=”224.0.0.1”</p>
+<p>mcastPort=”45564”</p>
+<p>mcastFrequency=”500”</p>
+<p>mcastDropTime=”3000”/&gt;</p>
+<p>&lt;Receiver</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationListener”</p>
+<p>tcpListenAddress=”192.168.19.199”</p>
+<p>tcpListenPort=”4002”    一定要改</p>
+<p>tcpSelectorTimeout=”100”</p>
+<p>tcpThreadCount=”6”/&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>D、将8080 8009 8082三个节点的端口改为</p>
+<p>9080 9009 9082 避免 与tomcat1端口冲突</p>
+<p>注：这里的IP也可以不改</p>
+<p>2、tomca1 tomcat 2 在不同机器上</p>
+<p>Tomcat 1 （IP: 192.168.19.199）</p>
+<p>A、修改Engine节点信息：</p>
+<p>B、去掉 &lt;\Cluster&gt; 的注释符</p>
+<p>C、修改Cluster 节点信息</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;Membership</p>
+<p>className=”org.apache.catalina.cluster.mcast.McastService”</p>
+<p>mcastBindAddress=”192.168.19.199”</p>
+<p>mcastAddr=”224.0.0.1”</p>
+<p>mcastPort=”45564”</p>
+<p>mcastFrequency=”500”</p>
+<p>mcastDropTime=”3000”/&gt;</p>
+<p>&lt;Receiver</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationListener”</p>
+<p>tcpListenAddress=”192.168.19.199”</p>
+<p>tcpListenPort=”4001”</p>
+<p>tcpSelectorTimeout=”100”</p>
+<p>tcpThreadCount=”6”/&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>Tomcat 2 （IP: 192.168.19.81）</p>
+<p>A、修改Engine节点信息：</p>
+<p>B、去掉 &lt;\Cluster&gt; 的注释符</p>
+<p>C、修改Cluster 节点信息</p>
+<p>&lt;pre&gt;&lt;code&gt;</p>
+<p>&lt;Membership</p>
+<p>className=”org.apache.catalina.cluster.mcast.McastService”</p>
+<p>mcastBindAddress=”192.168.19.81”</p>
+<p>mcastAddr=”224.0.0.1”</p>
+<p>mcastPort=”45564”     mcastFrequency=”500”</p>
+<p>mcastDropTime=”3000”/&gt;</p>
+<p>&lt;Receiver</p>
+<p>className=”org.apache.catalina.cluster.tcp.ReplicationListener”            tcpListenAddress=”192.168.19.81”</p>
+<p>tcpListenPort=”4001”</p>
+<p>tcpSelectorTimeout=”100”</p>
+<p>tcpThreadCount=”6”/&gt;</p>
+<p>&lt;/code&gt;&lt;/pre&gt;</p>
+<p>修改web应用里面WEB-INF目录下的web.xml文件，加入标签</p>
+<p>直接加在之前就可以了</p>
+<p>做tomcat集群必须需要这一步，否则用户的session就无法正常使用。</p>
+<p>源文档 &lt;<a href="http://www.opendoc.com.cn/webserver/Apache_Tomcat_Cluster.html&amp;gt" target="_blank" rel="external">http://www.opendoc.com.cn/webserver/Apache_Tomcat_Cluster.html&amp;gt</a>;</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/apache/">apache</a><a href="/tags/Cluster-bacst/">Cluster-bacst</a><a href="/tags/tomcat/">tomcat</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Webserver/">Webserver</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/18/apache-tomcat-cluster-bacst/" data-title="Apache Tomcat Cluster-bacst config | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/18/nginx-upgrad/" title="Nginx upgrade">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Nginx upgrade</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/18/tomcat-optimization-sending-end-packet/"  title="Tomcat 优化sending end packet">
+ <strong>NEXT:</strong><br/> 
+ <span>Tomcat 优化sending end packet
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#add_by_zhengxq"><span class="toc-number">1.</span> <span class="toc-text">add by zhengxq</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Defines_a_load_balancer_named_lb-_Use_even_if_you_only_have_one_machine-"><span class="toc-number">2.</span> <span class="toc-text">Defines a load balancer named lb. Use even if you only have one machine.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Example_socket_channel,_override_port_and_host-"><span class="toc-number">3.</span> <span class="toc-text">Example socket channel, override port and host.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#define_the_worker"><span class="toc-number">4.</span> <span class="toc-text">define the worker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Example_socket_channel,_override_port_and_host--1"><span class="toc-number">5.</span> <span class="toc-text">Example socket channel, override port and host.</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#define_the_worker-1"><span class="toc-number">6.</span> <span class="toc-text">define the worker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Map_the_Tomcat_examples_webapp_to_the_Web_server_uri_space"><span class="toc-number">7.</span> <span class="toc-text">Map the Tomcat examples webapp to the Web server uri space</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

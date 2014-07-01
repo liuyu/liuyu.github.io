@@ -1,0 +1,406 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="Puppet CDN Automate Game Cloud Architecture Zabbix Ruby Python">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main">
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2011/01/27/create-yum-repo/" title="创建自己的yum源站" itemprop="url">
+  
+    <h1 itemprop="name">创建自己的yum源站</h1>
+    
+     
+           <p itemprop="description" >安装epel yum-downloadonly
+
+rpm -Uvh http://mirrors.sohu.com/fedora-epel/5Server/i386/epel-release-5-4.noarch.rpm
+ftp://zid-luxinst.uibk.ac.at/</p>
+        
+    
+    <time datetime="2011-01-27T03:28:04.000Z" itemprop="datePublished">1月 27 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2011/01/26/cpan-error-make-test-had-returned-bad-status/" title="CPAN error: make test had returned bad status" itemprop="url">
+  
+    <h1 itemprop="name">CPAN error: make test had returned bad status</h1>
+    
+     
+           <p itemprop="description" >CPAN error: make test had returned bad status, won’t install without force
+To solve “CPAN error: make test had returned bad status, won’t in</p>
+        
+    
+    <time datetime="2011-01-26T14:16:16.000Z" itemprop="datePublished">1月 26 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2011/01/26/cpanm-install-perl-modules/" title="cpanm install perl modules" itemprop="url">
+  
+    <h1 itemprop="name">cpanm install perl modules</h1>
+    
+     
+           <p itemprop="description" >curl -LO http://bit.ly/cpanmchmod +x cpanmsudo cp cpanm /usr/local/bin
+使用方式
+常用的使用形式如下:
+cpanm 模块名
+参数可接模组名称、带版本号的 Tarball 名、Tarball 网址、或是 Tarb</p>
+        
+    
+    <time datetime="2011-01-26T13:45:41.000Z" itemprop="datePublished">1月 26 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2011/01/22/proftpd-quick-install-config/" title="proftpd quick install" itemprop="url">
+  
+    <h1 itemprop="name">proftpd quick install</h1>
+    
+     
+           <p itemprop="description" >配置proftpd 相关
+groupadd -g 46 proftpd 
+ useradd -c proftpd -d /data -g proftpd -s /usr/bin/proftpdshell -u 46 proftpd 
+ install -v -d -m775 -o</p>
+        
+    
+    <time datetime="2011-01-22T14:53:20.000Z" itemprop="datePublished">1月 22 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2011/01/21/mysql-master-slave-config/" title="mysql master-slave replication" itemprop="url">
+  
+    <h1 itemprop="name">mysql master-slave replication</h1>
+    
+     
+           <p itemprop="description" >今天很郁闷。真的很郁闷。。
+上次配置M/S很正常。今天却因为根分区满了，查找了半天的原因。哎。
+记录下配置这程吧。
+master:
+server-id = 1
+log-bin = /data/mysql/3306/logs/binlog/mysql-bin
+log-error =</p>
+        
+    
+    <time datetime="2011-01-21T07:33:04.000Z" itemprop="datePublished">1月 21 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2011/01/20/ganglia-metric-translate/" title="ganglia metric 默认监控项翻译" itemprop="url">
+  
+    <h1 itemprop="name">ganglia metric 默认监控项翻译</h1>
+    
+     
+           <p itemprop="description" >监控项说明监控值Load_oneOne minute load average每分钟的系统平均负载load_one=0.0Load_fiveFive minute load average每5分钟的系统平均负载load_five=0.0Load_fifteenFifteen mi</p>
+        
+    
+    <time datetime="2011-01-20T15:37:12.000Z" itemprop="datePublished">1月 20 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2011/01/20/puppet-dashboard/" title="puppet dashboard config" itemprop="url">
+  
+    <h1 itemprop="name">puppet dashboard config</h1>
+    
+     
+           <p itemprop="description" >puppet dashboard 配置Puppet Dashboard可以为你的Puppet环境添加一个图形用户界面（GUI）。Puppet Dashboard可以显示主机上Puppet的运行结果，并且可以提供一个节点分类工具来配置你的主机。Dashboard是一种运行在Rail</p>
+        
+    
+    <time datetime="2011-01-20T15:32:19.000Z" itemprop="datePublished">1月 20 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/26/puppet-certificate-verify-failed/" title="puppet certificate verify failed" itemprop="url">
+  
+    <h1 itemprop="name">puppet certificate verify failed</h1>
+    
+     
+           <p itemprop="description" >puppet Could not retrieve catalog from remote server: certificate verify failed
+通过签名认证后：notice: Ignoring —listen on onetime runerr: Could no</p>
+        
+    
+    <time datetime="2010-12-26T15:19:23.000Z" itemprop="datePublished">12月 26 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/21/ubuntu-apache-proxy-tomcat/" title="ubuntu 配置apache 代理tomcat" itemprop="url">
+  
+    <h1 itemprop="name">ubuntu 配置apache 代理tomcat</h1>
+    
+     
+           <p itemprop="description" >安装软件和包：
+apt-get install apache2 sun-java5-jdk tomcat5.5 libapache2-mod-proxy-html
+
+加载proxy模块 a2enmod proxy
+
+tomcat :server.xml 去掉以下注释：
+ 
+
+修改</p>
+        
+    
+    <time datetime="2010-12-21T15:28:58.000Z" itemprop="datePublished">12月 21 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/21/browser-cache/" title="浏览器缓存机制" itemprop="url">
+  
+    <h1 itemprop="name">浏览器缓存机制</h1>
+    
+     
+           <p itemprop="description" >Cache-Control
+Cache-Control 是最重要的规则。这个字段用于指定所有缓存机制在整个请求/响应链中必须服从的指令。这些指令指定用于阻止缓存对请求或响应造成不利干扰的行为。这些指令通常覆盖默认缓存算法。缓存指令是单向的，即请求中存在一个指令并不意味着响应中将存</p>
+        
+    
+    <time datetime="2010-12-21T02:05:17.000Z" itemprop="datePublished">12月 21 2010</time>
+  </a>
+</section>
+
+
+  <nav id="page-nav" class="clearfix">
+    <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+  </body>
+ </html>

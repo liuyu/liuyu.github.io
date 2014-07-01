@@ -1,0 +1,539 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>linux user group command explain | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="一、user相关配置文件
+/etc/passwd
+root:x:0:0:root:/root:/bin/bash`&amp;lt;/pre&amp;gt;
+用户名：UID:GID:finger：家目录：shell
+注：UID： 0即管理员 1-499系统使用 500-65535+ 一般用户
+
+&amp;lt;pre&amp;gt;">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/linux-user-group-detailed/" title="linux user group command explain" itemprop="url">linux user group command explain</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T08:04:01.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>一、user相关配置文件</p>
+<pre><code><span class="comment">/etc/passwd</span>
+root:x:0:0:root:/root:/bin/bash`&lt;/pre&gt;
+用户名：UID:GID:finger：家目录：shell
+注：UID： 0即管理员 1-499系统使用 500-65535+ 一般用户
+
+&lt;pre&gt;`/etc/shadow
+root:$1$jHNFgOBV$br7SAZsvGRyFmySJ9UlUI.:14720:0:99999:7:::`&lt;/pre&gt;
+用户：加密密码：更改密码日期：不可更改密码天数：需变更日期：过期天数：警告期限：宽限时间：失效日期
+注：日期按1970年1月1日作为起初日期。
+
+二、用户组相关配置
+&lt;pre&gt;`/etc/group
+<span class="comment">/etc/gshadow`&lt;/pre&gt;</span>
+
+三、管理用户（user）的工具或命令
+&lt;pre&gt;`useradd adduser 注：添加用户 
+passwd 注：为用户设置密码
+usermod 注：修改用户命令，可以通过usermod 来修改登录名、用户的家目录等等；
+pwconv 注：同步用户从/etc/passwd 到/etc/shadow
+pwck 注：pwck是校验用户配置文件/etc/passwd 和/etc/shadow 文件内容是否合法或完整；
+pwunconv 注：是pwcov 的立逆向操作，是从/etc/shadow和 /etc/passwd 创建/etc/passwd ，然后会删除 /etc/shadow 文件；
+finger 注：查看用户信息工具
+id 注：查看用户的UID、GID及所归属的用户组
+chfn 注：更改用户信息工具
+su 注：用户切换工具
+sudo 注：sudo 是通过另一个用户来执行命令（execute a command as another user），su 是用来切换用户，然后通过切换到的用户来完成相应的任务，但sudo 能后面直接执行命令，比如sudo 不需要root 密码就可以执行root 赋与的执行只有root才能执行相应的命令；但得通过visudo 来编辑/etc/sudoers来实现；
+visudo 注：visodo 是编辑 /etc/sudoers 的命令；也可以不用这个命令，直接用vi 来编辑 /etc/sudoers 的效果是一样的；
+sudoedit 注：和sudo 功能差不多；`&lt;/pre&gt;
+
+四、管理用户组（group）的工具或命令
+&lt;pre&gt;`groupadd 注：添加用户组；
+groupdel 注：删除用户组；
+groupmod 注：修改用户组信息
+groups 注：显示用户所属的用户组
+grpck
+grpconv 注：通过/etc/group和/etc/gshadow 的文件内容来同步或创建/etc/gshadow ，如果/etc/gshadow 不存在则创建；
+grpunconv 注：通过/etc/group 和/etc/gshadow 文件内容来同步或创建/etc/group ，然后删除gshadow文件；`&lt;/pre&gt;
+
+1、useradd 命令详解
+功能说明：建立用户帐号。
+语　　法：useradd [-mMnr][-c &lt;备注&gt;][-d &lt;登入目录&gt;][-e &lt;有效期限&gt;][-f &lt;缓冲天数&gt;][-g &lt;群组&gt;][-G &lt;群组&gt;][-s ][-u ][用户帐号] 或 useradd -D [-b][-e &lt;有效期限&gt;][-f &lt;缓冲天数&gt;][-g &lt;群组&gt;][-G &lt;群组&gt;][-s ]
+
+补充说明：useradd可用来建立用户帐号。帐号建好之后，再用passwd设定帐号的密码．而可用userdel删除帐号。使用useradd指令所建立的帐号，实际上是保存在/etc/passwd文本文件中。
+参　　数：
+&lt;pre&gt;`-c&lt;备注&gt; 加上备注文字。备注文字会保存在passwd的备注栏位中。
+-<span class="ruby">d&lt;登入目录&gt; 指定用户登入时的启始目录。
+</span>-<span class="ruby"><span class="constant">D</span> 　变更预设值．
+</span>-<span class="ruby">e&lt;有效期限&gt; 指定帐号的有效期限。
+</span>-<span class="ruby">f&lt;缓冲天数&gt; 指定在密码过期后多少天即关闭该帐号。
+</span>-<span class="ruby">g&lt;群组&gt; 指定用户所属的群组。
+</span>-<span class="ruby"><span class="constant">G</span>&lt;群组&gt; 指定用户所属的附加群组。
+</span>-<span class="ruby">m 　自动建立用户的登入目录。
+</span>-<span class="ruby"><span class="constant">M</span> 　不要自动建立用户的登入目录。
+</span>-<span class="ruby">n 　取消建立以用户名称为名的群组．
+</span>-<span class="ruby">r 　建立系统帐号。
+</span>-<span class="ruby">s　 　指定用户登入后所使用的shell。
+</span>-<span class="ruby">u 　指定用户<span class="constant">ID</span>。`&lt;<span class="regexp">/pre&gt;
+</span></span>
+2、usermod
+功能说明：修改用户帐号。
+语　　法：usermod [-LU][-c &lt;备注&gt;][-d &lt;登入目录&gt;][-e &lt;有效期限&gt;][-f &lt;缓冲天数&gt;][-g &lt;群组&gt;][-G &lt;群组&gt;][-l &lt;帐号名称&gt;][-s ][-u ][用户帐号]
+补充说明：usermod可用来修改用户帐号的各项设定。
+参　　数：
+&lt;pre&gt;`-c&lt;备注&gt; 修改用户帐号的备注文字。
+-<span class="ruby">d登入目录&gt; 修改用户登入时的目录。
+</span>-<span class="ruby">e&lt;有效期限&gt; 修改帐号的有效期限。
+</span>-<span class="ruby">f&lt;缓冲天数&gt; 修改在密码过期后多少天即关闭该帐号。
+</span>-<span class="ruby">g&lt;群组&gt; 修改用户所属的群组。
+</span>-<span class="ruby"><span class="constant">G</span>&lt;群组&gt; 修改用户所属的附加群组。
+</span>-<span class="ruby">l&lt;帐号名称&gt; 修改用户帐号名称。
+</span>-<span class="ruby"><span class="constant">L</span> 　锁定用户密码，使密码无效。
+</span>-<span class="ruby">s 　修改用户登入后所使用的shell。
+</span>-<span class="ruby">u 　修改用户<span class="constant">ID</span>。
+</span>-<span class="ruby"><span class="constant">U</span> 　解除密码锁定。`&lt;<span class="regexp">/pre&gt;
+</span></span>
+3、pwconv pwunconv
+功能说明：开启用户的投影密码。
+语　　法：pwconv
+补充说明：Linux系统里的用户和群组密码，分别存放在名称为passwd和group的文件中，　这两个文件位于/etc目录下。因系统运作所需，任 何人都得以读取它们，造成安全上的破绽。投影密码将文件内的密码改存在/etc目录下的shadow和gshadow文件内，只允许系统管理者读取，同时 把原密码置换为"x"字符，有效的强化了系统的安全性。
+功能说明：关闭用户的投影密码。
+语　　法：pwunconv
+补充说明：执行pwunconv指令可以关闭用户投影密码，它会把密码从shadow文件内，重回存到passwd文件里。
+
+4、 pwck
+功能：检查用户密码文件的完整性（/etc/passwd以及/etc/shadow文件）。
+用法：pwck [-q] [-s] [passwd [ shadow ]]
+pwck [-q] [-r] [passwd shadow]
+参数：
+&lt;pre&gt;`-q：只显示错误信息，警告不显示
+-<span class="ruby">s：按id排序
+</span>-<span class="ruby">r：只读方式检查`&lt;<span class="regexp">/pre&gt;
+</span></span>
+5、grpck命令
+功能：检查用户组及密码文件的完整性（etc/group以及/etc/gshadow文件）
+用法： grpck [-r] [group [ shadow ]]
+grpck [-s] [group [ shadow ]]
+参数：与pwck一样
+
+6、finger
+功能说明：查找并显示用户信息。
+语　　法：finger [-lmsp][帐号名称...]
+补充说明：finger指令会去查找，并显示指定帐号的用户相关信息，包括本地与远端主机的用户皆可，帐号名称没有大小写的差别。单独执行finger指 令，它会显示本地主机现在所有的用户的登陆信息，包括帐号名称，真实姓名，登入终端机，闲置时间，登入时间以及地址和电话。
+参　　数：
+&lt;pre&gt;`-l 　列出该用户的帐号名称，真实姓名，用户专属目录，登入所用的Shell，登入时间，转信地址，电子邮件状态，还有计划文件和方案文件内容。
+-<span class="ruby">m 　排除查找用户的真实姓名。
+</span>-<span class="ruby">s 　列出该用户的帐号名称，真实姓名，登入终端机，闲置时间，登入时间以及地址和电话。
+</span>-<span class="ruby">p 　列出该用户的帐号名称，真实姓名，用户专属目录，登入所用的<span class="constant">Shell</span>，登入时间，转信地址，电子邮件状态，但不显示该用户的计划文件和方案文件内容。`&lt;<span class="regexp">/pre&gt;
+</span></span>
+7、su
+1.作用
+u的作用是变更为其它使用者的身份，超级用户除外，需要键入该使用者的密码。
+
+2.格式
+u [选项]... [-] [USER [ARG]...]
+
+3.主要参数
+&lt;pre&gt;`-f ， --fast：不必读启动文件（如 csh.cshrc 等），仅用于csh或tcsh两种Shell。
+-<span class="ruby">l ， --login：加了这个参数之后，就好像是重新登陆为该使用者一样，大部分环境变量（例如<span class="constant">HOME</span>、<span class="constant">SHELL</span>和<span class="constant">USER</span>等）都是以该使用者（<span class="constant">USER</span>）为主，并且工作目录也会改变。如果没有指定<span class="constant">USER</span>，缺省情况是root。
+</span>-<span class="ruby">m， -p ，--preserve-environment：执行su时不改变环境变数。
+</span>-<span class="ruby">c command：变更账号为<span class="constant">USER</span>的使用者，并执行指令（command）后再变回原来使用者。
+</span>USER：欲变更的使用者账号，ARG传入新的Shell参数`&lt;/pre&gt;
+
+8、sudo
+功能说明：以其他身份来执行指令。
+语　　法：sudo [-bhHpV][-s ][-u &lt;用户&gt;][指令] 或 sudo [-klv]
+补充说明：sudo 可让用户以其他的身份来执行指定的指令，预设的身份为root。在/etc/sudoers中设置了可执行sudo指令的用户。若其未经授权的用户企图使 用sudo，则会发出警告的邮件给管理员。用户使用sudo时，必须先输入密码，之后有5分钟的有效期限，超过期限则必须重新输入密码。
+参　　数：
+&lt;pre&gt;`-b 　在后台执行指令。
+-<span class="ruby">h 　显示帮助。
+</span>-<span class="ruby"><span class="constant">H</span> 　将<span class="constant">HOME</span>环境变量设为新身份的<span class="constant">HOME</span>环境变量。
+</span>-<span class="ruby">k 　结束密码的有效期限，也就是下次再执行sudo时便需要输入密码。
+</span>-<span class="ruby">l 　列出目前用户可执行与无法执行的指令。
+</span>-<span class="ruby">p 　改变询问密码的提示符号。
+</span>-<span class="ruby">s 　执行指定的shell。
+</span>-<span class="ruby">u&lt;用户&gt; 以指定的用户作为新的身份。若不加上此参数，则预设以root作为新的身份。
+</span>-<span class="ruby">v 　延长密码有效期限<span class="number">5</span>分钟。
+</span>-<span class="ruby"><span class="constant">V</span> 　显示版本信息。`&lt;<span class="regexp">/pre&gt;
+</span></span>
+9、groupadd
+名称 groupadd - 建 立 新 群 组
+语法
+groupadd [-g gid [-o]] [-r] [-f] group
+参数：
+&lt;pre&gt;`-g gid group's
+ID值。除非使用-o参数不然该值必须是唯一，不可相同。数值不可为负。预设为最小不得小于500而逐次增加。0~499传统上是保留给系统帐号使用。
+-<span class="ruby">r
+</span>此参数是用来建立系统帐号。的UID会比定义在系统档上/etc/login.defs.的UID_MIN来的小。注意useradd此用法所建立的帐号 不会建立使用者目录，也不会在乎纪录在/etc/login.defs.的定义值。如果你想要有使用者目录须额外指定-m参数来建立系统帐号。这是 REDHAT额外增设的选项。它会自动帮你选定一个小于499的gif不需要再加上-g参数。这是REDHAT额外增设的选项。
+-<span class="ruby">f
+</span>Thisisforceflag.新增一个已经存在的群组帐号，系统会出现错误讯息然后结束groupadd。如果是这样的情况，不会新增这个群组(如果 是这个情况下，系统不会再新增一次)也可同时加上-g选项当你加上一个gid，此时gid就不用是唯一值，可不加-o参数，建好群组后会显结果 (addingagroupasneither-gor-ooptionswerespecified).
+这是REDHAT额外增设的选项`&lt;/pre&gt;
+
+10、groupmod
+功能说明：更改群组识别码或名称。
+语　　法：groupmod [-g &lt;群组识别码&gt; &lt;-o&gt;][-n &lt;新群组名称&gt;][群组名称]
+补充说明：需要更改群组的识别码或名称时，可用groupmod指令来完成这项工作。
+参　　数：
+&lt;pre&gt;`-g &lt;群组识别码&gt; 设置欲使用的群组识别码。
+-<span class="ruby">o 　重复使用群组识别码。
+</span>-<span class="ruby">n &lt;新群组名称&gt; 设置欲使用的群组名称。</span>
+</code></pre><p>参考：<br>鸟哥一书<br>互联网<br><a href="http://www.linuxsir.org/main/?q=node/91" target="_blank" rel="external">http://www.linuxsir.org/main/?q=node/91</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/chmod/">chmod</a><a href="/tags/chown/">chown</a><a href="/tags/group/">group</a><a href="/tags/groupadd/">groupadd</a><a href="/tags/linux/">linux</a><a href="/tags/user/">user</a><a href="/tags/useradd/">useradd</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Commands/">Commands</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/linux-user-group-detailed/" data-title="linux user group command explain | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/linux-smartctl/" title="linux smartctl check disk">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  linux smartctl check disk</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/prockcore-what-is/"  title="/proc/kcore是什么文件?">
+ <strong>NEXT:</strong><br/> 
+ <span>/proc/kcore是什么文件?
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,375 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>linux ps command explain | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="linux ps(process status) 命令详解功能说明：报告程序状况。
+语　　法：ps [-aAcdefHjlmNVwy][acefghLnrsSTuvxX][-C &amp;lt;指令名称&amp;gt;][-g &amp;lt;群组名称&amp;gt;][-G &amp;lt;群组识别码&amp;gt;][-p &amp;lt;程序识别码">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/linux-ps-detailed/" title="linux ps command explain" itemprop="url">linux ps command explain</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T08:52:33.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+		</div>
+		
+		<p>linux ps(process status) 命令详解<br>功能说明：报告程序状况。</p>
+<p><strong>语　　法</strong>：ps [-aAcdefHjlmNVwy][acefghLnrsSTuvxX][-C &lt;指令名称&gt;][-g &lt;群组名称&gt;][-G &lt;群组识别码&gt;][-p &lt;程序识别码&gt;][p &lt;程序识别码&gt;][-s &lt;阶段作业&gt;][-t &lt;终端机编号&gt;][t &lt;终端机编号&gt;][-u &lt;用户识别码&gt;][-U &lt;用户识别码&gt;][U &lt;用户名称&gt;][-&lt;程序识别码&gt;][—cols &lt;每列字符数&gt;][—columns &lt;每列字符数&gt;][—cumulative][—deselect][—forest][—headers][—help] [—info][—lines &lt;显示列数&gt;][—no-headers][—group &lt;群组名称&gt;][-Group &lt;群组识别码&gt;][—pid &lt;程序识别码&gt;][—rows &lt;显示列数&gt;][—sid &lt;阶段作业&gt;][—tty &lt;终端机编号&gt;][—user &lt;用户名称&gt;][—User &lt;用户识别码&gt;][—version][—width &lt;每列字符数&gt;]<br>补充说明：ps是用来报告程序执行状况的指令，您可以搭配kill指令随时中断，删除不必要的程序。<br><strong><br>参　　数：</strong><br>-a 　显示所有终端机下执行的程序，除了阶段作业领导者之外。<br>a 　显示现行终端机下的所有程序，包括其他用户的程序。<br>-A 　显示所有程序。<br>-c 　显示CLS和PRI栏位。<br>c 　列出程序时，显示每个程序真正的指令名称，而不包含路径，参数或常驻服务的标示。<br>-C&lt;指令名称&gt; 指定执行指令的名称，并列出该指令的程序的状况。<br>-d 　显示所有程序，但不包括阶段作业领导者的程序。<br>-e 　此参数的效果和指定”A”参数相同。<br>e 　列出程序时，显示每个程序所使用的环境变量。<br>-f 　显示UID,PPIP,C与STIME栏位。<br>f 　用ASCII字符显示树状结构，表达程序间的相互关系。<br>-g&lt;群组名称&gt; 此参数的效果和指定”-G”参数相同，当亦能使用阶段作业领导者的名称来指定。<br>g 　显示现行终端机下的所有程序，包括群组领导者的程序。<br>-G&lt;群组识别码&gt; 列出属于该群组的程序的状况，也可使用群组名称来指定。<br>h 　不显示标题列。<br>-H 　显示树状结构，表示程序间的相互关系。<br>-j或j 　采用工作控制的格式显示程序状况。<br>-l或l 　采用详细的格式来显示程序状况。<br>L 　列出栏位的相关信息。<br>-m或m 　显示所有的执行绪。<br>n 　以数字来表示USER和WCHAN栏位。<br>-N 　显示所有的程序，除了执行ps指令终端机下的程序之外。<br>-p&lt;程序识别码&gt; 指定程序识别码，并列出该程序的状况。<br>p&lt;程序识别码&gt; 此参数的效果和指定”-p”参数相同，只在列表格式方面稍有差异。<br>r 　只列出现行终端机正在执行中的程序。<br>-s&lt;阶段作业&gt; 指定阶段作业的程序识别码，并列出隶属该阶段作业的程序的状况。<br>s 　采用程序信号的格式显示程序状况。<br>S 　列出程序时，包括已中断的子程序资料。<br>-t&lt;终端机编号&gt; 指定终端机编号，并列出属于该终端机的程序的状况。<br>t&lt;终端机编号&gt; 此参数的效果和指定”-t”参数相同，只在列表格式方面稍有差异。<br>-T 　显示现行终端机下的所有程序。<br>-u&lt;用户识别码&gt; 此参数的效果和指定”-U”参数相同。<br>u 　以用户为主的格式来显示程序状况。<br>-U&lt;用户识别码&gt; 列出属于该用户的程序的状况，也可使用用户名称来指定。<br>U&lt;用户名称&gt; 列出属于该用户的程序的状况。<br>v 　采用虚拟内存的格式显示程序状况。<br>-V或V 　显示版本信息。<br>-w或w 　采用宽阔的格式来显示程序状况。<br>x 　显示所有程序，不以终端机来区分。<br>X 　采用旧式的Linux i386登陆格式显示程序状况。<br>-y 　配合参数”-l”使用时，不显示F(flag)栏位，并以RSS栏位取代ADDR栏位　。<br>-&lt;程序识别码&gt; 此参数的效果和指定”p”参数相同。<br>—cols&lt;每列字符数&gt; 设置每列的最大字符数。<br>—columns&lt;每列字符数&gt; 此参数的效果和指定”—cols”参数相同。<br>—cumulative 　此参数的效果和指定”S”参数相同。<br>—deselect 　此参数的效果和指定”-N”参数相同。<br>—forest 　此参数的效果和指定”f”参数相同。<br>—headers 　重复显示标题列。<br>—help 　在线帮助。<br>—info 　显示排错信息。<br>—lines&lt;显示列数&gt; 设置显示画面的列数。<br>—no-headers 　此参数的效果和指定”h”参数相同，只在列表格式方面稍有差异。<br>—group&lt;群组名称&gt; 此参数的效果和指定”-G”参数相同。<br>—Group&lt;群组识别码&gt; 此参数的效果和指定”-G”参数相同。<br>—pid&lt;程序识别码&gt; 此参数的效果和指定”-p”参数相同。<br>—rows&lt;显示列数&gt; 此参数的效果和指定”—lines”参数相同。<br>—sid&lt;阶段作业&gt; 此参数的效果和指定”-s”参数相同。<br>—tty&lt;终端机编号&gt; 此参数的效果和指定”-t”参数相同。<br>—user&lt;用户名称&gt; 此参数的效果和指定”-U”参数相同。<br>—User&lt;用户识别码&gt; 此参数的效果和指定”-U”参数相同。<br>—version 　此参数的效果和指定”-V”参数相同。<br>—widty&lt;每列字符数&gt; 此参数的效果和指定”-cols”参数相同。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/linux/">linux</a><a href="/tags/ps/">ps</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Commands/">Commands</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/linux-ps-detailed/" data-title="linux ps command explain | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/linux-top-detailed/" title="linux top command explain">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  linux top command explain</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/linux-diff/"  title="linux diff command explain">
+ <strong>NEXT:</strong><br/> 
+ <span>linux diff command explain
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

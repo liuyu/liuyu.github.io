@@ -1,0 +1,507 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="Puppet 3.x 新特性
+整体概况
+
+性能提升: 相比之前版本，编译性能提升50%，这也取决于你的代码编写
+自动数据捆绑和类参数: hiera会自动查询参数化类的值，因此不需要再解析函数
+核心hiera函数: hiera, hiera_array, hiera_hash, and hiera_include函数已经集成在puppet代码当中，如果你没有安装hiera-puppet软件包，需要卸载 puppet 后重新升级
+Solaris改进: 支持ipkg格式、Zones 支持、Zpool支持
+YAML节点缓存恢复
+提高 Ruby 代码加载速度
+YARD API 文档化（YARD生成可浏览基于行注释的代码文档）">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2013/09/21/puppet-3x-new-feature/" title="" itemprop="url"></a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2013-09-21T07:38:21.000Z" itemprop="datePublished">9月 21 2013</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Puppet_3-x_新特性"><span class="toc-number">1.</span> <span class="toc-text">Puppet 3.x 新特性</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#整体概况"><span class="toc-number">1.1.</span> <span class="toc-text">整体概况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依赖和支持的系统"><span class="toc-number">1.2.</span> <span class="toc-text">依赖和支持的系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#语言变化"><span class="toc-number">1.3.</span> <span class="toc-text">语言变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WEB架构的变化"><span class="toc-number">1.4.</span> <span class="toc-text">WEB架构的变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#核心资源类型的变化"><span class="toc-number">1.5.</span> <span class="toc-text">核心资源类型的变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#auth-conf文件变化"><span class="toc-number">1.6.</span> <span class="toc-text">auth.conf文件变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP_API的变化"><span class="toc-number">1.7.</span> <span class="toc-text">HTTP API的变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XML-RPC完全被废弃"><span class="toc-number">1.8.</span> <span class="toc-text">XML-RPC完全被废弃</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ruby_API的变化"><span class="toc-number">1.9.</span> <span class="toc-text">Ruby API的变化</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Agent_lockfile_的变化"><span class="toc-number">1.9.1.</span> <span class="toc-text">Agent lockfile 的变化</span></a></li></ol>
+		</div>
+		
+		<h1 id="Puppet_3-x_新特性">Puppet 3.x 新特性</h1>
+<h2 id="整体概况">整体概况</h2>
+<ol>
+<li>性能提升: 相比之前版本，编译性能提升50%，这也取决于你的代码编写</li>
+<li>自动数据捆绑和类参数: hiera会自动查询参数化类的值，因此不需要再解析函数</li>
+<li>核心hiera函数: hiera, hiera_array, hiera_hash, and hiera_include函数已经集成在puppet代码当中，如果你没有安装hiera-puppet软件包，需要卸载 puppet 后重新升级</li>
+<li>Solaris改进: 支持ipkg格式、Zones 支持、Zpool支持</li>
+<li>YAML节点缓存恢复</li>
+<li>提高 Ruby 代码加载速度</li>
+<li>YARD API 文档化（YARD生成可浏览基于行注释的代码文档）</li>
+</ol>
+<a id="more"></a>
+
+<h2 id="依赖和支持的系统">依赖和支持的系统</h2>
+<ol>
+<li>Ruby 1.9.3 抛弃Ruby 1.8.5 （但puppet doc 只支持Ruby 1.8.7）</li>
+<li>Hiera完全依赖</li>
+<li>Facter 1.6.2以上版本</li>
+<li>Mac OS X 10.4将不再支持</li>
+</ol>
+<h2 id="语言变化">语言变化</h2>
+<ol>
+<li>Puppet 2.7 中动态变量作用域被废弃</li>
+<li>定义参数必须是变量<br>正确的：<br><code>define vhost ($port = 80, $vhostdir) { ... }</code></li>
+</ol>
+<p>错误的：<br><code>define vhost (port = 80, vhostdir) { ... }</code></p>
+<p>没有变化的：<br><code>vhost {&#39;web01.example.com&#39;: port =&gt; 8080, vhostdir =&gt; &#39;/etc/apache2/conf.d&#39;, }</code></p>
+<ol>
+<li>Ruby DSL 被废弃</li>
+<li>删除过时的命令（上表中左列puppet 2.6版本的命令将不再支持）</li>
+<li>变更的应用命令<ul>
+<li>—apply 被废弃，由—catalog替代</li>
+<li>控制台输出格式变更</li>
+</ul>
+</li>
+<li>废弃或变化的配置项<ul>
+<li>factsync废弃，由pluginsync替代</li>
+<li>cadays替换成ca_ttl</li>
+<li>servertype废弃</li>
+<li>downcasefact废弃</li>
+<li>reportserver废弃，由report_server替代</li>
+<li>默认开启pluginsync</li>
+</ul>
+</li>
+</ol>
+<h2 id="WEB架构的变化">WEB架构的变化</h2>
+<ol>
+<li>Config.ru文件变化，采用Rack server部署时需要修改此配置文件</li>
+<li>需要指明—confdir选项，避免读取~/.puppet/puppet.conf</li>
+<li>Mongrel被废弃</li>
+</ol>
+<h2 id="核心资源类型的变化">核心资源类型的变化</h2>
+<ol>
+<li>文件(file)<ul>
+<li>recurse参数需要设置为true、false、remote，不再支持由它来指定递归深度，而是使用recurselimit参数完成</li>
+</ul>
+</li>
+<li>挂载(mount)<ul>
+<li>path参数被废弃，由name参数替代</li>
+</ul>
+</li>
+<li>包(package)<ul>
+<li>type参数被废弃，由provider参数替代</li>
+<li>msi参数被废弃</li>
+<li>Windows软件包install_options参数支持数组混合字符串和哈希</li>
+<li>Windows加入新参数uninstall_options</li>
+</ul>
+</li>
+<li>执行(exec)<ul>
+<li>logoutput参数默认值为on_failure</li>
+</ul>
+</li>
+<li>元参数(Metaparameters)<ul>
+<li>check metaparameter被废弃，由audit替代</li>
+</ul>
+</li>
+</ol>
+<h2 id="auth-conf文件变化">auth.conf文件变化</h2>
+<ol>
+<li>节点在授权时需要加入以下配置</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>#allow nodes <span class="keyword">to</span> retrieve their own node object
+path ~ ^/node/([^/]+)$
+<span class="function"><span class="keyword">method</span> <span class="title">find</span>
+<span class="title">allow</span> $1</span>
+</pre></td></tr></table></figure>
+
+<ol>
+<li>auth no 等同于auth any</li>
+<li>新的allow_ip指令，不再支持使用allow配置IP地址的权限</li>
+</ol>
+<h2 id="HTTP_API的变化">HTTP API的变化</h2>
+<ol>
+<li>新增kind选项，可以过滤class 、node 、defined_type其中之一的几种类似的资源</li>
+<li>此前每个返回结果中的type字段，改名为kind</li>
+<li>此前type字段的hostclass值改为class，definition值改为defined_type， 返回结果中的参数列表中的argument字段改名为parameters</li>
+</ol>
+<h2 id="XML-RPC完全被废弃">XML-RPC完全被废弃</h2>
+<h2 id="Ruby_API的变化">Ruby API的变化</h2>
+<ul>
+<li>主要体现在帮助、函数、资源类型、应用程序等变化</li>
+</ul>
+<h3 id="Agent_lockfile_的变化">Agent lockfile 的变化</h3>
+<ol>
+<li>Puppet lockfile由一个变成二个</li>
+<li>运行进程锁<ul>
+<li>通过agent_catalog_run_lockfile进行配置</li>
+<li>agent 正在运行行时将包含 进程PID 文件进行加锁</li>
+</ul>
+</li>
+<li>禁用锁文件<ul>
+<li>通过agent_disabled_lockfile进行配置</li>
+<li>管理员禁用时通过JSON 哈希包含disabled_message key，其值为说明性字符串</li>
+<li>报告系统支持https</li>
+</ul>
+</li>
+<li>https:// report_server<ul>
+<li>支持DNS SRV查找puppet master</li>
+<li>支持unless 语句</li>
+</ul>
+</li>
+</ol>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/puppet/">puppet</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Puppet/">Puppet</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2013/09/21/puppet-3x-new-feature/" data-title="Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2013/11/08/hexo-deploy-err/" title="hexo deploy err">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  hexo deploy err</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2013/08/11/migrate-my-blog-from-wordpress-to-hexo/"  title="Migrate My blog from WordPress to Hexo">
+ <strong>NEXT:</strong><br/> 
+ <span>Migrate My blog from WordPress to Hexo
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Puppet_3-x_新特性"><span class="toc-number">1.</span> <span class="toc-text">Puppet 3.x 新特性</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#整体概况"><span class="toc-number">1.1.</span> <span class="toc-text">整体概况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依赖和支持的系统"><span class="toc-number">1.2.</span> <span class="toc-text">依赖和支持的系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#语言变化"><span class="toc-number">1.3.</span> <span class="toc-text">语言变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WEB架构的变化"><span class="toc-number">1.4.</span> <span class="toc-text">WEB架构的变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#核心资源类型的变化"><span class="toc-number">1.5.</span> <span class="toc-text">核心资源类型的变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#auth-conf文件变化"><span class="toc-number">1.6.</span> <span class="toc-text">auth.conf文件变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP_API的变化"><span class="toc-number">1.7.</span> <span class="toc-text">HTTP API的变化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XML-RPC完全被废弃"><span class="toc-number">1.8.</span> <span class="toc-text">XML-RPC完全被废弃</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ruby_API的变化"><span class="toc-number">1.9.</span> <span class="toc-text">Ruby API的变化</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Agent_lockfile_的变化"><span class="toc-number">1.9.1.</span> <span class="toc-text">Agent lockfile 的变化</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,433 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Apache referer AccessKey | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="防盗链原理：
+http标准协议中有专门的字段记录referer一来可以追溯上一个入站地址是什么二来对于资源文件，可以跟踪到包含显示他的网页地址是什么。因此所有防盗链方法都是基于这个Referer字段
+主要有两种方法实现
+第一种：使用FilesMatch
+ServerAdmin laogui@gmai">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/17/apache-referer/" title="Apache referer AccessKey" itemprop="url">Apache referer AccessKey</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-17T10:48:24.000Z" itemprop="datePublished">12月 17 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#防盗链原理："><span class="toc-number">1.</span> <span class="toc-text">防盗链原理：</strong></span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一种：使用FilesMatch"><span class="toc-number">1.1.</span> <span class="toc-text">第一种：使用FilesMatch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二种方法："><span class="toc-number">1.2.</span> <span class="toc-text">第二种方法：</span></a></li></ol>
+		</div>
+		
+		<h2 id="防盗链原理："><strong>防盗链原理：</strong></h2>
+<p>http标准协议中有专门的字段记录referer<br>一来可以追溯上一个入站地址是什么<br>二来对于资源文件，可以跟踪到包含显示他的网页地址是什么。<br>因此所有防盗链方法都是基于这个Referer字段</p>
+<p>主要有两种方法实现</p>
+<h3 id="第一种：使用FilesMatch">第一种：使用FilesMatch</h3>
+<pre><code>ServerAdmin laogui@gmail<span class="preprocessor">.com</span>
+DocumentRoot D:/www/www<span class="preprocessor">.chinahtml</span><span class="preprocessor">.com</span>
+ServerName www<span class="preprocessor">.aaa</span><span class="preprocessor">.com</span>
+ServerName aaa<span class="preprocessor">.com</span>
+</code></pre><p>盗用连接指定显示的页面。也可以不用此项，这样盗用连接也可无法使用。</p>
+<pre><code>ErrorDocument <span class="number">404</span> http://www<span class="preprocessor">.chinahtml</span><span class="preprocessor">.com</span>/error<span class="preprocessor">.html</span>
+</code></pre><p>允许www.aaa.com的网站使用</p>
+<pre><code>SetEnvIfNoCase <span class="keyword">Referer</span> <span class="string">"^http://www.aaa.com"</span> local_ref<span class="subst">=</span><span class="number">1</span>
+</code></pre><p>允许 aaa.com  的网站使用</p>
+<pre><code>SetEnvIfNoCase <span class="keyword">Referer</span> <span class="string">"^http://aaa.com"</span> local_ref<span class="subst">=</span><span class="number">1</span>
+</code></pre><p>定义防盗文件的扩展名</p>
+<pre><code><span class="keyword">Order</span> Allow,Deny
+Allow <span class="keyword">from</span> env=local_ref  允许上面指定域
+</code></pre><p>防盗链设置样本：使用正则表达式</p>
+<pre><code>SetEnvIf <span class="keyword">Referer</span> <span class="string">"^http://(.)+\.ilinux\.cn/"</span> local_ref<span class="subst">=</span><span class="number">1</span>
+SetEnvIf <span class="keyword">Referer</span> <span class="string">"^http://(.)+\.isql\.cn/"</span> local_ref<span class="subst">=</span><span class="number">1</span>
+<span class="variable">#SetEnvIf</span> <span class="keyword">Referer</span> <span class="string">"^http://(.)+\.other\.org\.cn/"</span> local_ref<span class="subst">=</span><span class="number">1</span>
+SetEnvIf Request_URI <span class="string">"/logo(.)+"</span> local_ref<span class="subst">=</span><span class="number">0</span>
+
+<span class="keyword">Order</span> Allow,Deny
+Allow from env<span class="subst">=</span>local_ref
+</code></pre><p>解释：</p>
+<ol>
+<li>部分，表示设置允许访问的referer地址，第一行的意思为所有http协议访问，以.ilinux.cn结尾的域名地址，第二行类似，只是换成 了.isql.cn，表问我前面的鬼符是什么，不懂得可以去翻正则表达式的研究文献，不想深究的可以照猫画虎设置自己的网站。</li>
+<li>绿色部分，表示不在上述引用域名范围内，但可以被放行的特例，本例中表示网站/目录，所有以logo开头的文件(用作允许其它网站的友情连接引用本站logo)。</li>
+<li>橙色部分是设置反盗链的关键部分，上面每一个设置都联系到了local_ref这个环境变量，只有这个变量为1，则允许被引用，否则显示一个X。</li>
+<li>紫色部分设置了哪些扩展名的文件加入反盗链的规则。</li>
+</ol>
+<h3 id="第二种方法：">第二种方法：</h3>
+<p>使用rewirte方式：</p>
+<pre><code><span class="keyword"><span class="common">RewriteEngine</span></span> <span class="literal">on</span>
+<span class="keyword"><span class="common">RewriteCond</span></span> <span class="cbracket">%{HTTP_REFERER}</span> !^$
+<span class="keyword"><span class="common">RewriteCond</span></span> <span class="cbracket">%{HTTP_REFERER}</span> !^http://bbs.ilinux.cn/.*$   <span class="sqbracket"> [NC]</span>
+<span class="keyword"><span class="common">RewriteCond</span></span> <span class="cbracket">%{HTTP_REFERER}</span> !^http://bbs.ilinux.cn$     <span class="sqbracket"> [NC]</span>
+<span class="keyword"><span class="common">RewriteCond</span></span> <span class="cbracket">%{HTTP_REFERER}</span> !^http://www.ilinux.cn/.*$     <span class="sqbracket"> [NC]</span>
+<span class="keyword"><span class="common">RewriteCond</span></span> <span class="cbracket">%{HTTP_REFERER}</span> !^http://www.ilinux.cn$     <span class="sqbracket"> [NC]</span>
+<span class="keyword"><span class="common">RewriteCond</span></span> <span class="cbracket">%{HTTP_REFERER}</span> !^http://ilinux.cn/.*$     <span class="sqbracket"> [NC]</span>
+<span class="keyword"><span class="common">RewriteCond</span></span> <span class="cbracket">%{HTTP_REFERER}</span> !^http://ilinux.cn$     <span class="sqbracket"> [NC]</span>
+<span class="keyword"><span class="common">RewriteRule</span></span> .*\.(gif|jpg|jpeg|avi|bmp|ram|rmvb|rm|rar|zip)$ http://www.ilinux.cn<span class="sqbracket"> [R,NC]</span>
+</code></pre><p>上面的，需要Rewrite模板．所有指定的文件，如果Referer不是上面的值，将被重定向到首页.</p>
+<p>还有使用.htaccess 文件的方法，不过不推荐使用，影响apache性能。</p>
+<p>写一个.htaccess包括以下代码：</p>
+<pre><code>SetEnvIfNoCase Referer <span class="string">"^http://google\.com/"</span> local_ref=<span class="number">1</span>
+<span class="keyword">Order</span> Allow,Deny
+Allow <span class="keyword">from</span> env=local_ref
+Allow <span class="keyword">from</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>
+Allow <span class="keyword">from</span> <span class="number">123.123</span><span class="number">.123</span><span class="number">.12</span>
+</code></pre><p>如果你的网址是www.myst.cn就改为<br>    SetEnvIfNoCase Referer “^<a href="http://www\.myst\.com/" target="_blank" rel="external">http://www\.myst\.com/</a>“ local_ref=1</p>
+<p>这意思是说防止人家连结你的jpg档案.可以增修为</p>
+<p>ps.最后一个不使用区各线</p>
+<pre><code>Allow <span class="keyword">from</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>
+</code></pre><p>这表示允许连结主机的IP。<br>你要是默认其他网站可以连结的话，就填入该主机IP，把上述的code储存为.htaccess然后放入你安装的目录下即可。</p>
+<p>出自：<a href="http://blog.chinaunix.net/u/11765/showart_236561.html" target="_blank" rel="external">http://blog.chinaunix.net/u/11765/showart_236561.html</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/apache/">apache</a><a href="/tags/referer/">referer</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Webserver/">Webserver</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/17/apache-referer/" data-title="Apache referer AccessKey | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/17/apache-exclude-log/" title="Apache filter log">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Apache filter log</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/17/apache-etag-expires-gzip/"  title="Apache etag expires gzip">
+ <strong>NEXT:</strong><br/> 
+ <span>Apache etag expires gzip
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#防盗链原理："><span class="toc-number">1.</span> <span class="toc-text">防盗链原理：</strong></span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#第一种：使用FilesMatch"><span class="toc-number">1.1.</span> <span class="toc-text">第一种：使用FilesMatch</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#第二种方法："><span class="toc-number">1.2.</span> <span class="toc-text">第二种方法：</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

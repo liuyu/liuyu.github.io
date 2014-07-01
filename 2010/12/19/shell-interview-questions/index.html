@@ -1,0 +1,468 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>shell 面试题汇集 | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="利用top取某个进程的CPU的脚本:
+/bin/sh
+ Max_CPU=0 Avg_CPU=0 Total_Time=1  Process=$1  Interval=$2
+check the parameters
+  if [ $# -ne 2 ]; then
+ echo &quot;Usage: $0 Pr">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2010/12/19/shell-interview-questions/" title="shell 面试题汇集" itemprop="url">shell 面试题汇集</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2010-12-19T09:15:13.000Z" itemprop="datePublished">12月 19 2010</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/sh"><span class="toc-number">1.</span> <span class="toc-text">/bin/sh</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#check_the_parameters"><span class="toc-number">2.</span> <span class="toc-text">check the parameters</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/bash"><span class="toc-number">3.</span> <span class="toc-text">/bin/bash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/bash-1"><span class="toc-number">4.</span> <span class="toc-text">/bin/bash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#awk_‘{print_$1}’_log_|sort_|uniq_-c|sort_-r_|head_-n10"><span class="toc-number">5.</span> <span class="toc-text">awk ‘{print $1}’ log      |sort |uniq -c|sort -r |head -n10</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/bash-2"><span class="toc-number">6.</span> <span class="toc-text">/bin/bash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#time_for_i_in_{1-2000}_;_do_mkdir_/root/neil$i;_done"><span class="toc-number">7.</span> <span class="toc-text">time for i in {1..2000} ; do mkdir /root/neil$i; done</span></a></li></ol>
+		</div>
+		
+		<ol>
+<li><p>利用top取某个进程的CPU的脚本:</p>
+<h1 id="/bin/sh">/bin/sh</h1>
+<p> Max_CPU=0<br> Avg_CPU=0<br> Total_Time=1<br>  Process=$1<br>  Interval=$2</p>
+<h1 id="check_the_parameters">check the parameters</h1>
+<p>  if [ $# -ne 2 ]; then</p>
+<pre><code> <span class="built_in">echo</span> <span class="string">"Usage: <span class="variable">$0</span> ProcessName Interval"</span>
+ <span class="keyword">exit</span>
+</code></pre><p>  fi<br>  LogFile=”Per.txt”<br>  echo “date” &gt; $LogFile<br>  while sleep $Interval<br>  do</p>
+<pre><code> top -d <span class="number">1</span> -n <span class="number">1</span>|<span class="keyword">grep</span> <span class="variable">$Process</span>|<span class="keyword">grep</span> -v <span class="keyword">grep</span>|awk <span class="string">'{print $9"\t"$10}'</span> &gt;&gt; <span class="variable">$LogFile</span>
+</code></pre><p>  done</p>
+</li>
+<li><p>判断是否是设备文件</p>
+<h1 id="/bin/bash">/bin/bash</h1>
+<p>  echo -e “The program will Judge a file is or not a device file.\n\n”<br>  read -p “Input a filename:” filename<br>  if [ -b $filename -o -c $filename ]; then</p>
+<pre><code>      <span class="built_in">echo</span> <span class="string">"<span class="variable">$filename</span> is a device file"</span>
+      <span class="keyword">exit</span> <span class="number">0</span>
+</code></pre><p>  else</p>
+<pre><code>      <span class="built_in">echo</span> <span class="string">"<span class="variable">$filename</span> is not a device file"</span>
+      <span class="keyword">exit</span> <span class="number">1</span>
+</code></pre><p>  firead –p：用于在读数据时输出提示信息</p>
+<p> 注意！ [ 之间是有空格的：if ! [ -f $filename ] ; then。一般用if [ ! * ]</p>
+</li>
+<li><p>添加用户：</p>
+<h1 id="/bin/bash-1">/bin/bash</h1>
+<p> groupadd -f class1<br> for i in {9909..9911}<br> do</p>
+<pre><code>     xx=<span class="built_in">echo</span> <span class="variable">$i</span> | sed <span class="string">'s/99//g'</span>
+     useradd -g class1 std<span class="variable">${xx}</span>
+     <span class="built_in">echo</span> std<span class="variable">${xx}</span> | passwd std<span class="variable">${xx}</span> --stdin
+     <span class="built_in">echo</span> <span class="operator">-e</span> <span class="string">"user std<span class="variable">${xx}</span> passwd is std<span class="variable">${xx}</span>"</span>&gt;&gt;/root/newuser.txt
+</code></pre><p> done<br> exit 0</p>
+<pre><code>    注意等号的前后不要有空格：xx=<span class="built_in">echo</span> <span class="variable">$i</span> | sed <span class="string">'s/99//g'</span>
+    变量如果前后有字符，要是大括号
+</code></pre></li>
+<li><p>统计IP访问：<br> 要求分析apache访问日志，找出访问页面数量在前100位的IP数。日志大小在78M左右。以下是apache的访问日志节选</p>
+<p> 202.101.129.218 - - [26/Mar/2006:23:59:55 +0800] “GET /online/stat_inst.php?pid=d065 HTTP/1.1” 302 20-“-“ “-“ “Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)”</p>
+<h1 id="awk_‘{print_$1}’_log_|sort_|uniq_-c|sort_-r_|head_-n10">awk ‘{print $1}’ log      |sort |uniq -c|sort -r |head -n10</h1>
+<pre><code>   5 221.224.78.15
+   3 221.233.19.137
+    1 58.63.148.135
+    1 222.90.66.142
+    1 222.218.90.239
+    1 222.182.95.155
+    1 221.7.249.206
+    1 221.237.232.191
+    1 221.235.61.109
+    1 219.129.183.122
+</code></pre><p> 这个地方有个疑问，为什么在使用uniq之前要sort。</p>
+</li>
+<li><p>求2个数之和</p>
+<h1 id="/bin/bash-2">/bin/bash</h1>
+<p>  typeset first second<br>  read -p “Input the first number:” first<br>  read -p “Input the second number:” second<br>  result=$[$first+$second]<br>  echo “result is : $result”<br>  exit 0</p>
+</li>
+<li><p>文本分析<br> 取出password中shell出现的次数</p>
+<p> 第一种方法结果:</p>
+<pre><code>    <span class="number">4</span> /bin/bash
+    <span class="number">1</span> /bin/sync
+    <span class="number">1</span> /sbin/halt
+   <span class="number">31</span> /sbin/nologin
+    <span class="number">1</span> /sbin/<span class="keyword">shutdown</span>
+</code></pre><p> 第二种方法结果:<br>  /bin/sync       1<br>  /bin/bash       1<br>  /sbin/nologin   30<br>  /sbin/halt      1<br>  /sbin/shutdown  1</p>
+<p> 答案：<br> cat /etc/passwd|awk -F: ‘{if ($7!=””) print $7}’|sort|uniq –c<br>  cat /etc/passwd|awk -F: ‘{if ($7!=””) print $7}’|sort|uniq -c | awk ‘{print $2,$1}’</p>
+</li>
+<li><p>文件整理<br> employee文件中记录了工号和姓名<br>  employee.txt:<br>  100 Jason Smith<br>  200 John Doe<br>  300 Sanjay Gupta<br>  400 Ashok Sharma<br>  bonus文件中记录工号和工资<br>  bonus.txt:<br>  100 $5,000<br>  200 $500<br>  300 $3,000<br>  400 $1,250 </p>
+</li>
+<li><p>要求把两个文件合并并输出如下<br>  处理结果<br>  400 ashok sharma $1,250<br>  100 jason smith  $5,000<br>  200 john doe  $500<br>  300 sanjay gupta  $3,000</p>
+<p> 答案：join employee bonus | sort -k 2</p>
+</li>
+<li><p>打印本机的交换分区大小</p>
+<p> 处理结果:<br>  Swap:1024M<br> free -m | sed -n ‘/Swap/p’ | awk ‘{ print $2}’<br>  free -m | sed -n ‘s/Swap:\ <em>([0-9]</em>).*/\1/p’</p>
+</li>
+<li><p>输出本机创建20000个目录所用的时间</p>
+<p>处理结果:<br> real    0m3.367s<br> user    0m0.066s<br> sys     0m1.925s</p>
+<p>答案：</p>
+<h1 id="time_for_i_in_{1-2000}_;_do_mkdir_/root/neil$i;_done">time for i in {1..2000} ; do mkdir /root/neil$i; done</h1>
+<p>  real    0m6.200s<br> user    0m1.128s<br> sys     0m4.710s</p>
+</li>
+<li><p>打印当前sshd的端口和进程id</p>
+<p> 处理结果:<br> sshd Port&amp;&amp;pid: 22 5412<br> 答案：netstat -anp | grep sshd | sed -n ‘s/.<em>:::([0-9]</em>)\ .<em> \ ([0-9]</em>)\/sshd/\1 \2/p’</p>
+</li>
+<li><p>打印root可以使用可执行文件数</p>
+<p> 处理结果:<br> root’s bins: 2306<br> echo “root’s bins: $(find ./ -type f | xargs ls -l | sed ‘/-..x/p’ | wc -l)”<br> root’s bins: 3664</p>
+</li>
+<li><p>编译当前目录下的所有.c文件：</p>
+<p> for file in *.c; do echo $file ; gcc -o $(basename $file .c) $file  ; sleep 2;  done &gt; compile 2&gt;&amp;1</p>
+</li>
+<li><p>将一目录下所有的文件的扩展名改为bak</p>
+<p> for i in <em>.</em>;do mv $i ${i%%.*}.bak;done </p>
+</li>
+</ol>
+<p>转自：oychw.cublog.cn</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/shell/">shell</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Programming/">Programming</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2010/12/19/shell-interview-questions/" data-title="shell 面试题汇集 | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2010/12/19/sed-vs-awk/" title="sed 和 awk 示例操作对比">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  sed 和 awk 示例操作对比</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2010/12/19/linux-if-use/"  title="linux if 命令使用">
+ <strong>NEXT:</strong><br/> 
+ <span>linux if 命令使用
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/sh"><span class="toc-number">1.</span> <span class="toc-text">/bin/sh</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#check_the_parameters"><span class="toc-number">2.</span> <span class="toc-text">check the parameters</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/bash"><span class="toc-number">3.</span> <span class="toc-text">/bin/bash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/bash-1"><span class="toc-number">4.</span> <span class="toc-text">/bin/bash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#awk_‘{print_$1}’_log_|sort_|uniq_-c|sort_-r_|head_-n10"><span class="toc-number">5.</span> <span class="toc-text">awk ‘{print $1}’ log      |sort |uniq -c|sort -r |head -n10</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#/bin/bash-2"><span class="toc-number">6.</span> <span class="toc-text">/bin/bash</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#time_for_i_in_{1-2000}_;_do_mkdir_/root/neil$i;_done"><span class="toc-number">7.</span> <span class="toc-text">time for i in {1..2000} ; do mkdir /root/neil$i; done</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

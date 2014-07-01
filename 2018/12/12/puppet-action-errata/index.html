@@ -1,0 +1,432 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Puppet action Errata | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="《Puppet实战》勘误反馈
+再见2013，你好2014！
+选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。为此，就在这辞旧迎新的日子里挤出此文。
+先祝大家：
+1
+2
+3
+4
+5
+6
+	    Happy     
+		  New       
+	    Year  
+	        BYE 2013      
+	    HELLO 2014           
+祝新年快乐、平安、健康！">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata" itemprop="url">Puppet action Errata</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2018-12-11T16:00:00.000Z" itemprop="datePublished">12月 12 2018</time>
+    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+		</div>
+		
+		<h1 id="《Puppet实战》勘误反馈">《Puppet实战》勘误反馈</h1>
+<h2 id="再见2013，你好2014！">再见2013，你好2014！</h2>
+<p>选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。<br>为此，就在这辞旧迎新的日子里挤出此文。</p>
+<p>先祝大家：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre>	    Happy     
+		  New       
+	    Year  
+	        BYE 2013      
+	    HELLO 2014           
+祝新年快乐、平安、健康！
+</pre></td></tr></table></figure><br><a id="more"></a><br><br>## 写在前面的话<br><br>《Puppet实战》从2012年9月华章杨福川兄弟找我沟通，直至 2013-12-12号预售，2013-12-27号正式发售，历时15个月。过程在这里就不细表了，真的很艰辛，写作是很孤独而枯燥的事，没有想到我能坚持到底。且文笔貌似没有长进。大哭。<br><br>本人已尽力确保本书内容的准确性，但无法避免一些细节错误或印刷错误。如果你在阅读本书发现任何疑问或错误的地方，无论是标点符号还是代码块，欢迎将这些信息通过本文评论进行反馈，我将不胜感激。<br>我会认真核对你的每一个反馈，核对无误后，会通过update $date $write 的形式更新在此博文中。你也可以把你的个人信息注在反馈信息中。<br><br>当然，你也可以通过 <code>liuyu105#gmail.com</code> 给我反馈信息。<br><br>反馈简单格式如下：<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>第一章 第8页 图1-1 puppet dashboard 错写成了 deshboard
+</pre></td></tr></table></figure>
+
+<p>分隔线</p>
+<hr>
+<p><strong> %Changelog </strong>  </p>
+<ul>
+<li><p>2013-10-27 Chenlin <chenlin0802@></chenlin0802@></p>
+<ul>
+<li>第1章 P8 图1-1 puppet dashboard 错写成了 deshboard</li>
+<li>第5章 P54、P55、P56 各种名的正则表达式是不是应该为 \A[a-z][a-z0-9] ……  ，书中少写了个 “-“，写成了\A[az]</li>
+<li>第5章 P54 5.2.3节的最后几行， require nginx::install 的方法空格位置不对，写成了 requir enginx::install  应为：require nginx::install </li>
+<li>第5章 P62 class[‘name’] -&gt; class[‘name2’] 中class应该为Class ，首字母大写，另外引号这里是印刷导致，不应该为中文的符号</li>
+</ul>
+</li>
+<li><p>2014-01-10 小吴</p>
+<ul>
+<li>第6章 P96  source =&gt; ‘puppet://$fileserver/modules/test/test’  其中的变量在新的语法中应为${fileserver}</li>
+<li>第7章 P126 图7-1 ensure =&gt; template(‘nginx/vhost.erb’) 这里的ensure应为content</li>
+<li>第7章 P132  最下面  nam =&gt; nginx,少写个e</li>
+<li>第7章 P139 子类名： nginx::configng、inx::vhost   符号错位nginx::config、nginx::vhost</li>
+<li>第14章 P227  4）启动Git, git-daemon  应该为git daemon</li>
+<li>第14章 228页  cp /tmp/puppet/<em>   应该为cp /tmp/puppet/</em> ./</li>
+</ul>
+</li>
+<li><p>2014-01-18 liusy23</p>
+<ul>
+<li>第4章 P47  (3) 在修改testing分支的site.pp时，应该为sudo vim /etc/puppet/modules/test/manifests/init.pp<br>PS: P44 写的evn却为testing，因此这块的测试环境不够严谨，但原理没有错误</li>
+</ul>
+</li>
+<li><p>2014-02-06 @stackhacker</p>
+<ul>
+<li>第2章 P25 倒数7行，是最为人生（应为性）化的操作系统之一</li>
+</ul>
+</li>
+</ul>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/puppet/">puppet</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Puppet/">Puppet</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2018/12/12/puppet-action-errata/" data-title="Puppet action Errata | Liuyu Blog" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2014/06/24/Where-am-I-now/"  title="Where am I now ?">
+ <strong>NEXT:</strong><br/> 
+ <span>Where am I now ?
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

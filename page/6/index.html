@@ -1,0 +1,404 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="Puppet CDN Automate Game Cloud Architecture Zabbix Ruby Python">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main">
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/20/dell-r410-r710-update-bnx2-on-centos/" title="DELL R410 R710 centos5.5 64bit 升级网卡驱动" itemprop="url">
+  
+    <h1 itemprop="name">DELL R410 R710 centos5.5 64bit 升级网卡驱动</h1>
+    
+     
+           <p itemprop="description" >R410网卡为Broadcom bnx2 Linux Driver驱动下载：http://zh-cn.broadcom.com/support/ethernet_nic/netxtremeii.php 下载linux 版本
+解压：unzip linux-1.9.20b_1.50.</p>
+        
+    
+    <time datetime="2010-12-20T14:41:07.000Z" itemprop="datePublished">12月 20 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/20/ubuntu-could-not-update-ideauthority-file-homeuser-iceauthority/" title="当登录UBUNTU时出现 “Could not update IDEauthority file home{user}.ICEauthority”" itemprop="url">
+  
+    <h1 itemprop="name">当登录UBUNTU时出现 “Could not update IDEauthority file home{user}.ICEauthority”</h1>
+    
+     
+           <p itemprop="description" >登录用户时会出现Could not update IDEauthority file /home/{user}/.ICEauthority
+郁闷    home/{user}/.ICEauthority文件的所有权被改成ROOT了 
+进入ROOT用户chown -R {user}</p>
+        
+    
+    <time datetime="2010-12-20T13:44:10.000Z" itemprop="datePublished">12月 20 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/20/wordpress-content/" title="无法定位WordPress Content目录(wp-content) 解决方案" itemprop="url">
+  
+    <h1 itemprop="name">无法定位WordPress Content目录(wp-content) 解决方案</h1>
+    
+     
+           <p itemprop="description" >方案： 打开htdocs目录下的wp-config.php文件，将下面的代码放在wp-config.php最后一行的”?&amp;gt;”前面即可。注意，不要忘记上传到服务器上啊。
+Php代码
+if(is_admin()) {add_filter(&#39;filesystem_method&#39;,</p>
+        
+    
+    <time datetime="2010-12-20T13:40:17.000Z" itemprop="datePublished">12月 20 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/20/sendmail-not-send-mail/" title="sendmail无法发信，启动慢解决方案" itemprop="url">
+  
+    <h1 itemprop="name">sendmail无法发信，启动慢解决方案</h1>
+    
+     
+           <p itemprop="description" >php无法发mail用命令行测试下：
+#!/bin/bash
+/usr/sbin/sendmail -t &amp;lt;&amp;lt;EOF
+From: Mail testing &amp;lt;mail.goapk.gmail.com&amp;gt;
+To: liuyu105@gmail.com
+Subj</p>
+        
+    
+    <time datetime="2010-12-20T13:38:02.000Z" itemprop="datePublished">12月 20 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/20/howto-install-puppet-on-centos5/" title="Centos5 yum install puppet 2.6" itemprop="url">
+  
+    <h1 itemprop="name">Centos5 yum install puppet 2.6</h1>
+    
+     
+           <p itemprop="description" >Centos 5 使用yum源安装puppet 2.6
+一，配置yum源cd /etc/yum.repos.d/
+vim puppet.repo
+[puppetlabs]
+name=Puppet Labs Packages
+baseurl=http://yum.puppetlab</p>
+        
+    
+    <time datetime="2010-12-20T03:27:34.000Z" itemprop="datePublished">12月 20 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/19/squid-log-detailed/" title="squid 日志详解" itemprop="url">
+  
+    <h1 itemprop="name">squid 日志详解</h1>
+    
+     
+           <p itemprop="description" >安装配置完squid，通过日志来看看squid的一些基本的运行状态
+
+access.log
+
+访问日志，位于squid/var/logs/access.log，常用的记录格式如下
+remotehost rfc931 authuser [date] “method URL” sta</p>
+        
+    
+    <time datetime="2010-12-19T15:26:04.000Z" itemprop="datePublished">12月 19 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/19/windows7-winsxs/" title="给Windows7减肥如何将winsxs放到其他硬盘分区下" itemprop="url">
+  
+    <h1 itemprop="name">给Windows7减肥如何将winsxs放到其他硬盘分区下</h1>
+    
+     
+       <p itemprop="description" >不知道大家注意过没有，在Vista和Windows 7系统盘的Windows目录下，有一个名为winscs的文件夹，对于整个Windows目录来说，这个文件夹就占用了其一半多的体积（近3GB）不但如此，随着系统使用时间的不断延长，winscs文件夹的体积还会变得更大，我的现在已经</p>
+      
+    
+    <time datetime="2010-12-19T09:57:32.000Z" itemprop="datePublished">12月 19 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/19/sedline/" title="SED单行脚本快速参考" itemprop="url">
+  
+    <h1 itemprop="name">SED单行脚本快速参考</h1>
+    
+     
+           <p itemprop="description" >SED单行脚本快速参考（Unix 流编辑器） 2005年12月29日英文标题：USEFUL ONE-LINE SCRIPTS FOR SED (Unix stream editor) 原标题：HANDY ONE-LINERS FOR SED (Unix stream editor</p>
+        
+    
+    <time datetime="2010-12-19T09:54:27.000Z" itemprop="datePublished">12月 19 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/19/sed-vs-awk/" title="sed 和 awk 示例操作对比" itemprop="url">
+  
+    <h1 itemprop="name">sed 和 awk 示例操作对比</h1>
+    
+     
+       <p itemprop="description" >sed 和 awk 都是 Linux下常用的流编辑器，他们各有各的特色，本文并不是要做什么对比，而是权当好玩，把《SED单行脚本快速参考》这文章，用 awk 做了一遍~至于孰好孰坏，那真是很难评论了。一般来说，sed的命令会更短小一些，同时也更难读懂；而 awk 稍微长点，但是 </p>
+      
+    
+    <time datetime="2010-12-19T09:26:05.000Z" itemprop="datePublished">12月 19 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
+    <a href="/2010/12/19/shell-interview-questions/" title="shell 面试题汇集" itemprop="url">
+  
+    <h1 itemprop="name">shell 面试题汇集</h1>
+    
+     
+           <p itemprop="description" >利用top取某个进程的CPU的脚本:
+/bin/sh
+ Max_CPU=0 Avg_CPU=0 Total_Time=1  Process=$1  Interval=$2
+check the parameters
+  if [ $# -ne 2 ]; then
+ echo &quot;Us</p>
+        
+    
+    <time datetime="2010-12-19T09:15:13.000Z" itemprop="datePublished">12月 19 2010</time>
+  </a>
+</section>
+
+
+  <nav id="page-nav" class="clearfix">
+    <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
+  </nav>
+
+</div>
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+  </body>
+ </html>
