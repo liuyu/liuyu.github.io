@@ -1,0 +1,680 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Migrate Gitlab to New Server and add https | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="说在前面的话
+
+
+网上的参考文档只供了解过程，具体操作还需要实践。
+官网文档更新不及时导致问题不断。
+不同版本之间的Backup 与 restore 不兼容。本例6.9与7.0会提示不兼容，导致repositories无法导入。
+权限问题需要多注意，修改配置文件后先check再重启服务。
+
+
+背景
+">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/07/05/Migrate-Gitlab-to-New-Server-and-add-https/" title="Migrate Gitlab to New Server and add https" itemprop="url">Migrate Gitlab to New Server and add https</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-07-05T05:35:28.000Z" itemprop="datePublished">7月 5 2014</time>
+    更新日期:<time datetime="2014-07-05T06:54:56.000Z" itemprop="dateModified">7月 5 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装与升级"><span class="toc-number">2.</span> <span class="toc-text">安装与升级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置https"><span class="toc-number">3.</span> <span class="toc-text">配置https</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-_SSL配置"><span class="toc-number">3.1.</span> <span class="toc-text">1. SSL配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-_修改配置文件"><span class="toc-number">3.2.</span> <span class="toc-text">2. 修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-_检测gitlab并重启生效"><span class="toc-number">3.3.</span> <span class="toc-text">3. 检测gitlab并重启生效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-_nginx的配置文件参考如下："><span class="toc-number">3.4.</span> <span class="toc-text">4. nginx的配置文件参考如下：</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#备份与还原"><span class="toc-number">4.</span> <span class="toc-text">备份与还原</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">5.</span> <span class="toc-text">后记</span></a></li></ol>
+		</div>
+		
+		<p><strong>说在前面的话</strong></p>
+<blockquote>
+<ol>
+<li>网上的参考文档只供了解过程，具体操作还需要实践。</li>
+<li>官网文档更新不及时导致问题不断。</li>
+<li>不同版本之间的Backup 与 restore 不兼容。本例6.9与7.0会提示不兼容，导致repositories无法导入。</li>
+<li>权限问题需要多注意，修改配置文件后先check再重启服务。</li>
+</ol>
+</blockquote>
+<h2 id="背景">背景</h2>
+<p>  团队之前在使用SVN做代码管理，由于无法很好地支持离线办工，加上速度越来越慢，因上经推荐大家使用Git，想着就搭建一套Gitlab吧，和Github一样，操作也方便，小团队合作的利器。<br>  整个搭建过程很顺利，但考虑到后期安全等各种问题，进行了一次升级及迁移，并加上了https。主要是由于没有狠心在Github上多泡10分钟，否则。。。</p>
+<h2 id="安装与升级">安装与升级</h2>
+<p>其实都可以不写的，因为，我采用RPM进行安装。快速、简单、有效。</p>
+<p>官网提供Ubuntu 12.04 14.04 、Debian 7 及Centos 6的包。<a href="https://about.gitlab.com/downloads/" target="_blank" rel="external">Gitlab-download</a></p>
+<p>安装过程：</p>
+<ol>
+<li>下载和安装软件包</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>wget https://downloads-packages<span class="preprocessor">.s</span>3<span class="preprocessor">.amazonaws</span><span class="preprocessor">.com</span>/centos-<span class="number">6.5</span>/gitlab-<span class="number">7.0</span><span class="number">.0</span>_omnibus-<span class="number">1.</span>el6<span class="preprocessor">.x</span>86_64<span class="preprocessor">.rpm</span>
+sudo yum install openssh-server
+sudo yum install postfix <span class="preprocessor"># Select 'Internet Site', using sendmail or exim is also OK</span>
+sudo rpm -i gitlab-<span class="number">7.0</span><span class="number">.0</span>_omnibus-<span class="number">1.</span>el6<span class="preprocessor">.x</span>86_64<span class="preprocessor">.rpm</span>
+</pre></td></tr></table></figure>
+
+<ol>
+<li>可以提前通过配置gitlab.rb来预设置gitlab相关的配置文件。我这里只是修改了主机名：</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="built_in">sudo</span> <span class="operator">-e</span> /etc/gitlab/gitlab.rb
+external_url <span class="string">"http://gitlab.bubbyroom.com"</span>
+</pre></td></tr></table></figure>
+
+<ol>
+<li>配置和启动服务</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="built_in">sudo</span> gitlab-ctl reconfigure
+<span class="built_in">sudo</span> lokkit <span class="operator">-s</span> http <span class="operator">-s</span> ssh
+</pre></td></tr></table></figure>
+
+<ol>
+<li>默认用户名及密码</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre><span class="attribute">Username</span>: <span class="string">root </span>
+<span class="attribute">Password</span>: <span class="string">5iveL!fe</span>
+</pre></td></tr></table></figure>
+
+<h2 id="配置https">配置https</h2>
+<p>目录说明：<br>rpm 包安装完成后，不在传统的/etc /home相关目录下。而是集中在 <code>/var/opt/gitlab</code> 和 <code>/opt/gitlb</code></p>
+<p>值得注意的是 <code>/opt/gitlab/embedded/servicc/</code> ，gitlab的主目录。backup restore check等命令都需要在gitlab-rails目录进行。</p>
+<p>由于是采用的 gitlab 7.0 版本，因上网上的现有文档都没有解决https的问题，后来在github上的gitlab最新版本库中找到nginx的配置文件，文件中就包括了配置过程。</p>
+<p>文件目录地址： <a href="https://github.com/gitlabhq/gitlabhq/tree/master/lib/support/nginx" target="_blank" rel="external">github-gitlabhq</a></p>
+<h3 id="1-_SSL配置">1. SSL配置</h3>
+<p>创建ssl目录和证书文件。（ssl目录需要对应gitlab-http.conf）</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+</pre></td><td class="code"><pre>mkdir /opt/gitlab/embedded/ssl
+cd /opt/gitlab/embedded/ssl
+sudo openssl req <span class="attribute">-newkey</span> rsa:<span class="number">2048</span> <span class="attribute">-x509</span> <span class="attribute">-nodes</span> <span class="attribute">-days</span> <span class="number">3560</span> <span class="attribute">-out</span> gitlab<span class="built_in">.</span>crt <span class="attribute">-keyout</span> gitlab<span class="built_in">.</span>key
+sudo chmod o<span class="attribute">-r</span> gitlab<span class="built_in">.</span>key
+</pre></td></tr></table></figure>
+
+<h3 id="2-_修改配置文件">2. 修改配置文件</h3>
+<p>修改 <code>gitlab-shell/config.yml</code> ，本例完整路径为：<code>/opt/gitlab/embedded/service/gitlab-shell/config.yml</code></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre>1) <span class="operator"><span class="keyword">Set</span> <span class="string">"gitlab_url"</span> param <span class="keyword">in</span> <span class="string">`gitlab-shell/config.yml`</span> <span class="keyword">to</span> <span class="string">`https://git.example.com`</span>
+<span class="number">2</span>) <span class="keyword">Set</span> <span class="string">"ca_file"</span> <span class="keyword">to</span> <span class="string">`/etc/nginx/ssl/gitlab.crt`</span>
+<span class="number">3</span>) <span class="keyword">Set</span> <span class="string">"self_signed_cert"</span> <span class="keyword">to</span> <span class="string">`true`</span></span>
+</pre></td></tr></table></figure>
+
+<p>修改  <code>gitlab/config/gitlab.yml</code>，本例完整路径为：<code>/opt/gitlab/embedded/service/gitlab-rails/config/gitlab.yml</code></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="number">1</span>) Define port <span class="keyword">for</span> <span class="keyword">http</span> <span class="string">"port: 443"</span>
+<span class="number">2</span>) Enable <span class="keyword">https</span> <span class="string">"https: true"</span>
+<span class="number">3</span>) Update ssl <span class="keyword">for</span> gravatar <span class="string">"ssl_url: https://secure.gravatar.com/avatar/%{hash}?s=%{size}&d=mm"</span>
+</pre></td></tr></table></figure>
+
+<h3 id="3-_检测gitlab并重启生效">3. 检测gitlab并重启生效</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="built_in">cd</span> /opt/gitlab/embedded/servicc/gitlab-rails/
+
+bundle <span class="keyword">exec</span> rake gitlab:env:info RAILS_ENV=production
+
+bundle <span class="keyword">exec</span> rake gitlab:check RAILS_ENV=production
+</pre></td></tr></table></figure>
+
+<p>如有提示权限问题，可以通过：如下命令尝试修复：<br><code>/opt/gitlab/embedded/service/gitlab-shell/bin/install</code><br><code>rebuild key: bundle exec rake gitlab:shell:setup RAILS_ENV=production</code></p>
+<h3 id="4-_nginx的配置文件参考如下：">4. nginx的配置文件参考如下：</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+</pre></td><td class="code"><pre><span class="title">upstream</span> gitlab {
+  <span class="title">server</span> <span class="url">unix:/var/opt/gitlab/gitlab-rails/tmp/sockets/gitlab.socket</span>;
+}
+
+<span class="title">server</span> {
+  <span class="title">listen</span> *:<span class="number">80</span>;
+  <span class="title">server_name</span> gitlab.bubbyroom.com;
+  <span class="title">server_tokens</span> <span class="built_in">off</span>;
+  <span class="title">root</span> /nowhere;
+  <span class="title">rewrite</span><span class="regexp"> ^</span> <span class="url">https://$server_name$request_uri</span> <span class="built_in">permanent</span>;
+}
+
+<span class="title">server</span> {
+  <span class="title">listen</span> <span class="number">443</span> ssl;
+  <span class="title">server_name</span> gitlab.xsjcs.cn;
+  <span class="title">server_tokens</span> <span class="built_in">off</span>;
+  <span class="title">root</span> /opt/gitlab/embedded/service/gitlab-rails/public;
+
+  <span class="title">client_max_body_size</span> <span class="number">20m</span>;
+
+  <span class="title">ssl</span> <span class="built_in">on</span>;
+  <span class="title">ssl_certificate</span> /opt/gitlab/embedded/ssl/gitlab.crt;
+  <span class="title">ssl_certificate_key</span> /opt/gitlab/embedded/ssl/gitlab.key;
+
+  <span class="title">ssl_ciphers</span> <span class="string">'ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4'</span>;
+
+  <span class="title">ssl_protocols</span>  TLSv1 TLSv1.<span class="number">1</span> TLSv1.<span class="number">2</span>;
+  <span class="title">ssl_session_cache</span>  builtin:<span class="number">1000</span>  shared:SSL:<span class="number">10m</span>;
+  <span class="title">ssl_prefer_server_ciphers</span>   <span class="built_in">on</span>;
+
+  <span class="title">add_header</span> Strict-Transport-Security max-age=<span class="number">63072000</span>;
+  <span class="title">add_header</span> X-Frame-Options DENY;
+  <span class="title">add_header</span> X-Content-Type-Options nosniff;
+
+  <span class="title">access_log</span>  /var/log/gitlab/nginx/gitlab_access.log;
+  <span class="title">error_log</span>   /var/log/gitlab/nginx/gitlab_error.log;
+
+  <span class="title">location</span> / {
+    <span class="title">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/index.html <span class="variable">$uri</span>.html <span class="variable">@gitlab</span>;
+  }
+
+  <span class="title">location</span> <span class="variable">@gitlab</span> {
+
+    <span class="title">gzip</span> <span class="built_in">off</span>;
+
+    <span class="title">proxy_read_timeout</span>      <span class="number">300</span>;
+    <span class="title">proxy_connect_timeout</span>   <span class="number">300</span>;
+    <span class="title">proxy_redirect</span>          <span class="built_in">off</span>;
+
+    <span class="title">proxy_set_header</span>    Host                <span class="variable">$http_host</span>;
+    <span class="title">proxy_set_header</span>    X-Real-IP           <span class="variable">$remote_addr</span>;
+    <span class="title">proxy_set_header</span>    X-Forwarded-Ssl     <span class="built_in">on</span>;
+    <span class="title">proxy_set_header</span>    X-Forwarded-For     <span class="variable">$proxy_add_x_forwarded_for</span>;
+    <span class="title">proxy_set_header</span>    X-Forwarded-Proto   <span class="variable">$scheme</span>;
+    <span class="title">proxy_set_header</span>    X-Frame-Options     SAMEORIGIN;
+
+    <span class="title">proxy_pass</span> <span class="url">http://gitlab</span>;
+  }
+
+  <span class="title">location</span> <span class="regexp">~ ^/(assets)/</span> {
+    <span class="title">root</span> /opt/gitlab/embedded/service/gitlab-rails/public;
+    <span class="title">gzip_static</span> <span class="built_in">on</span>; <span class="comment"># to serve pre-gzipped version</span>
+    <span class="title">expires</span> max;
+    <span class="title">add_header</span> Cache-Control public;
+  }
+
+  <span class="title">error_page</span> <span class="number">502</span> /<span class="number">502</span>.html;
+}
+</pre></td></tr></table></figure>
+
+<h2 id="备份与还原">备份与还原</h2>
+<p>RPM包安装的目录：<br><code>/opt/gitlab/embedded/service/gitlab-rails</code></p>
+<p>备份：</p>
+<p><code>bundle exec rake gitlab:backup:create RAILS_ENV=production</code></p>
+<p>备份文件在：/var/opt/gitlab/backups<br>文件名：1403964190_gitlab_backup.tar</p>
+<p>新机器安装好后进行还原：</p>
+<p><code>bundle exec rake gitlab:backup:restore RAILS_ENV=production</code></p>
+<p>再次运行 eheck命令进行检查，如有问题可以update repo<br><code>bundle exec rake gitlab:gitolite:update_keys RAILS_ENV=production</code></p>
+<h2 id="后记">后记</h2>
+<ol>
+<li>SSL错误提示如下：</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>SSL certificate problem: Invalid certificate chain
+</pre></td></tr></table></figure>
+
+<p>证书问题，需要重新生成。</p>
+<ol>
+<li><p>关于ACL，修改nginx.conf ，增加一个acl，只允许公司的出口IP访问。</p>
+</li>
+<li><p>关于注册，默认不允许注册，可以临时开启，让同事集中注册：</p>
+</li>
+</ol>
+<p>修改配置文件：<br>/var/opt/gitlab/gitlab-rails/etc/gitlab.yml<br>  signup_enabled: true</p>
+<p>今天就到此。</p>
+<p>参考：<br><a href="https://gitlab.com/gitlab-org/gitlab-recipes/tree/master/misc/ssl-certificate-implemented" target="_blank" rel="external">SSL配置：官方文档</a><br><a href="http://jonocoetzee.com/gitlab-with-https-and-two-factor-auth/" target="_blank" rel="external">SSL配置：jonoCoetzee</a><br><a href="https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/raketasks/backup_restore.md" target="_blank" rel="external">备份：官方文档</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/gitlab-git/">gitlab git</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2014/07/05/Migrate-Gitlab-to-New-Server-and-add-https/" data-title="Migrate Gitlab to New Server and add https | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Puppet action Errata</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/06/24/Where-am-I-now/"  title="Where am I now ?">
+ <strong>NEXT:</strong><br/> 
+ <span>Where am I now ?
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装与升级"><span class="toc-number">2.</span> <span class="toc-text">安装与升级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置https"><span class="toc-number">3.</span> <span class="toc-text">配置https</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-_SSL配置"><span class="toc-number">3.1.</span> <span class="toc-text">1. SSL配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-_修改配置文件"><span class="toc-number">3.2.</span> <span class="toc-text">2. 修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-_检测gitlab并重启生效"><span class="toc-number">3.3.</span> <span class="toc-text">3. 检测gitlab并重启生效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-_nginx的配置文件参考如下："><span class="toc-number">3.4.</span> <span class="toc-text">4. nginx的配置文件参考如下：</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#备份与还原"><span class="toc-number">4.</span> <span class="toc-text">备份与还原</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">5.</span> <span class="toc-text">后记</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://yangjian.me" target="_blank" title="YangJian">Alimon's Blog</a></li>
+      <li><a href="http://zespia.tw/hexo" target="_blank" title="Hexo">Hexo</a></li>
+      <li><a href="http://chenlinux.com/" title="年年风雨's Blog">三斗室</a></li>
+      <li><a href="http://kisspuppet.com/" title="KissPuppet's blog">KissPuppet</a></li>
+    </ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/opendoc" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/liuyu" target="_blank" title="github"></a>
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"liuyu105"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>
