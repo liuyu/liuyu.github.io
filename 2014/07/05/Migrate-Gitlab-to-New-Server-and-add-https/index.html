@@ -86,7 +86,7 @@
     </p>
   <p class="article-time">
     <time datetime="2014-07-05T05:35:28.000Z" itemprop="datePublished">7月 5 2014</time>
-    更新日期:<time datetime="2014-07-05T06:54:56.000Z" itemprop="dateModified">7月 5 2014</time>
+    更新日期:<time datetime="2014-07-05T07:06:55.000Z" itemprop="dateModified">7月 5 2014</time>
     
   </p>
 </header>
@@ -95,7 +95,7 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装与升级"><span class="toc-number">2.</span> <span class="toc-text">安装与升级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置https"><span class="toc-number">3.</span> <span class="toc-text">配置https</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-_SSL配置"><span class="toc-number">3.1.</span> <span class="toc-text">1. SSL配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-_修改配置文件"><span class="toc-number">3.2.</span> <span class="toc-text">2. 修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-_检测gitlab并重启生效"><span class="toc-number">3.3.</span> <span class="toc-text">3. 检测gitlab并重启生效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-_nginx的配置文件参考如下："><span class="toc-number">3.4.</span> <span class="toc-text">4. nginx的配置文件参考如下：</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#备份与还原"><span class="toc-number">4.</span> <span class="toc-text">备份与还原</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">5.</span> <span class="toc-text">后记</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装与升级"><span class="toc-number">2.</span> <span class="toc-text">安装与升级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置https"><span class="toc-number">3.</span> <span class="toc-text">配置https</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SSL配置"><span class="toc-number">3.1.</span> <span class="toc-text">SSL配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改配置文件"><span class="toc-number">3.2.</span> <span class="toc-text">修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#检测gitlab并重启生效"><span class="toc-number">3.3.</span> <span class="toc-text">检测gitlab并重启生效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx的配置文件参考如下："><span class="toc-number">3.4.</span> <span class="toc-text">nginx的配置文件参考如下：</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#备份与还原"><span class="toc-number">4.</span> <span class="toc-text">备份与还原</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">5.</span> <span class="toc-text">后记</span></a></li></ol>
 		</div>
 		
 		<p><strong>说在前面的话</strong></p>
@@ -158,7 +158,7 @@ external_url <span class="string">"http://gitlab.bubbyroom.com"</span>
 <p>值得注意的是 <code>/opt/gitlab/embedded/servicc/</code> ，gitlab的主目录。backup restore check等命令都需要在gitlab-rails目录进行。</p>
 <p>由于是采用的 gitlab 7.0 版本，因上网上的现有文档都没有解决https的问题，后来在github上的gitlab最新版本库中找到nginx的配置文件，文件中就包括了配置过程。</p>
 <p>文件目录地址： <a href="https://github.com/gitlabhq/gitlabhq/tree/master/lib/support/nginx" target="_blank" rel="external">github-gitlabhq</a></p>
-<h3 id="1-_SSL配置">1. SSL配置</h3>
+<h3 id="SSL配置">SSL配置</h3>
 <p>创建ssl目录和证书文件。（ssl目录需要对应gitlab-http.conf）</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -170,7 +170,7 @@ sudo openssl req <span class="attribute">-newkey</span> rsa:<span class="number"
 sudo chmod o<span class="attribute">-r</span> gitlab<span class="built_in">.</span>key
 </pre></td></tr></table></figure>
 
-<h3 id="2-_修改配置文件">2. 修改配置文件</h3>
+<h3 id="修改配置文件">修改配置文件</h3>
 <p>修改 <code>gitlab-shell/config.yml</code> ，本例完整路径为：<code>/opt/gitlab/embedded/service/gitlab-shell/config.yml</code></p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -189,7 +189,7 @@ sudo chmod o<span class="attribute">-r</span> gitlab<span class="built_in">.</sp
 <span class="number">3</span>) Update ssl <span class="keyword">for</span> gravatar <span class="string">"ssl_url: https://secure.gravatar.com/avatar/%{hash}?s=%{size}&d=mm"</span>
 </pre></td></tr></table></figure>
 
-<h3 id="3-_检测gitlab并重启生效">3. 检测gitlab并重启生效</h3>
+<h3 id="检测gitlab并重启生效">检测gitlab并重启生效</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -203,7 +203,7 @@ bundle <span class="keyword">exec</span> rake gitlab:check RAILS_ENV=production
 </pre></td></tr></table></figure>
 
 <p>如有提示权限问题，可以通过：如下命令尝试修复：<br><code>/opt/gitlab/embedded/service/gitlab-shell/bin/install</code><br><code>rebuild key: bundle exec rake gitlab:shell:setup RAILS_ENV=production</code></p>
-<h3 id="4-_nginx的配置文件参考如下：">4. nginx的配置文件参考如下：</h3>
+<h3 id="nginx的配置文件参考如下：">nginx的配置文件参考如下：</h3>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
@@ -350,6 +350,9 @@ bundle <span class="keyword">exec</span> rake gitlab:check RAILS_ENV=production
 <p>新机器安装好后进行还原：</p>
 <p><code>bundle exec rake gitlab:backup:restore RAILS_ENV=production</code></p>
 <p>再次运行 eheck命令进行检查，如有问题可以update repo<br><code>bundle exec rake gitlab:gitolite:update_keys RAILS_ENV=production</code></p>
+<p><strong>注意</strong><br>由于证书没有购买，在clone前，需要在本地运行 <code>git config http.sslVerify false</code> 以忽略证书的合法性。</p>
+<p>否则会提示：<code>Unable to clone Git repository due to self signed certificate</code></p>
+<p>参考：<a href="https://github.com/hbons/SparkleShare/issues/1136" target="_blank" rel="external">CAcert</a></p>
 <h2 id="后记">后记</h2>
 <ol>
 <li>SSL错误提示如下：</li>
@@ -358,7 +361,7 @@ bundle <span class="keyword">exec</span> rake gitlab:check RAILS_ENV=production
 </pre></td><td class="code"><pre>SSL certificate problem: Invalid certificate chain
 </pre></td></tr></table></figure>
 
-<p>证书问题，需要重新生成。</p>
+<p>证书问题，需要重新生成和配置。</p>
 <ol>
 <li><p>关于ACL，修改nginx.conf ，增加一个acl，只允许公司的出口IP访问。</p>
 </li>
@@ -420,7 +423,7 @@ bundle <span class="keyword">exec</span> rake gitlab:check RAILS_ENV=production
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装与升级"><span class="toc-number">2.</span> <span class="toc-text">安装与升级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置https"><span class="toc-number">3.</span> <span class="toc-text">配置https</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-_SSL配置"><span class="toc-number">3.1.</span> <span class="toc-text">1. SSL配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-_修改配置文件"><span class="toc-number">3.2.</span> <span class="toc-text">2. 修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-_检测gitlab并重启生效"><span class="toc-number">3.3.</span> <span class="toc-text">3. 检测gitlab并重启生效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-_nginx的配置文件参考如下："><span class="toc-number">3.4.</span> <span class="toc-text">4. nginx的配置文件参考如下：</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#备份与还原"><span class="toc-number">4.</span> <span class="toc-text">备份与还原</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">5.</span> <span class="toc-text">后记</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装与升级"><span class="toc-number">2.</span> <span class="toc-text">安装与升级</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置https"><span class="toc-number">3.</span> <span class="toc-text">配置https</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SSL配置"><span class="toc-number">3.1.</span> <span class="toc-text">SSL配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改配置文件"><span class="toc-number">3.2.</span> <span class="toc-text">修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#检测gitlab并重启生效"><span class="toc-number">3.3.</span> <span class="toc-text">检测gitlab并重启生效</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx的配置文件参考如下："><span class="toc-number">3.4.</span> <span class="toc-text">nginx的配置文件参考如下：</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#备份与还原"><span class="toc-number">4.</span> <span class="toc-text">备份与还原</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">5.</span> <span class="toc-text">后记</span></a></li></ol>
   </div>
 
 <div id="asidepart">
