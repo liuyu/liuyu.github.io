@@ -1,0 +1,489 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Gitlab Manual | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="简单记录，整理。
+摘要
+  为方便大家快速上手Git，并使用Gitlab协同合作，特编写此手册，手册内容不会太丰富与深入。  主要包含如下内容：
+
+Git 使用教程   1.1 安装   1.2 常用命令   1.3 版本控制   1.4 分支与tag
+Gitlab 使用教程   2.1 界面简介 ">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/07/11/Gitlab-Manual/" title="Gitlab Manual" itemprop="url">Gitlab Manual</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-07-11T08:43:53.000Z" itemprop="datePublished">7月 11 2014</time>
+    更新日期:<time datetime="2014-07-11T08:45:27.000Z" itemprop="dateModified">7月 11 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#摘要"><span class="toc-number">1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-_Git_使用教程"><span class="toc-number">2.</span> <span class="toc-text">1. Git 使用教程</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1_安装"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2_常用命令"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 常用命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3_版本控制"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 版本控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4_分支与tag"><span class="toc-number">2.4.</span> <span class="toc-text">1.4 分支与tag</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#2-_Gitlab_使用教程"><span class="toc-number">3.</span> <span class="toc-text">2. Gitlab 使用教程</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1_界面简介"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 界面简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2_常用功能介绍"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 常用功能介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3_注意事项"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 注意事项</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#3-_多人协作流程与规范"><span class="toc-number">4.</span> <span class="toc-text">3. 多人协作流程与规范</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1_永久与临时分支"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 永久与临时分支</span></a></li><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#feature"><span class="toc-number">4.1.1.</span> <span class="toc-text">feature</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#release"><span class="toc-number">4.1.2.</span> <span class="toc-text">release</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#hotfix"><span class="toc-number">4.1.3.</span> <span class="toc-text">hotfix</span></a></li></ol><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2_工作流图"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 工作流图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3_规范"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 规范</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#4-_Code_Review"><span class="toc-number">5.</span> <span class="toc-text">4. Code Review</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1_为什么要有Code_Review"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 为什么要有Code Review</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2_如何进行?"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 如何进行?</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#5-_参考资料"><span class="toc-number">6.</span> <span class="toc-text">5. 参考资料</span></a></li></ol>
+		</div>
+		
+		<p>简单记录，整理。</p>
+<h2 id="摘要">摘要</h2>
+<p>  为方便大家快速上手Git，并使用Gitlab协同合作，特编写此手册，手册内容不会太丰富与深入。<br>  主要包含如下内容：</p>
+<ol>
+<li>Git 使用教程<br>   1.1 安装<br>   1.2 常用命令<br>   1.3 版本控制<br>   1.4 分支与tag</li>
+<li>Gitlab 使用教程<br>   2.1 界面简介<br>   2.2 常用功能介绍<br>   2.3 注意事项</li>
+<li>多人协作流程与规范<br>   3.1 永久与临时分支<br>   3.2 工作流图<br>   3.3 规范</li>
+<li>Code Review<br>   4.1 为什么要有Code Review<br>   4.2 如何进行? </li>
+<li><p>参考资料</p>
+<p>后续会加入CI，自动部署等。</p>
+</li>
+</ol>
+<h2 id="1-_Git_使用教程">1. Git 使用教程</h2>
+<h3 id="1-1_安装">1.1 安装</h3>
+<p>  建议安装最新版本，及1.7以上。</p>
+<p>下载地址：<a href="http://git-scm.com/downloads" target="_blank" rel="external">Git下载页面</a><br>官方安装教程：<a href="http://git-scm.com/book/en/Getting-Started-Installing-Git" target="_blank" rel="external">安装教程</a></p>
+<h3 id="1-2_常用命令">1.2 常用命令</h3>
+<p>在Linux和Mac下直接用终端操作即可；Windows下需要右键打开 “git bash”进行操作。</p>
+<p><strong>使用公司的gitlab库，需要忽略验证证书合法性</strong><br><code>git config http.sslVerify false</code></p>
+<p>a. 克隆代码库至本地<br>地址在gitlab.xsjcs.cn项目中获得，请选择https 地址<br><code>git clone https://gitlab.xsjcs.cn/powerking/log-sever.git</code></p>
+<p>b. 修改文件并提交<br><code>git add file-name</code><br><code>git commit -m &quot;注释&quot;</code></p>
+<p><strong>注释一定要详细，不能是”test”,”update”之类的。并尽量采用英文说明。</strong></p>
+<p>c. 推送到远程分支，默认是所有<br><code>git push</code></p>
+<p>d. 推送至主分支<br><code>git push origin master</code></p>
+<p>更多命令请参考:</p>
+<p><a href="http://wiki.xsjcs.cn/pages/viewpage.action?pageId=4128955" target="_blank" rel="external">Git命用命令</a></p>
+<p><a href="http://wiki.xsjcs.cn/pages/viewpage.action?pageId=4128954" target="_blank" rel="external">Git命令速查</a></p>
+<h3 id="1-3_版本控制">1.3 版本控制</h3>
+<p>通常我们在本地提交代码库是git add &amp;&amp; git commit 命令，在需要提交到远程时才使用git push 。<br>因此git 的版本控制分为2块。本地和远程。</p>
+<p>在本地命令操作中，还可以采用git reset HEAD 来撤销提交，以及git checkout 来恢复文件。</p>
+<p>因此git 文件夹存在三个区域：</p>
+<blockquote>
+<p>实际目录：实际修改的文件。<br>待提交区：暂存准备提交的内容，提交之后被清空。(也叫做index区）<br>已提交区：提交到本地git版本库的内容，有版本号。<br>对这三个区域的操作都可以在本地离线完成。</p>
+</blockquote>
+<p>同时可以通过<code>git status</code>查看文件状态</p>
+<blockquote>
+<p>文件总共四种状态：<br>与git repository一致<br>与git repository不一致，已缓存<br>与git repository不一致，未缓存<br>还未添加到git repository</p>
+</blockquote>
+<p>通常我们在本地操作完成后，会提交到远程的自己的分支，或开发分支。因此就涉及分支的知识。</p>
+<h3 id="1-4_分支与tag">1.4 分支与tag</h3>
+<p>  分支是用来将特性开发分开来的，在创建仓库时，master是默认主干。通常我们还会创建一个开发分支”Develop”，以及一个测试分支”testing”。每个开发人员需要开发新功能时，在本地再创建一个自己的分支”feature_a”，然后再将分支提交测试或开发，由相关人员测试并审核通过后，merge到主干。</p>
+<p>  创建一个feature_a 的分支，并切换到该分支：<br>  <code>git branch feature_a</code><br>  <code>git checkout feature_a</code><br>  切换回主:<br>  <code>git checkout master</code><br>  查看本地分支列表：<br>  <code>git branch -a</code><br>  删除分支：<br>  <code>git branch -d feature_a</code></p>
+<p>  合并分支<br>  合并分支前通常需要使用git diff查看提交的版本差异。在gitlab界面有diff界面可以帮助我们查看。如果没有异常可以配置自动合并，如果自动合并报冲突时，需要手动操作。<br>  git add 标记相关信息<br>  git merge 合并其它分支到当前分支，合并前需要先确认当前分支。</p>
+<h2 id="2-_Gitlab_使用教程">2. Gitlab 使用教程</h2>
+<p>  Gitlab界面比较简洁，目前公司配置的gitlab不支持ssh方式。只能采用http(S)进行。但用户注册后，需要配置个人信息，特别是头像。建议都配置。</p>
+<h3 id="2-1_界面简介">2.1 界面简介</h3>
+<p>  貌似这个没啥好写的，特别个人头像即可。</p>
+<h3 id="2-2_常用功能介绍">2.2 常用功能介绍</h3>
+<p>  创建Groups ： 通常我们会给一个项目创建一个组。比如：网管中心、xoyobox、运维小组开发工具。<br>  创建User：    目前开放注册，后续需要邮件申请。<br>  将用户加入组：在创建组后，可以选择将不同的用户加入组进行协同开发。<br>  创建Project:  项目可以选择归属那个组，在创建时，也可以选择导入。创建后，初始化信息注册选择http(s)协议。</p>
+<h3 id="2-3_注意事项">2.3 注意事项</h3>
+<p>  由于公司配置https 证书没有购买，当前还没有申请免费的key，所以需要配置忽略验证证书合法性：<br>  <code>git config http.sslVerify false</code></p>
+<p>  更多使用可参考：<a href="http://wiki.xsjcs.cn/pages/viewpage.action?pageId=2032062" target="_blank" rel="external">如何使用Gitlab</a></p>
+<h2 id="3-_多人协作流程与规范">3. 多人协作流程与规范</h2>
+<p>  为避免2个或多个人同时修改一个功能，或开发一个新的feature，需要有严格的规范或流程进行约束。<br>  因此我们需要创建永久分支与临时分支。</p>
+<h3 id="3-1_永久与临时分支">3.1 永久与临时分支</h3>
+<p>  永久分支：master develop testing<br>  临时分支：在开发或发布时创建，使用一段时间后删除。<br>  master: 主干分支，线上发布的稳定版本。以偶数为版本号。<br>  develop：开发分支，将测试完成，或不需要测试的分支一起merge至master。发布时，以奇数为版本号。<br>  testing：测试分支，供前期测试使用的分支，可以不加版本号。</p>
+<p>  几个重要的说明：</p>
+<h4 id="feature">feature</h4>
+<p>  作用：开发新功能<br>  分支来源：develop<br>  结束时：merge develop<br>  说明：特性分支，用来为下一个版本开发新特性。一般只存在开发者本地。</p>
+<h4 id="release">release</h4>
+<p>  作用：发布新版本<br>  分支来源：develop<br>  结束时：merge develop / master<br>  说明：为新产品发布是做支持，一般用于发版，线上环境更新。需要有一定的版本更新说明，bugfix说明，等。提取出来后，只允许小的修改，不允许再增加新的feature。</p>
+<h4 id="hotfix">hotfix</h4>
+<p>  作用：修复发行版本的bug<br>  分支来源：master<br>  结束时：merge develop / master<br>  说明：打补丁</p>
+<h3 id="3-2_工作流图">3.2 工作流图</h3>
+<p> 见图 </p>
+<h3 id="3-3_规范">3.3 规范</h3>
+<p>约定：</p>
+<ol>
+<li>master分支中的任何版本都可以立即部署</li>
+<li>每次master变更都来自其它分支的master合并操作</li>
+<li>对master修改必须要有review </li>
+<li>不允许存在奇数版本</li>
+</ol>
+<h2 id="4-_Code_Review">4. Code Review</h2>
+<h3 id="4-1_为什么要有Code_Review">4.1 为什么要有Code Review</h3>
+<p>  不觉明厉</p>
+<h3 id="4-2_如何进行?">4.2 如何进行?</h3>
+<ol>
+<li>建议在gitlab界面进行</li>
+<li>提交代码时需要注册分支及版本号</li>
+<li>使用本地git flow 进行合并操作</li>
+</ol>
+<h2 id="5-_参考资料">5. 参考资料</h2>
+<p><a href="http://scottchacon.com/2011/08/31/github-flow.html" target="_blank" rel="external">Github-flow</a><br><a href="http://blog.qdaxb.me/%E4%BD%BF%E7%94%A8git%E3%80%81git-flow%E4%B8%8Egitlab%E5%B7%A5%E4%BD%9C/" target="_blank" rel="external">Git_Gitlab</a></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/gitlab-git/">gitlab git</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2014/07/11/Gitlab-Manual/" data-title="Gitlab Manual | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Puppet action Errata</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/07/05/Migrate-Gitlab-to-New-Server-and-add-https/"  title="Migrate Gitlab to New Server and add https">
+ <strong>NEXT:</strong><br/> 
+ <span>Migrate Gitlab to New Server and add https
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#摘要"><span class="toc-number">1.</span> <span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-_Git_使用教程"><span class="toc-number">2.</span> <span class="toc-text">1. Git 使用教程</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1_安装"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2_常用命令"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 常用命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3_版本控制"><span class="toc-number">2.3.</span> <span class="toc-text">1.3 版本控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4_分支与tag"><span class="toc-number">2.4.</span> <span class="toc-text">1.4 分支与tag</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#2-_Gitlab_使用教程"><span class="toc-number">3.</span> <span class="toc-text">2. Gitlab 使用教程</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1_界面简介"><span class="toc-number">3.1.</span> <span class="toc-text">2.1 界面简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2_常用功能介绍"><span class="toc-number">3.2.</span> <span class="toc-text">2.2 常用功能介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3_注意事项"><span class="toc-number">3.3.</span> <span class="toc-text">2.3 注意事项</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#3-_多人协作流程与规范"><span class="toc-number">4.</span> <span class="toc-text">3. 多人协作流程与规范</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1_永久与临时分支"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 永久与临时分支</span></a></li><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#feature"><span class="toc-number">4.1.1.</span> <span class="toc-text">feature</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#release"><span class="toc-number">4.1.2.</span> <span class="toc-text">release</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#hotfix"><span class="toc-number">4.1.3.</span> <span class="toc-text">hotfix</span></a></li></ol><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2_工作流图"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 工作流图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3_规范"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 规范</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#4-_Code_Review"><span class="toc-number">5.</span> <span class="toc-text">4. Code Review</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1_为什么要有Code_Review"><span class="toc-number">5.1.</span> <span class="toc-text">4.1 为什么要有Code Review</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2_如何进行?"><span class="toc-number">5.2.</span> <span class="toc-text">4.2 如何进行?</span></a></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#5-_参考资料"><span class="toc-number">6.</span> <span class="toc-text">5. 参考资料</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+			<li><a href="/tags/bnx2/" title="bnx2">bnx2<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://yangjian.me" target="_blank" title="YangJian">Alimon's Blog</a></li>
+      <li><a href="http://zespia.tw/hexo" target="_blank" title="Hexo">Hexo</a></li>
+      <li><a href="http://chenlinux.com/" title="年年风雨's Blog">三斗室</a></li>
+      <li><a href="http://kisspuppet.com/" title="KissPuppet's blog">KissPuppet</a></li>
+    </ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/opendoc" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/liuyu" target="_blank" title="github"></a>
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"liuyu105"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>
