@@ -76,7 +76,7 @@
     </p>
   <p class="article-time">
     <time datetime="2014-07-15T09:45:04.000Z" itemprop="datePublished">7月 15 2014</time>
-    更新日期:<time datetime="2014-07-16T03:43:55.000Z" itemprop="dateModified">7月 16 2014</time>
+    更新日期:<time datetime="2014-07-16T03:45:45.000Z" itemprop="dateModified">7月 16 2014</time>
     
   </p>
 </header>
@@ -138,12 +138,10 @@ sudo make install
 </li>
 <li><p>导入别人的公钥<br><code>$ gpg --import publickey.asc</code><br><code>$ gpg --fingerprint A7327C0E</code><br><code>$ gpg --sign-key A7327C0E</code><br>导入时会有一个gpg: key A7327C0E ，key后面的值可以通过<code>$ gpg --fingerprint A7327C0E</code>查看。再使用<code>$ gpg --sign-key A7327C0E</code>授权签名即可。</p>
 </li>
-<li><p>使用公钥加密文件<br><code>gpg -a --output encrypt_file.gpg -r UID -e file.txt</code><br>UID可以是名字或email地址</p>
+<li><p>使用公钥加密文件<br><code>gpg -a --output encrypt_file.gpg -r UID -e file.txt</code><br>UID可以是名字或email地址<br>或者使用<code>$ gpg -ao cipher.asc -esr name@domain.com file.txt</code></p>
 </li>
-</ol>
-<p>或者使用<code>$ gpg -ao cipher.asc -esr name@domain.com file.txt</code></p>
-<ol>
-<li>使用私钥解密文件<br><code>$ gpg -o decrypted_plain.txt -d cipher.asc</code><br>需要注意的事，这里的私钥需要与公钥配对才能解开此文件。</li>
+<li><p>使用私钥解密文件<br><code>$ gpg -o decrypted_plain.txt -d cipher.asc</code><br>需要注意的事，这里的私钥需要与公钥配对才能解开此文件。</p>
+</li>
 </ol>
 <p>最后，差不多就这样子了，话说，那个英文文档真的很赞。</p>
 <p>安装参考：<a href="http://macgpg.sourceforge.net/docs/howto-build-gpg-osx.txt.asc" target="_blank" rel="external">Howto Build GnuPG on OS X</a><br>参考：<a href="http://archboy.org/2013/04/18/gnupg-pgp-encrypt-decrypt-message-and-email-and-digital-signing-easy-tutorial/" target="_blank" rel="external">GnuPG的初步使用教程</a></p>
