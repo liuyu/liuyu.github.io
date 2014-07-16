@@ -67,6 +67,22 @@
 
   <section class="post" itemscope itemprop="blogPost">
   
+    <a href="/2010/12/19/rhel-use-centos-yum/" title="rhel howto use centos yum ?" itemprop="url">
+  
+    <h1 itemprop="name">rhel howto use centos yum ?</h1>
+    
+     
+           <p itemprop="description" >rhel服务器可以使用yum更新，但需要先卸载原先的yum，并且安装新的yum，然后可以更新。
+1 卸载原先的yumrpm -aq|grep yum|xargs rpm -e —nodeps如果有卸载不了的，试试 —nodeps如果是定义的安装包，试试 —allmatches
+2</p>
+        
+    
+    <time datetime="2010-12-18T23:32:25.000Z" itemprop="datePublished">12月 19 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
     <a href="/2010/12/19/vim-editor-save-file-without-root-permission/" title="vi编辑文件保存时没有root权限" itemprop="url">
   
     <h1 itemprop="name">vi编辑文件保存时没有root权限</h1>
@@ -211,23 +227,6 @@ netstat -n |</p>
         
     
     <time datetime="2010-12-18T06:13:39.000Z" itemprop="datePublished">12月 18 2010</time>
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2010/12/18/vsftpd-virtual-user/" title="vsftpd 安装与虚拟用户配置" itemprop="url">
-  
-    <h1 itemprop="name">vsftpd 安装与虚拟用户配置</h1>
-    
-     
-           <p itemprop="description" >vsftpd 安装与虚拟用户配置
-测试环境：centos 5.X 64bitvsftpd 2.0
-安装：yum -y install vsftpd
-需求：虚拟三个用户，使用同一个家目录。权限如下。ftpadmin 读写删除ftpuser 读写ftp 读(下载)目录为：/data密</p>
-        
-    
-    <time datetime="2010-12-18T06:05:34.000Z" itemprop="datePublished">12月 18 2010</time>
   </a>
 </section>
 

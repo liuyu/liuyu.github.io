@@ -4,27 +4,12 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Puppet action Errata | Liuyu Blog</title>
+    <title>Build GnuPG and Encrypt File | Liuyu Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Liu Yu">
     
-    <meta name="description" content="《Puppet实战》勘误反馈
-再见2013，你好2014！
-选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。为此，就在这辞旧迎新的日子里挤出此文。
-先祝大家：
-1
-2
-3
-4
-5
-6
-	    Happy     
-		  New       
-	    Year  
-	        BYE 2013      
-	    HELLO 2014           
-祝新年快乐、平安、健康！">
+    <meta name="description" content="PGP (Pretty Good Privacy) 是由 Phil Zimmermann 于 1991 开发的一个用于数据加密和数字签名的程序，由于被广泛应用，以至于后来形成一个开放的标准 OpenPGP，这个标准也是目前最为常用的邮件加密和签名的方式。而 GnuPG 则是实现了该标准的一个开源免费">
     
     
     
@@ -83,15 +68,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata" itemprop="url">Puppet action Errata</a>
+      <a href="/2014/07/15/Build-GnuPG-and-Encrypt-File/" title="Build GnuPG and Encrypt File" itemprop="url">Build GnuPG and Encrypt File</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
     </p>
   <p class="article-time">
-    <time datetime="2018-12-11T16:00:00.000Z" itemprop="datePublished">12月 12 2018</time>
-    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    <time datetime="2014-07-15T09:45:04.000Z" itemprop="datePublished">7月 15 2014</time>
+    更新日期:<time datetime="2014-07-16T03:43:55.000Z" itemprop="dateModified">7月 16 2014</time>
     
   </p>
 </header>
@@ -100,82 +85,83 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#加密的简单原理"><span class="toc-number">1.</span> <span class="toc-text">加密的简单原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MAC_编译安装GnuPG"><span class="toc-number">2.</span> <span class="toc-text">MAC 编译安装GnuPG</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用命令行管理key"><span class="toc-number">2.1.</span> <span class="toc-text">使用命令行管理key</span></a></li></ol>
 		</div>
 		
-		<h1 id="《Puppet实战》勘误反馈">《Puppet实战》勘误反馈</h1>
-<h2 id="再见2013，你好2014！">再见2013，你好2014！</h2>
-<p>选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。<br>为此，就在这辞旧迎新的日子里挤出此文。</p>
-<p>先祝大家：</p>
+		<blockquote>
+<p>PGP (Pretty Good Privacy) 是由 Phil Zimmermann 于 1991 开发的一个用于数据加密和数字签名的程序，由于被广泛应用，以至于后来形成一个开放的标准 OpenPGP，这个标准也是目前最为常用的邮件加密和签名的方式。而 GnuPG 则是实现了该标准的一个开源免费程序，简单记录下在 mac 下使用GnuPG 管理钥匙、加密文件的使用。</p>
+</blockquote>
+<h2 id="加密的简单原理">加密的简单原理</h2>
+<p>怎么着，也得知道一下原理吧。<br>在使用前用户需要使用png生成全球唯一的密钥对，包括：公钥(public key)及私钥(private/secret key)。公钥用来加密，私钥用来解密。我们可以使用另人的公钥来加密文件，然后发送给对方，对方利用公钥对应的私钥来解密文件即可。简单点就是这样。</p>
+<h2 id="MAC_编译安装GnuPG">MAC 编译安装GnuPG</h2>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
 5
 6
-</pre></td><td class="code"><pre>	    Happy     
-		  New       
-	    Year  
-	        BYE 2013      
-	    HELLO 2014           
-祝新年快乐、平安、健康！
-</pre></td></tr></table></figure><br><a id="more"></a><br><br>## 写在前面的话<br><br>《Puppet实战》从2012年9月华章杨福川兄弟找我沟通，直至 2013-12-12号预售，2013-12-27号正式发售，历时15个月。过程在这里就不细表了，真的很艰辛，写作是很孤独而枯燥的事，没有想到我能坚持到底。且文笔貌似没有长进。大哭。<br><br>本人已尽力确保本书内容的准确性，但无法避免一些细节错误或印刷错误。如果你在阅读本书发现任何疑问或错误的地方，无论是标点符号还是代码块，欢迎将这些信息通过本文评论进行反馈，我将不胜感激。<br>我会认真核对你的每一个反馈，核对无误后，会通过update $date $write 的形式更新在此博文中。你也可以把你的个人信息注在反馈信息中。<br><br>当然，你也可以通过 <code>liuyu105#gmail.com</code> 给我反馈信息。<br><br>反馈简单格式如下：<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>第一章 第8页 图1-1 puppet dashboard 错写成了 deshboard
+</pre></td><td class="code"><pre>curl -O ftp://ftp<span class="preprocessor">.gnupg</span><span class="preprocessor">.org</span>/gcrypt/gnupg/gnupg-<span class="number">1.4</span><span class="number">.18</span><span class="preprocessor">.tar</span><span class="preprocessor">.gz</span>
+tar -xzf gnupg-<span class="number">1.4</span><span class="number">.18</span><span class="preprocessor">.tar</span><span class="preprocessor">.gz</span>
+cd gnupg-<span class="number">1.4</span><span class="number">.18</span>
+./configure
+make
+sudo make install
 </pre></td></tr></table></figure>
 
-<p>分隔线</p>
-<hr>
-<p><strong> %Changelog </strong>  </p>
-<ul>
-<li><p>2013-10-27 Chenlin <chenlin0802@></chenlin0802@></p>
-<ul>
-<li>第1章 P8 图1-1 puppet dashboard 错写成了 deshboard</li>
-<li>第5章 P54、P55、P56 各种名的正则表达式是不是应该为 \A[a-z][a-z0-9] ……  ，书中少写了个 “-“，写成了\A[az]</li>
-<li>第5章 P54 5.2.3节的最后几行， require nginx::install 的方法空格位置不对，写成了 requir enginx::install  应为：require nginx::install </li>
-<li>第5章 P62 class[‘name’] -&gt; class[‘name2’] 中class应该为Class ，首字母大写，另外引号这里是印刷导致，不应该为中文的符号</li>
-</ul>
+<h3 id="使用命令行管理key">使用命令行管理key</h3>
+<p>参考：<a href="http://www.reactive.io/tips/2008/02/18/working-with-pgp-and-mac-os-x/" target="_blank" rel="external">Working-with-pgp-and-mac</a></p>
+<ol>
+<li>生成自己的key </li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>$ gpg --gen-key
+<span class="preprocessor"># a. 让你选择加密方式，一般选择的默认，RSA</span>
+<span class="preprocessor"># b. 回车后提示选择密钥长度，一般选择默认 2048</span>
+<span class="preprocessor"># c. 选择密钥的使用年限，默认永久，10y 就是10years </span>
+<span class="preprocessor"># d. 确认后会填写个人信息</span>
+<span class="preprocessor"># e. name + email + Comment </span>
+<span class="preprocessor"># f. 再选择o保存退出，即可生成</span>
+</pre></td></tr></table></figure>
+
+<ol>
+<li><p>查看本地的公钥<br><code>$ gpg --list-keys</code></p>
 </li>
-<li><p>2014-01-10 小吴</p>
-<ul>
-<li>第6章 P96  source =&gt; ‘puppet://$fileserver/modules/test/test’  其中的变量在新的语法中应为${fileserver}</li>
-<li>第7章 P126 图7-1 ensure =&gt; template(‘nginx/vhost.erb’) 这里的ensure应为content</li>
-<li>第7章 P132  最下面  nam =&gt; nginx,少写个e</li>
-<li>第7章 P139 子类名： nginx::configng、inx::vhost   符号错位nginx::config、nginx::vhost</li>
-<li>第14章 P227  4）启动Git, git-daemon  应该为git daemon</li>
-<li>第14章 228页  cp /tmp/puppet/<em>   应该为cp /tmp/puppet/</em> ./</li>
-</ul>
+<li><p>查看本地的私钥<br><code>$ gpg --list-secret-keys</code></p>
 </li>
-<li><p>2014-01-18 liusy23</p>
-<ul>
-<li>第4章 P47  (3) 在修改testing分支的site.pp时，应该为sudo vim /etc/puppet/modules/test/manifests/init.pp<br>PS: P44 写的evn却为testing，因此这块的测试环境不够严谨，但原理没有错误</li>
-</ul>
+<li><p>导出公钥（需要对方使用你的公钥加密文件时，导入提供给对方）<br><code>$ gpg -a --output key.public --export UID</code><br>UID可以是名字或email地址。</p>
 </li>
-<li><p>2014-02-06 @stackhacker</p>
-<ul>
-<li>第2章 P25 倒数7行，是最为人生（应为性）化的操作系统之一</li>
-</ul>
+<li><p>导入别人的公钥<br><code>$ gpg --import publickey.asc</code><br><code>$ gpg --fingerprint A7327C0E</code><br><code>$ gpg --sign-key A7327C0E</code><br>导入时会有一个gpg: key A7327C0E ，key后面的值可以通过<code>$ gpg --fingerprint A7327C0E</code>查看。再使用<code>$ gpg --sign-key A7327C0E</code>授权签名即可。</p>
 </li>
-</ul>
+<li><p>使用公钥加密文件<br><code>gpg -a --output encrypt_file.gpg -r UID -e file.txt</code><br>UID可以是名字或email地址</p>
+</li>
+</ol>
+<p>或者使用<code>$ gpg -ao cipher.asc -esr name@domain.com file.txt</code></p>
+<ol>
+<li>使用私钥解密文件<br><code>$ gpg -o decrypted_plain.txt -d cipher.asc</code><br>需要注意的事，这里的私钥需要与公钥配对才能解开此文件。</li>
+</ol>
+<p>最后，差不多就这样子了，话说，那个英文文档真的很赞。</p>
+<p>安装参考：<a href="http://macgpg.sourceforge.net/docs/howto-build-gpg-osx.txt.asc" target="_blank" rel="external">Howto Build GnuPG on OS X</a><br>参考：<a href="http://archboy.org/2013/04/18/gnupg-pgp-encrypt-decrypt-message-and-email-and-digital-signing-easy-tutorial/" target="_blank" rel="external">GnuPG的初步使用教程</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/puppet/">puppet</a>
+  <span></span> <a href="/tags/howto/">howto</a>
   </div>
 
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Puppet/">Puppet</a>
-</div>
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://bubbyroom.com/2018/12/12/puppet-action-errata/" data-title="Puppet action Errata | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  <div data-url="http://bubbyroom.com/2014/07/15/Build-GnuPG-and-Encrypt-File/" data-title="Build GnuPG and Encrypt File | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
   </div>
 
 </div>
@@ -184,11 +170,19 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Puppet action Errata</span>
+</a>
+</div>
+
 
 <div class="next">
-<a href="/2014/07/15/Build-GnuPG-and-Encrypt-File/"  title="Build GnuPG and Encrypt File">
+<a href="/2014/07/11/Gitlab-Manual/"  title="Gitlab Manual">
  <strong>NEXT:</strong><br/> 
- <span>Build GnuPG and Encrypt File
+ <span>Gitlab Manual
 </span>
 </a>
 </div>
@@ -205,7 +199,7 @@
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#加密的简单原理"><span class="toc-number">1.</span> <span class="toc-text">加密的简单原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MAC_编译安装GnuPG"><span class="toc-number">2.</span> <span class="toc-text">MAC 编译安装GnuPG</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用命令行管理key"><span class="toc-number">2.1.</span> <span class="toc-text">使用命令行管理key</span></a></li></ol>
   </div>
 
 <div id="asidepart">
