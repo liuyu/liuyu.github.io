@@ -4,12 +4,14 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Build GnuPG and Encrypt File | Liuyu Blog</title>
+    <title>QingCloud Richard notes | Liuyu Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Liu Yu">
     
-    <meta name="description" content="PGP (Pretty Good Privacy) 是由 Phil Zimmermann 于 1991 开发的一个用于数据加密和数字签名的程序，由于被广泛应用，以至于后来形成一个开放的标准 OpenPGP，这个标准也是目前最为常用的邮件加密和签名的方式。而 GnuPG 则是实现了该标准的一个开源免费">
+    <meta name="description" content="稳健行事，不要拘泥于形式
+在MH17航班失事，威马逊超强台风登陆广东的时候，进行了一场长途跋涉，从珠海奔赴深圳的大梅沙参加 @ArchSummit深圳全球架构师峰会，所幸台风对珠海和深圳没有太大的影响，来回平安。为MH17航班全体成员默哀，为正在受灾的海南人民送去祝福。
+先不说这一路的奔袭了，这次大">
     
     
     
@@ -68,15 +70,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/07/15/Build-GnuPG-and-Encrypt-File/" title="Build GnuPG and Encrypt File" itemprop="url">Build GnuPG and Encrypt File</a>
+      <a href="/2014/07/21/QingCloud-Richard-notes/" title="QingCloud Richard notes" itemprop="url">QingCloud Richard notes</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-07-15T09:45:04.000Z" itemprop="datePublished">7月 15 2014</time>
-    更新日期:<time datetime="2014-07-16T03:45:45.000Z" itemprop="dateModified">7月 16 2014</time>
+    <time datetime="2014-07-21T05:28:34.000Z" itemprop="datePublished">7月 21 2014</time>
+    更新日期:<time datetime="2014-07-21T05:30:58.000Z" itemprop="dateModified">7月 21 2014</time>
     
   </p>
 </header>
@@ -85,73 +87,41 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#加密的简单原理"><span class="toc-number">1.</span> <span class="toc-text">加密的简单原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MAC_编译安装GnuPG"><span class="toc-number">2.</span> <span class="toc-text">MAC 编译安装GnuPG</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用命令行管理key"><span class="toc-number">2.1.</span> <span class="toc-text">使用命令行管理key</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#稳健行事，不要拘泥于形式"><span class="toc-number">1.</span> <span class="toc-text">稳健行事，不要拘泥于形式</span></a></li></ol>
 		</div>
 		
-		<blockquote>
-<p>PGP (Pretty Good Privacy) 是由 Phil Zimmermann 于 1991 开发的一个用于数据加密和数字签名的程序，由于被广泛应用，以至于后来形成一个开放的标准 OpenPGP，这个标准也是目前最为常用的邮件加密和签名的方式。而 GnuPG 则是实现了该标准的一个开源免费程序，简单记录下在 mac 下使用GnuPG 管理钥匙、加密文件的使用。</p>
+		<h1 id="稳健行事，不要拘泥于形式">稳健行事，不要拘泥于形式</h1>
+<p>在MH17航班失事，威马逊超强台风登陆广东的时候，进行了一场长途跋涉，从珠海奔赴深圳的大梅沙参加 @ArchSummit深圳全球架构师峰会，所幸台风对珠海和深圳没有太大的影响，来回平安。为MH17航班全体成员默哀，为正在受灾的海南人民送去祝福。</p>
+<p>先不说这一路的奔袭了，这次大会的地点的确值得吐槽：真**远。还是直接切入主题吧。</p>
+<p>缘起：想整理下和 @Richard Huang 交谈近1个多小时的收获。</p>
+<blockquote>
+<p>黄允松 青云 Co-founder &amp; CEO Twitter: @fisherman ( Richard Huang )，在 IBM 实验室度过了九年的职业生涯，主要精力贡献给了开源世界，先后经历了 Eclipse、Hadoop、Linux KVM，最后是云计算，为 IBM SmartCloud 初创成员及架构师。现在与几位同伴一起创建青云 QingCloud，致力于为企业市场带来稳定易用靠谱的云服务。</p>
 </blockquote>
-<h2 id="加密的简单原理">加密的简单原理</h2>
-<p>怎么着，也得知道一下原理吧。<br>在使用前用户需要使用png生成全球唯一的密钥对，包括：公钥(public key)及私钥(private/secret key)。公钥用来加密，私钥用来解密。我们可以使用另人的公钥来加密文件，然后发送给对方，对方利用公钥对应的私钥来解密文件即可。简单点就是这样。</p>
-<h2 id="MAC_编译安装GnuPG">MAC 编译安装GnuPG</h2>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-</pre></td><td class="code"><pre>curl -O ftp://ftp<span class="preprocessor">.gnupg</span><span class="preprocessor">.org</span>/gcrypt/gnupg/gnupg-<span class="number">1.4</span><span class="number">.18</span><span class="preprocessor">.tar</span><span class="preprocessor">.gz</span>
-tar -xzf gnupg-<span class="number">1.4</span><span class="number">.18</span><span class="preprocessor">.tar</span><span class="preprocessor">.gz</span>
-cd gnupg-<span class="number">1.4</span><span class="number">.18</span>
-./configure
-make
-sudo make install
-</pre></td></tr></table></figure>
-
-<h3 id="使用命令行管理key">使用命令行管理key</h3>
-<p>参考：<a href="http://www.reactive.io/tips/2008/02/18/working-with-pgp-and-mac-os-x/" target="_blank" rel="external">Working-with-pgp-and-mac</a></p>
+<p>话题主要围绕着云计算展开，由于我刚加盟游戏公司，之前对游戏公司所有的了解都来自几个身在游戏公司的铁哥们。他们也都有在折腾云，但整个行业的发展方向以及云真真正正地在公司完美的落地还是很难的。那么，对于云计算如何在游戏中运用，我一直是抱着学习的态度，况且公司也有了金山云，我们应该无条件支持兄弟部门。引进一门新技术或者说一个系统给公司目前所有的体系与架构会带来很大的冲击，不管是我自己还是公司一再强调的是稳，凡事以稳为先。</p>
+<p>@Richard 是《坐看云起时》的出品人，在做完主持后能毫无缝隙地接着跟我聊，尤其是在交流当中还穿插了众人的围观、请教、索要名片等各种中断。这种逻辑思维、表达以及控制能力都很让人钦佩。导致后来我和 @Sai 在小八卦@Richard是狮子座男人。</p>
+<p>在跟我讲了大量实例以及亲身经历的事后，给了我三点建议：</p>
 <ol>
-<li>生成自己的key </li>
+<li>不要拘泥于形式，做什么都可以，用什么做都可以，保持稳定</li>
+<li>先做好支持，然后找到共同点，慢慢修改，节约成本</li>
+<li>做好接受失败的准备，找兄弟部门先接入测试环境</li>
 </ol>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-</pre></td><td class="code"><pre>$ gpg --gen-key
-<span class="preprocessor"># a. 让你选择加密方式，一般选择的默认，RSA</span>
-<span class="preprocessor"># b. 回车后提示选择密钥长度，一般选择默认 2048</span>
-<span class="preprocessor"># c. 选择密钥的使用年限，默认永久，10y 就是10years </span>
-<span class="preprocessor"># d. 确认后会填写个人信息</span>
-<span class="preprocessor"># e. name + email + Comment </span>
-<span class="preprocessor"># f. 再选择o保存退出，即可生成</span>
-</pre></td></tr></table></figure>
-
-<ol>
-<li><p>查看本地的公钥<br><code>$ gpg --list-keys</code></p>
-</li>
-<li><p>查看本地的私钥<br><code>$ gpg --list-secret-keys</code></p>
-</li>
-<li><p>导出公钥（需要对方使用你的公钥加密文件时，导入提供给对方）<br><code>$ gpg -a --output key.public --export UID</code><br>UID可以是名字或email地址。</p>
-</li>
-<li><p>导入别人的公钥<br><code>$ gpg --import publickey.asc</code><br><code>$ gpg --fingerprint A7327C0E</code><br><code>$ gpg --sign-key A7327C0E</code><br>导入时会有一个gpg: key A7327C0E ，key后面的值可以通过<code>$ gpg --fingerprint A7327C0E</code>查看。再使用<code>$ gpg --sign-key A7327C0E</code>授权签名即可。</p>
-</li>
-<li><p>使用公钥加密文件<br><code>gpg -a --output encrypt_file.gpg -r UID -e file.txt</code><br>UID可以是名字或email地址<br>或者使用<code>$ gpg -ao cipher.asc -esr name@domain.com file.txt</code></p>
-</li>
-<li><p>使用私钥解密文件<br><code>$ gpg -o decrypted_plain.txt -d cipher.asc</code><br>需要注意的事，这里的私钥需要与公钥配对才能解开此文件。</p>
-</li>
-</ol>
-<p>最后，差不多就这样子了，话说，那个英文文档真的很赞。</p>
-<p>安装参考：<a href="http://macgpg.sourceforge.net/docs/howto-build-gpg-osx.txt.asc" target="_blank" rel="external">Howto Build GnuPG on OS X</a><br>参考：<a href="http://archboy.org/2013/04/18/gnupg-pgp-encrypt-decrypt-message-and-email-and-digital-signing-easy-tutorial/" target="_blank" rel="external">GnuPG的初步使用教程</a></p>
+<p>总结只有短短三条，而中间的故事让人听着很振奋。</p>
+<p>故事一：Ucloud的老季（季昕华，ucloud创始人，CEO）走了一条正确的道路，我已经在各种场合多次表扬了他。case by case ，一个一个地解决问题，真正的解决客户的需求，而不计成本。为此，做游戏云，需要跟老季学习，建议我和老季聊聊（PS：我很期待）。由于游戏是五花八门，会遇到多种问题，而这些问题没有统一性；例如：两个客户都在使用Memcache，但用法不一样，因此你只能用二套来解决问题，但时间久了你会发现他们之间具有一定的共性。你可以协调来合并。不管后期如何，前提是，你得先服务好客户，做到真正的稳定。</p>
+<p>故事二：钱在那里，云计算方向就在那里。给我列举了很多数字，我对数字一直不敏感，所以没有记住。从这堆数字里，我看到了一个问题，传统行业对云计算的投入只占区区的5%，也就是说大部分开销还投在IT基础架构服务中，类似IBM的ITD服务（IT 基础架构服务业务 (ITD) 是 IBM 全球信息科技服务部 (Global Technology Services) 的重要组成部分。），国内的文思海辉。因此，不管做什么，需要看清一些事实，而不是盲目地追随。</p>
+<p>故事三：在内部找兄弟做支撑。 @Richard最开始在IBM做SmartCloud就是找的一个兄弟部门支持他，将业务迁移进来，最开始的时候，一天最高记录是挂过10次，但最终他还是一如既往地支持着我。这对于我来说很重要，因此我一生都很感激他。</p>
+<p>很多事情都是相通的，通过和@Richard的交谈，我不断地在思考如何将这些运用目前的工作当中，做架构，要承受和承担的远远比别人更多，而很多事情远远比你想像中的复杂，但还不一定会得到别人的认可。</p>
+<p>找准方向，不断试错，内心要强大。同时告诉你的老板，做一些事有可能3、5年是没有回报的，但是他会对行业带来良性的循环，前提是不能偏离方向，相信你自己，逐步稳定地前行。这些或许是我以后要面对的，现在我们做事情，无论是云，还是普通的服务接管，都需要慢下来，静下心来去做事。不去跟别人比，不急于推出新功能，哪怕你比别人慢半年，就算是时机过了，只要你足够稳定，你一定能赢得你的市场。</p>
+<p>成本控制与精简人员。这两点是很多公司推崇的，也是大多数领导所关心的。但是，你是要解决问题，维持稳定，还是要赚噱头？很是值得思考。</p>
+<p> PS1：中间还有一个小插曲，可以围观@sai的公众账号：lazycai_notes<br> PS2：聊得太欢乐了，以至于忘记拍合影。</p>
+<p>收获满满，每次参加InfoQ的大会，都特别有收获，感谢Kevin 感谢Sai 感谢Jessie 感谢InfoQ的小伙伴们。</p>
+<p>欢迎订阅本人微信公众账号：puppetchina</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/howto/">howto</a>
+  <span></span> <a href="/tags/live/">live</a>
   </div>
 
 
@@ -159,7 +129,7 @@ sudo make install
 
 <div class="article-share" id="share">
 
-  <div data-url="http://bubbyroom.com/2014/07/15/Build-GnuPG-and-Encrypt-File/" data-title="Build GnuPG and Encrypt File | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  <div data-url="http://bubbyroom.com/2014/07/21/QingCloud-Richard-notes/" data-title="QingCloud Richard notes | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
   </div>
 
 </div>
@@ -169,18 +139,18 @@ sudo make install
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2014/07/21/QingCloud-Richard-notes/" title="QingCloud Richard notes">
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
   <strong>PREVIOUS:</strong><br/>
   <span>
-  QingCloud Richard notes</span>
+  Puppet action Errata</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2014/07/11/Gitlab-Manual/"  title="Gitlab Manual">
+<a href="/2014/07/15/Build-GnuPG-and-Encrypt-File/"  title="Build GnuPG and Encrypt File">
  <strong>NEXT:</strong><br/> 
- <span>Gitlab Manual
+ <span>Build GnuPG and Encrypt File
 </span>
 </a>
 </div>
@@ -197,7 +167,7 @@ sudo make install
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#加密的简单原理"><span class="toc-number">1.</span> <span class="toc-text">加密的简单原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MAC_编译安装GnuPG"><span class="toc-number">2.</span> <span class="toc-text">MAC 编译安装GnuPG</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#使用命令行管理key"><span class="toc-number">2.1.</span> <span class="toc-text">使用命令行管理key</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#稳健行事，不要拘泥于形式"><span class="toc-number">1.</span> <span class="toc-text">稳健行事，不要拘泥于形式</span></a></li></ol>
   </div>
 
 <div id="asidepart">
