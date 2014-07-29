@@ -1,0 +1,480 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>WOT My First Hosting experience | Liuyu Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Liu Yu">
+    
+    <meta name="description" content="记一次北京之旅：一场颠覆性的技术专题演讲
+应51CTO之邀，上周六在北京WOT进行一次Puppet主题演讲，同时担任自动化运维专场主持人。话说，这是我第一次担任主持人，奇怪的是，没觉得自己无法胜任？
+登上北上的灰机前，我还特意查了下京城的天，木有雾霾，好得不得了。尽管下灰机时还能看见远处的灰尘，不过">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Liuyu Blog" title="Liuyu Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Liuyu Blog">Liuyu Blog</a></h1>
+				<h2 class="blog-motto">Puppet in action</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:bubbyroom.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2014/07/29/WOT-My-First-Hosting-experience/" title="WOT My First Hosting experience" itemprop="url">WOT My First Hosting experience</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2014-07-29T09:02:05.000Z" itemprop="datePublished">7月 29 2014</time>
+    更新日期:<time datetime="2014-07-29T09:19:33.000Z" itemprop="dateModified">7月 29 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#记一次北京之旅：一场颠覆性的技术专题演讲"><span class="toc-number">1.</span> <span class="toc-text">记一次北京之旅：一场颠覆性的技术专题演讲</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、dhgate自动化构建与发布实践"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、dhgate自动化构建与发布实践</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、私人定制"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、私人定制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、小米的运维系统"><span class="toc-number">1.0.3.</span> <span class="toc-text">三、小米的运维系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、奇虎Hulk"><span class="toc-number">1.0.4.</span> <span class="toc-text">四、奇虎Hulk</span></a></li></ol>
+		</div>
+		
+		<h1 id="记一次北京之旅：一场颠覆性的技术专题演讲">记一次北京之旅：一场颠覆性的技术专题演讲</h1>
+<p>应51CTO之邀，上周六在北京<a href="http://wot.51cto.com/2014/schedule.html" target="_blank" rel="external">WOT</a>进行一次Puppet主题演讲，同时担任自动化运维专场主持人。话说，这是我第一次担任主持人，奇怪的是，没觉得自己无法胜任？</p>
+<p>登上北上的灰机前，我还特意查了下京城的天，木有雾霾，好得不得了。尽管下灰机时还能看见远处的灰尘，不过已经不重要啦。吸了两口氧，嗯，木有烧烤的味道，赞。&lt;不能再黑了&gt;</p>
+<p>”回到老地方“，离京差不多有2个月了，第一回京有种说不出的感受，还是老模样，熟悉的味道；由于时间安排非常紧，因此也就只在二个地方停留了：双井、机场。不对，漏掉了重要环节，德亮兄开着他那高大帅气的”自行车“去机场接我去360观摩他新的平台：Hulk云平台。（PS：新版用户交互体验被我批了一顿，嘿嘿！我就不会说好话。）</p>
+<p>回珠海后先换装跑了三公里，因此只有今天有空来码码字，却无从下手。打开邮箱，收到如下邮件：</p>
+<blockquote>
+<p>”@刘宇：可以叫你“交际花”吗？你完全颠覆了我对ITer的印象！作为讲师+主持人的你，除了在准备课程之外，还通过各种方法来增加与用户间的互动，主动的和场内的每一个讲师在会前沟通演讲内容，提出建议。“</p>
+<p>登上QQ，收到一个评价：”嗯，其它大家感觉广告重，自动化运维是很不错，大家都说刘宇是见过最好的主持。“</p>
+</blockquote>
+<p>开心了，灰常的开心。</p>
+<p>但，”交际花“真心谈不上，@程显峰老师看到后，会K我滴，狠狠滴K。感叹的事，没有聚上的事，暂且不谈，今天跟大家聊聊”自动化运维专场“里发生的那点破事。</p>
+<p>会议安排：7月26日下午<br>|13:30-14:15|Puppet企业应用技巧|刘宇|金山西山居 架构师,《Puppet实战》一书作者,Linuxtone.org创始人之一|<br>|14:15-15:00|奇虎运维自动化升级之路|孔德亮|360高级技术经理|<br>|15:00-15:10|茶歇时间|<br>|15:10-15:55|运维自动化的私人订制|邵海杨|又拍云运维总监|<br>|15:55-16:40|小米运维系统从无到有的构建之路|黄继|小米科技高级运维研发工程师|<br>|16:40-17:25|dhgate自动化构建和发布实践|孙宝明| 敦煌网研发中心架构部负责人|</p>
+<p>作为主持人的我，需要了解所有人的演讲内容及重点，在拜读了各位嘉宾的PPT后，第一个感叹就是：会议安排要是可以临时调整，这场效果会更佳。我先来说说理由。</p>
+<p>第一场：工具，配置管理工具；第二场：平台，私有云平台+产品观众；第三场：实施，将自动化运维的思想利用工具进行落地；第三场：发展，一个系统的发展之路，都运用了何种工具来实现；第四场：工具，CI工具，也就是我们所熟知的Jenkins。</p>
+<p>如果能把顺序调整为：Jenkins —&gt; Puppet —&gt; 从无到有构建系统 —&gt; 私人订制 —&gt; 云平台 。Perfect! （内心：下次有机会，就得这么搞）</p>
+<p>还是先来看看现场的群众表现吧：<br><img src="http://liuyu105.qiniudn.com/wot-people.jpg" alt="people"></p>
+<p>再来看看演讲嘉宾的风采：<br><img src="http://liuyu105.qiniudn.com/wot-teacher.jpg" alt="teacher"></p>
+<p>不管如何，还是成功了。其中，还包括我那销魂的背影：<br><img src="http://liuyu105.qiniudn.com/wot-back.jpg" alt="back"></p>
+<p>给大家来点技术总结吧：</p>
+<ol>
+<li>Jenkins是CI里的最优秀的工具，敦煌网孙宝明将它运用得淋漓尽致，并将它与其它系统完美地结合到了一起。</li>
+<li>Puppet不是万能的工具，但做为配置管理工具，它一直是那么地兢兢业业，交给它的事，一定能完成任务并不出差错。</li>
+<li>要构建一个宏大的运维系统，离不开优秀的工具和开发人员，小米从DB-Tree-tag-start-configure-monitor-app一条龙上做得非常极致。</li>
+<li>私人定制，定制属于你自己的运维系统，没有最好的，只有最适合自己的，让人像架构一样可扩展，相信通过海洋的实战学习你能打造出自有的系统。</li>
+<li>做系统也好，平台也罢，都需要有产品观，奇虎的Hulk就是这么打造而来，先把流程跑通，快速试错。而新系统除了华丽的外表，还有实在的便捷。</li>
+</ol>
+<p>以上是技术总结吗？ 咋越看越不像。。。继续</p>
+<h3 id="一、dhgate自动化构建与发布实践">一、dhgate自动化构建与发布实践</h3>
+<p>技术选型：</p>
+<ul>
+<li>Spring MVC+Hibernate+Mysql 实现web界面、交互</li>
+<li>Shell script实现服务起停、状态检查、配置替换、发布日志</li>
+<li>Python script实现构建版本信息、二进制包拷备</li>
+<li>Nginx作软件包的文件服务器-稳定、强大</li>
+</ul>
+<p>整体个流程大体如下：代码存放在SVN中进行管理，统一采用Jenkins中进行Build（保持构建版本与发布版本的一致），将替换配置文件在Deploy/start/runtime时进行，采用多个环境与灰度发布进行自动快速发布，最后配合一定的流程与规范来保证快速有效。系统设计图如下：<br><img src="http://liuyu105.qiniudn.com/wot-dhgate.jpg" alt="dhgate"></p>
+<h3 id="二、私人定制">二、私人定制</h3>
+<ul>
+<li>运维三剑客：bash awk sed</li>
+<li>全代码完整打包，更方便部署</li>
+<li>提供shell非交互式的命令控制</li>
+<li>读懂程序本质，并动态生成配置文件</li>
+<li>Ansible+Puppet的完美结合</li>
+<li>监控的常态化、性能可视化、破解运维魔咒</li>
+<li>redmine + Gitlab</li>
+</ul>
+<p><img src="http://liuyu105.qiniudn.com/wot-upyun.jpg" alt="upyun"></p>
+<blockquote>
+<puppet的运行让我很开心>
+
+</puppet的运行让我很开心></blockquote>
+<h3 id="三、小米的运维系统">三、小米的运维系统</h3>
+<p>尽可能利用开源软件来实现，并在服务树的基础上根据服务动态生成tag。运用的开源技术有：</p>
+<ul>
+<li>Git</li>
+<li>Frigga RPC+AGENT，用来对God所管理的job进行控制，模块化管理</li>
+<li>God 控制job的启停、清理等，与Frigga形成双生机制，永不停转</li>
+<li>Ansible 命令执行系统，快速有效，并在此基础上进行了插件开发</li>
+<li>配置也由静态文件转为动态生成</li>
+<li>自动部署过程中通过http api 方式提交变更</li>
+</ul>
+<p><img src="http://liuyu105.qiniudn.com/wot-xiaomi.jpg" alt="xiaomi"></p>
+<blockquote>
+<p>&lt;说到这：dhgate为什么还在使用svn呢？&gt;</p>
+</blockquote>
+<h3 id="四、奇虎Hulk">四、奇虎Hulk</h3>
+<p>以产品观做平台，Hulk从诞生之日起，就注定不平凡。错综复杂、毫无交集的不同业务接入，对平台无疑是最大的挑战。</p>
+<ul>
+<li>通过OS预制RPM包，Puppet快速配置</li>
+<li>Salt，做为命令执行系统</li>
+<li>通过快速试错，不断追求极致</li>
+</ul>
+<p><img src="http://liuyu105.qiniudn.com/wot-360.jpg" alt="360"></p>
+<blockquote>
+<puppet的全面运用让我很开心>
+
+</puppet的全面运用让我很开心></blockquote>
+<p>PS：由于一直在主持+拍照，总结不一定非常全面，欢迎各种前来补充。<br>PPS： 在360和现场都遇到了粉丝并拿书签名，让我很开心，灰常地开心。<br>PPPS：更多信息请围观讲师PPT。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Puppet/">Puppet</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://bubbyroom.com/2014/07/29/WOT-My-First-Hosting-experience/" data-title="WOT My First Hosting experience | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Puppet action Errata</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2014/07/21/QingCloud-Richard-notes/"  title="QingCloud Richard notes">
+ <strong>NEXT:</strong><br/> 
+ <span>QingCloud Richard notes
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+<section class="comment">
+	<div class="ds-thread"></div>
+</section>
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#记一次北京之旅：一场颠覆性的技术专题演讲"><span class="toc-number">1.</span> <span class="toc-text">记一次北京之旅：一场颠覆性的技术专题演讲</span></a></li><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、dhgate自动化构建与发布实践"><span class="toc-number">1.0.1.</span> <span class="toc-text">一、dhgate自动化构建与发布实践</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、私人定制"><span class="toc-number">1.0.2.</span> <span class="toc-text">二、私人定制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、小米的运维系统"><span class="toc-number">1.0.3.</span> <span class="toc-text">三、小米的运维系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、奇虎Hulk"><span class="toc-number">1.0.4.</span> <span class="toc-text">四、奇虎Hulk</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Cache/" title="Cache">Cache<sup>1</sup></a></li>
+		
+			<li><a href="/categories/Commands/" title="Commands">Commands<sup>15</sup></a></li>
+		
+			<li><a href="/categories/Databases/" title="Databases">Databases<sup>5</sup></a></li>
+		
+			<li><a href="/categories/Faq/" title="Faq">Faq<sup>21</sup></a></li>
+		
+			<li><a href="/categories/Howtoforge/" title="Howtoforge">Howtoforge<sup>3</sup></a></li>
+		
+			<li><a href="/categories/Lives/" title="Lives">Lives<sup>2</sup></a></li>
+		
+			<li><a href="/categories/Monitoring/" title="Monitoring">Monitoring<sup>6</sup></a></li>
+		
+			<li><a href="/categories/Programming/" title="Programming">Programming<sup>7</sup></a></li>
+		
+			<li><a href="/categories/Puppet/" title="Puppet">Puppet<sup>11</sup></a></li>
+		
+			<li><a href="/categories/Webserver/" title="Webserver">Webserver<sup>18</sup></a></li>
+		
+			<li><a href="/categories/cdn/" title="cdn">cdn<sup>6</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/1032/" title="1032">1032<sup>1</sup></a></li>
+		
+			<li><a href="/tags/1236/" title="1236">1236<sup>1</sup></a></li>
+		
+			<li><a href="/tags/403/" title="403">403<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Cache-control/" title="Cache-control">Cache-control<sup>2</sup></a></li>
+		
+			<li><a href="/tags/Cluster-bacst/" title="Cluster-bacst">Cluster-bacst<sup>1</sup></a></li>
+		
+			<li><a href="/tags/E752x/" title="E752x">E752x<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Lives/" title="Lives">Lives<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Monitoring/" title="Monitoring">Monitoring<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Puppet/" title="Puppet">Puppet<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Python-Imaging-Library/" title="Python Imaging Library">Python Imaging Library<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Smokeping/" title="Smokeping">Smokeping<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Zabbix/" title="Zabbix">Zabbix<sup>1</sup></a></li>
+		
+			<li><a href="/tags/acl/" title="acl">acl<sup>2</sup></a></li>
+		
+			<li><a href="/tags/allcommands/" title="allcommands">allcommands<sup>1</sup></a></li>
+		
+			<li><a href="/tags/apache/" title="apache">apache<sup>8</sup></a></li>
+		
+			<li><a href="/tags/arp/" title="arp">arp<sup>1</sup></a></li>
+		
+			<li><a href="/tags/awk/" title="awk">awk<sup>4</sup></a></li>
+		
+			<li><a href="/tags/bash/" title="bash">bash<sup>2</sup></a></li>
+		
+			<li><a href="/tags/binding/" title="binding">binding<sup>1</sup></a></li>
+		
+			<li><a href="/tags/binlog/" title="binlog">binlog<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 订阅</a>
+</div>
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+      <li><a href="http://yangjian.me" target="_blank" title="YangJian">Alimon's Blog</a></li>
+      <li><a href="http://zespia.tw/hexo" target="_blank" title="Hexo">Hexo</a></li>
+      <li><a href="http://chenlinux.com/" title="年年风雨's Blog">三斗室</a></li>
+      <li><a href="http://kisspuppet.com/" title="KissPuppet's blog">KissPuppet</a></li>
+    </ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/opendoc" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/liuyu" target="_blank" title="github"></a>
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://zespia.tw/hexo/" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2014 
+		
+		<a href="http://bubbyroom.com" target="_blank" title="Liu Yu">Liu Yu</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+<script type="text/javascript">
+  var duoshuoQuery = {short_name:"liuyu105"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+    || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+</script> 
+
+
+
+
+
+  </body>
+</html>
