@@ -67,6 +67,22 @@
 
   <section class="post" itemscope itemprop="blogPost">
   
+    <a href="/2010/12/20/wordpress-content/" title="无法定位WordPress Content目录(wp-content) 解决方案" itemprop="url">
+  
+    <h1 itemprop="name">无法定位WordPress Content目录(wp-content) 解决方案</h1>
+    
+     
+           <p itemprop="description" >方案： 打开htdocs目录下的wp-config.php文件，将下面的代码放在wp-config.php最后一行的”?&amp;gt;”前面即可。注意，不要忘记上传到服务器上啊。
+Php代码
+if(is_admin()) {add_filter(&#39;filesystem_method&#39;,</p>
+        
+    
+    <time datetime="2010-12-20T13:40:17.000Z" itemprop="datePublished">12月 20 2010</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
     <a href="/2010/12/20/sendmail-not-send-mail/" title="sendmail无法发信，启动慢解决方案" itemprop="url">
   
     <h1 itemprop="name">sendmail无法发信，启动慢解决方案</h1>
@@ -223,24 +239,6 @@ if guess == </p>
         
     
     <time datetime="2010-12-19T09:09:46.000Z" itemprop="datePublished">12月 19 2010</time>
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2010/12/19/awk-use-bash-shell-export/" title="awk中使用shell的环境变量" itemprop="url">
-  
-    <h1 itemprop="name">awk中使用shell的环境变量</h1>
-    
-     
-           <p itemprop="description" >awk中使用shell的环境变量一:”‘$var’”这种写法大家无需改变用’括起awk程序的习惯,是老外常用的写法.如:
-var=&quot;test&quot;
-awk &#39;BEGIN{print &quot;&#39;$var&#39;&quot;}&#39;
-`&amp;lt;/pre&amp;gt;
-这种写法其实际是双括号变为单括号的常量,传递给了aw</p>
-        
-    
-    <time datetime="2010-12-19T09:06:37.000Z" itemprop="datePublished">12月 19 2010</time>
   </a>
 </section>
 

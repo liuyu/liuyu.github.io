@@ -4,27 +4,16 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Puppet action Errata | Liuyu Blog</title>
+    <title>changing the system clock can&#39;t cause memcached | Liuyu Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Liu Yu">
     
-    <meta name="description" content="《Puppet实战》勘误反馈
-再见2013，你好2014！
-选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。为此，就在这辞旧迎新的日子里挤出此文。
-先祝大家：
-1
-2
-3
-4
-5
-6
-	    Happy     
-		  New       
-	    Year  
-	        BYE 2013      
-	    HELLO 2014           
-祝新年快乐、平安、健康！">
+    <meta name="description" content="新版Memcached采用单一时钟，修改系统时间将无影响
+数据库链接突然增大，本来应该在Memcached中的数据穿透了。进而发现memcached与系统时间出现偏差，到底是什么原因导致的呢？
+首先查到Memcached的协议文档，其中stats节有关于time字段说明：
+
+|———————————">
     
     
     
@@ -83,15 +72,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata" itemprop="url">Puppet action Errata</a>
+      <a href="/2014/09/16/changing-the-system-clock-cant-cause-memcached/" title="changing the system clock can&#39;t cause memcached" itemprop="url">changing the system clock can&#39;t cause memcached</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
     </p>
   <p class="article-time">
-    <time datetime="2018-12-11T16:00:00.000Z" itemprop="datePublished">12月 12 2018</time>
-    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    <time datetime="2014-09-16T13:34:05.000Z" itemprop="datePublished">9月 16 2014</time>
+    更新日期:<time datetime="2014-09-16T13:35:50.000Z" itemprop="dateModified">9月 16 2014</time>
     
   </p>
 </header>
@@ -100,82 +89,118 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+		
 		</div>
 		
-		<h1 id="《Puppet实战》勘误反馈">《Puppet实战》勘误反馈</h1>
-<h2 id="再见2013，你好2014！">再见2013，你好2014！</h2>
-<p>选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。<br>为此，就在这辞旧迎新的日子里挤出此文。</p>
-<p>先祝大家：</p>
+		<p>新版Memcached采用单一时钟，修改系统时间将无影响</p>
+<p>数据库链接突然增大，本来应该在Memcached中的数据穿透了。进而发现memcached与系统时间出现偏差，到底是什么原因导致的呢？</p>
+<p>首先查到Memcached的协议文档，其中stats节有关于time字段说明：</p>
+<blockquote>
+<p>|———————————-+————-+—————————————————————-|<br>| Name                  | Type    | Meaning                                   |<br>|———————————-+————-+—————————————————————-|<br>| pid                   | 32u     | Process id of this server process         |<br>| uptime                | 32u     | Number of secs since the server started   |<br>| time                  | 32u     | current UNIX time according to the server |<br>| version               | string  | Version string of this server             |</p>
+</blockquote>
+<p>其中time字段说明是采用服务器当前UNIX时间。由此可以说明，是因为系统时间出现校对不准导致，服务器都统一采用ntpdate同步同一ntpserver，按理是不存在这种情况。先验证一下，如果系统时间发生改变Memcached会做什么处理呢？</p>
+<p>测试环境：</p>
+<blockquote>
+<p>Centos 6.5 64bit<br>Memcache Version: 1.4.7 </p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre># <span class="tag">date</span>
+<span class="tag">Tue</span> <span class="tag">Sep</span> 16 09<span class="pseudo">:56</span><span class="pseudo">:43</span> <span class="tag">CST</span> 2014
+</pre></td></tr></table></figure>
+
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
 3
 4
 5
 6
-</pre></td><td class="code"><pre>	    Happy     
-		  New       
-	    Year  
-	        BYE 2013      
-	    HELLO 2014           
-祝新年快乐、平安、健康！
-</pre></td></tr></table></figure><br><a id="more"></a><br><br>## 写在前面的话<br><br>《Puppet实战》从2012年9月华章杨福川兄弟找我沟通，直至 2013-12-12号预售，2013-12-27号正式发售，历时15个月。过程在这里就不细表了，真的很艰辛，写作是很孤独而枯燥的事，没有想到我能坚持到底。且文笔貌似没有长进。大哭。<br><br>本人已尽力确保本书内容的准确性，但无法避免一些细节错误或印刷错误。如果你在阅读本书发现任何疑问或错误的地方，无论是标点符号还是代码块，欢迎将这些信息通过本文评论进行反馈，我将不胜感激。<br>我会认真核对你的每一个反馈，核对无误后，会通过update $date $write 的形式更新在此博文中。你也可以把你的个人信息注在反馈信息中。<br><br>当然，你也可以通过 <code>liuyu105#gmail.com</code> 给我反馈信息。<br><br>反馈简单格式如下：<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>第一章 第8页 图1-1 puppet dashboard 错写成了 deshboard
+7
+8
+</pre></td><td class="code"><pre><span class="comment"># telnet 10.11.1.15 11211</span>
+Trying <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span><span class="keyword">...</span>
+Connected to <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span> (<span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span>).
+Escape character is <span class="string">'^]'</span>. stats
+STAT pid <span class="number">2923</span>
+STAT uptime <span class="number">9</span>
+STAT time <span class="number">1410850931</span>
+STAT version <span class="number">1.4</span><span class="number">.7</span>
 </pre></td></tr></table></figure>
 
-<p>分隔线</p>
-<hr>
-<p><strong> %Changelog </strong>  </p>
-<ul>
-<li><p>2013-10-27 Chenlin <chenlin0802@></chenlin0802@></p>
-<ul>
-<li>第1章 P8 图1-1 puppet dashboard 错写成了 deshboard</li>
-<li>第5章 P54、P55、P56 各种名的正则表达式是不是应该为 \A[a-z][a-z0-9] ……  ，书中少写了个 “-“，写成了\A[az]</li>
-<li>第5章 P54 5.2.3节的最后几行， require nginx::install 的方法空格位置不对，写成了 requir enginx::install  应为：require nginx::install </li>
-<li>第5章 P62 class[‘name’] -&gt; class[‘name2’] 中class应该为Class ，首字母大写，另外引号这里是印刷导致，不应该为中文的符号</li>
-</ul>
-</li>
-<li><p>2014-01-10 小吴</p>
-<ul>
-<li>第6章 P96  source =&gt; ‘puppet://$fileserver/modules/test/test’  其中的变量在新的语法中应为${fileserver}</li>
-<li>第7章 P126 图7-1 ensure =&gt; template(‘nginx/vhost.erb’) 这里的ensure应为content</li>
-<li>第7章 P132  最下面  nam =&gt; nginx,少写个e</li>
-<li>第7章 P139 子类名： nginx::configng、inx::vhost   符号错位nginx::config、nginx::vhost</li>
-<li>第14章 P227  4）启动Git, git-daemon  应该为git daemon</li>
-<li>第14章 228页  cp /tmp/puppet/<em>   应该为cp /tmp/puppet/</em> ./</li>
-</ul>
-</li>
-<li><p>2014-01-18 liusy23</p>
-<ul>
-<li>第4章 P47  (3) 在修改testing分支的site.pp时，应该为sudo vim /etc/puppet/modules/test/manifests/init.pp<br>PS: P44 写的evn却为testing，因此这块的测试环境不够严谨，但原理没有错误</li>
-</ul>
-</li>
-<li><p>2014-02-06 @stackhacker</p>
-<ul>
-<li>第2章 P25 倒数7行，是最为人生（应为性）化的操作系统之一</li>
-</ul>
-</li>
-</ul>
+<p>修改下系统时间</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre># <span class="tag">date</span>
+<span class="tag">Fri</span> <span class="tag">Jul</span> 26 00<span class="pseudo">:00</span><span class="pseudo">:00</span> <span class="tag">CST</span> 2013
+</pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="code"><pre><span class="comment"># telnet 10.11.1.15 11211</span>
+Trying <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span><span class="keyword">...</span>
+Connected to <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span> (<span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span>).
+Escape character is <span class="string">'^]'</span>. stats
+stats
+STAT pid <span class="number">2923</span>
+STAT uptime <span class="number">4258884380</span>
+STAT time <span class="number">5669735302</span>
+STAT version <span class="number">1.4</span><span class="number">.7</span>
+</pre></td></tr></table></figure>
+
+<p>结论：当系统时间发生改变时，Memcached的UNIX time也异常了。这就可以说明，当系统时间因外部因素出现一定时间差时，就会导致异常。</p>
+<p>我们再升级memcached 到最新版本1.4.20 看看情况。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>Centos <span class="number">6.5</span> <span class="number">64</span>bit 
+Memcache <span class="keyword">Version</span>: <span class="number">1.4</span><span class="number">.20</span>
+</pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="comment"># stats</span>
+STAT pid <span class="number">2586</span>
+STAT uptime <span class="number">8</span>
+STAT <span class="built_in">time</span> <span class="number">1410838280</span>
+STAT <span class="built_in">version</span> <span class="number">1.4</span><span class="number">.20</span>
+STAT libevent <span class="number">1.4</span><span class="number">.13</span>-stable
+</pre></td></tr></table></figure>
+
+<p>修改下系统时间<br><code>Fri Jul 26 00:00:00 CST 2013</code></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre><span class="comment"># stats</span>
+STAT pid <span class="number">2586</span>
+STAT uptime <span class="number">55</span>
+STAT <span class="built_in">time</span> <span class="number">1410838327</span>
+STAT <span class="built_in">version</span> <span class="number">1.4</span><span class="number">.20</span>
+</pre></td></tr></table></figure>
+
+<p>结论：当系统时间发生改变时，Memcached的UNIX time 没有出现异常。官网应该是修复了这个Bug ? 沿着ReleaseNote一个一个版本看下来，并没有这一条说明。实在是忍不住了，直接官网Maillist，得到如下答复：<br>“Recent versions use a monotonic clock, so changing the system clock can’t cause memcached to lose its mind. “<br>我再问是那个版本时，对方没有回复了。好吧，问题找到了，也就知道如何处理了。</p>
+<p>Memcached stats说明：<a href="https://github.com/memcached/memcached/blob/master/doc/protocol.txt" target="_blank" rel="external">https://github.com/memcached/memcached/blob/master/doc/protocol.txt</a><br>ReleaseNote: <a href="http://code.google.com/p/memcached/wiki/ReleaseNotes" target="_blank" rel="external">http://code.google.com/p/memcached/wiki/ReleaseNotes</a></p>
   
 	</div>
 		<footer class="article-footer clearfix">
 
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/puppet/">puppet</a>
-  </div>
-
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Puppet/">Puppet</a>
-</div>
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://bubbyroom.com/2018/12/12/puppet-action-errata/" data-title="Puppet action Errata | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  <div data-url="http://bubbyroom.com/2014/09/16/changing-the-system-clock-cant-cause-memcached/" data-title="changing the system clock can&#39;t cause memcached | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
   </div>
 
 </div>
@@ -184,11 +209,19 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Puppet action Errata</span>
+</a>
+</div>
+
 
 <div class="next">
-<a href="/2014/09/16/changing-the-system-clock-cant-cause-memcached/"  title="changing the system clock can&#39;t cause memcached">
+<a href="/2014/09/02/http-load-generate-tools-tsung/"  title="http load generate tools tsung">
  <strong>NEXT:</strong><br/> 
- <span>changing the system clock can&#39;t cause memcached
+ <span>http load generate tools tsung
 </span>
 </a>
 </div>
@@ -205,7 +238,7 @@
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+  
   </div>
 
 <div id="asidepart">
