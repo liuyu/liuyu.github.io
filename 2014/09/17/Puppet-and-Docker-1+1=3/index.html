@@ -4,16 +4,18 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>changing the system clock can&#39;t cause memcached | Liuyu Blog</title>
+    <title>Puppet and Docker 1+1=3 | Liuyu Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Liu Yu">
     
-    <meta name="description" content="新版Memcached采用单一时钟，修改系统时间将无影响
-数据库链接突然增大，本来应该在Memcached中的数据穿透了。进而发现memcached与系统时间出现偏差，到底是什么原因导致的呢？
-首先查到Memcached的协议文档，其中stats节有关于time字段说明：
+    <meta name="description" content="Docker and Puppet （1+1=3）
 
-|———————————">
+还记得很早之前，应该是Docker刚开始火的时候，很多人都认为Docker会替代Puppet，持有这一观点的大多数应该是程序员。个人猜想。
+
+
+Dockerfile可以自动构建一个image，包括软件包及依赖。
+程序员只需要快速构建一个测试环境。">
     
     
     
@@ -72,15 +74,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/09/16/changing-the-system-clock-cant-cause-memcached/" title="changing the system clock can&#39;t cause memcached" itemprop="url">changing the system clock can&#39;t cause memcached</a>
+      <a href="/2014/09/17/Puppet-and-Docker-1+1=3/" title="Puppet and Docker 1+1=3" itemprop="url">Puppet and Docker 1+1=3</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-09-16T13:34:05.000Z" itemprop="datePublished">9月 16 2014</time>
-    更新日期:<time datetime="2014-09-16T13:35:50.000Z" itemprop="dateModified">9月 16 2014</time>
+    <time datetime="2014-09-17T09:56:38.000Z" itemprop="datePublished">9月 17 2014</time>
+    更新日期:<time datetime="2014-09-17T09:58:15.000Z" itemprop="dateModified">9月 17 2014</time>
     
   </p>
 </header>
@@ -89,108 +91,63 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#利用Puppet安装Docker"><span class="toc-number">1.</span> <span class="toc-text">利用Puppet安装Docker</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#安装docker"><span class="toc-number"></span> <span class="toc-text">安装docker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#download_the_registry_image"><span class="toc-number"></span> <span class="toc-text">download the registry image</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#don’t_download_all_ubuntu,"><span class="toc-number"></span> <span class="toc-text">don’t download all ubuntu,</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#just_‘precise’"><span class="toc-number"></span> <span class="toc-text">just ‘precise’</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Run_containers"><span class="toc-number"></span> <span class="toc-text">Run containers</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile-1"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li></ol>
 		</div>
 		
-		<p>新版Memcached采用单一时钟，修改系统时间将无影响</p>
-<p>数据库链接突然增大，本来应该在Memcached中的数据穿透了。进而发现memcached与系统时间出现偏差，到底是什么原因导致的呢？</p>
-<p>首先查到Memcached的协议文档，其中stats节有关于time字段说明：</p>
+		<p>Docker and Puppet （1+1=3）</p>
 <blockquote>
-<p>|———————————-+————-+—————————————————————-|<br>| Name                  | Type    | Meaning                                   |<br>|———————————-+————-+—————————————————————-|<br>| pid                   | 32u     | Process id of this server process         |<br>| uptime                | 32u     | Number of secs since the server started   |<br>| time                  | 32u     | current UNIX time according to the server |<br>| version               | string  | Version string of this server             |</p>
+<p>还记得很早之前，应该是Docker刚开始火的时候，很多人都认为Docker会替代Puppet，持有这一观点的大多数应该是程序员。个人猜想。</p>
 </blockquote>
-<p>其中time字段说明是采用服务器当前UNIX时间。由此可以说明，是因为系统时间出现校对不准导致，服务器都统一采用ntpdate同步同一ntpserver，按理是不存在这种情况。先验证一下，如果系统时间发生改变Memcached会做什么处理呢？</p>
-<p>测试环境：</p>
-<blockquote>
-<p>Centos 6.5 64bit<br>Memcache Version: 1.4.7 </p>
-</blockquote>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-</pre></td><td class="code"><pre># <span class="tag">date</span>
-<span class="tag">Tue</span> <span class="tag">Sep</span> 16 09<span class="pseudo">:56</span><span class="pseudo">:43</span> <span class="tag">CST</span> 2014
-</pre></td></tr></table></figure>
-
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-</pre></td><td class="code"><pre><span class="comment"># telnet 10.11.1.15 11211</span>
-Trying <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span><span class="keyword">...</span>
-Connected to <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span> (<span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span>).
-Escape character is <span class="string">'^]'</span>. stats
-STAT pid <span class="number">2923</span>
-STAT uptime <span class="number">9</span>
-STAT time <span class="number">1410850931</span>
-STAT version <span class="number">1.4</span><span class="number">.7</span>
-</pre></td></tr></table></figure>
-
-<p>修改下系统时间</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-</pre></td><td class="code"><pre># <span class="tag">date</span>
-<span class="tag">Fri</span> <span class="tag">Jul</span> 26 00<span class="pseudo">:00</span><span class="pseudo">:00</span> <span class="tag">CST</span> 2013
-</pre></td></tr></table></figure>
-
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-</pre></td><td class="code"><pre><span class="comment"># telnet 10.11.1.15 11211</span>
-Trying <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span><span class="keyword">...</span>
-Connected to <span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span> (<span class="number">10.11</span><span class="number">.1</span><span class="number">.15</span>).
-Escape character is <span class="string">'^]'</span>. stats
-stats
-STAT pid <span class="number">2923</span>
-STAT uptime <span class="number">4258884380</span>
-STAT time <span class="number">5669735302</span>
-STAT version <span class="number">1.4</span><span class="number">.7</span>
-</pre></td></tr></table></figure>
-
-<p>结论：当系统时间发生改变时，Memcached的UNIX time也异常了。这就可以说明，当系统时间因外部因素出现一定时间差时，就会导致异常。</p>
-<p>我们再升级memcached 到最新版本1.4.20 看看情况。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-</pre></td><td class="code"><pre>Centos <span class="number">6.5</span> <span class="number">64</span>bit 
-Memcache <span class="keyword">Version</span>: <span class="number">1.4</span><span class="number">.20</span>
-</pre></td></tr></table></figure>
-
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-</pre></td><td class="code"><pre><span class="comment"># stats</span>
-STAT pid <span class="number">2586</span>
-STAT uptime <span class="number">8</span>
-STAT <span class="built_in">time</span> <span class="number">1410838280</span>
-STAT <span class="built_in">version</span> <span class="number">1.4</span><span class="number">.20</span>
-STAT libevent <span class="number">1.4</span><span class="number">.13</span>-stable
-</pre></td></tr></table></figure>
-
-<p>修改下系统时间<br><code>Fri Jul 26 00:00:00 CST 2013</code></p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-</pre></td><td class="code"><pre><span class="comment"># stats</span>
-STAT pid <span class="number">2586</span>
-STAT uptime <span class="number">55</span>
-STAT <span class="built_in">time</span> <span class="number">1410838327</span>
-STAT <span class="built_in">version</span> <span class="number">1.4</span><span class="number">.20</span>
-</pre></td></tr></table></figure>
-
-<p>结论：当系统时间发生改变时，Memcached的UNIX time 没有出现异常。官网应该是修复了这个Bug ? 沿着ReleaseNote一个一个版本看下来，并没有这一条说明。实在是忍不住了，直接官网Maillist，得到如下答复：<br>“Recent versions use a monotonic clock, so changing the system clock can’t cause memcached to lose its mind. “<br>我再问是那个版本时，对方没有回复了。好吧，问题找到了，也就知道如何处理了。</p>
-<p>Memcached stats说明：<a href="https://github.com/memcached/memcached/blob/master/doc/protocol.txt" target="_blank" rel="external">https://github.com/memcached/memcached/blob/master/doc/protocol.txt</a><br>ReleaseNote: <a href="http://code.google.com/p/memcached/wiki/ReleaseNotes" target="_blank" rel="external">http://code.google.com/p/memcached/wiki/ReleaseNotes</a></p>
+<ol>
+<li>Dockerfile可以自动构建一个image，包括软件包及依赖。</li>
+<li>程序员只需要快速构建一个测试环境。</li>
+</ol>
+<p>真是一句道破天机呀，Dockerfile的确是很强大，语法也很简单，以至于大家马上就爱上它了。这正是因为如此，大家脑海里都会有一个疑问，Puppet与Docker的关系到底如何？</p>
+<p>一直以来，我也没有找到很多的理由来解释两者之关的关系，我们到底要如何好好利用这两款软件？最开始我就认为把Puppet客户端部署在Docker容器里，是不太现实的问题，Docker的特点就是快，创建快，销毁也快。如果还需要再维护一套Puppet来做配置管理，适得其反。并且Docker网络方案并不成熟，无法有效地管理Puppet在容器中的客户端。</p>
+<p>前2天有幸看到@jpetazzo 大神在Puppetcamp上的分享《Docker and Puppet （1+1=3）》深有体会，特此分享给大家。</p>
+<p>PPT的几个要点：</p>
+<ol>
+<li>Dockerfile vs Shell Scripts</li>
+<li>Dockerfile vs Configureation management</li>
+<li>Dockerfile and Puppet </li>
+</ol>
+<p>针对几个要点总结如下：</p>
+<ol>
+<li>Shell脚本处理异常比较繁琐，重新构建时都需要再次选择，并且它永远是从头开始执行，整体性能比较低下。</li>
+<li>配置软件的优点：它能确保所有的操作系统都收敛到一个已知状态、编写的模块可以重复使用、可以任意组合模板库。</li>
+<li>配置软件的缺点：学习路线曲折，需要配置一个agent客户端、除非你使用puppet appley来执行、资源集中。</li>
+<li>以前使用Puppet：管理系统或虚拟机的软件包安装、部署代码、启动服务。</li>
+<li>现在使用Puppet：管理系统或虚拟机的Docker安装、容器运行。</li>
+<li>现在使用Dockerfiles：安装软件包、部署代码、启动服务。</li>
+</ol>
+<p>最关键的点就是最后3条。为什么说在容器之外运行Puppet更为方便？</p>
+<h2 id="利用Puppet安装Docker">利用Puppet安装Docker</h2>
+<p>配置代码参考如下：</p>
+<p>‘’’</p>
+<h1 id="安装docker">安装docker</h1>
+<p>include ‘docker’<br>class { ‘docker’:<br>    version =&gt; ‘1.2.0’<br>}</p>
+<h1 id="download_the_registry_image">download the registry image</h1>
+<p>docker::image { ‘stackbrew/registry’:<br>}</p>
+<h1 id="don’t_download_all_ubuntu,">don’t download all ubuntu,</h1>
+<h1 id="just_‘precise’">just ‘precise’</h1>
+<p>docker::image { ‘ubuntu’:<br>  image_tag =&gt; ‘precise’<br>}</p>
+<h1 id="Run_containers">Run containers</h1>
+<p>docker::run { ‘slavedb’:<br>  image   =&gt; ‘jpetazzo/postgresql’<br>    command         =&gt; ‘…’<br>    ports           =&gt; [‘5432’, ‘22’],<br>    links           =&gt; [‘masterdb:master’],<br>    use_name        =&gt; true,<br>    volumes         =&gt; [‘/var/lib/postgresql’],<br>    volumes_from    =&gt; ‘420fc7e8aa20’,<br>    memory_limit    =&gt; 100000000, # bytes<br>    username        =&gt; ‘postgres’,<br>    hostname        =&gt; ‘sdb.prod.dckr.io’,<br>    env             =&gt; [‘FUZZINESS=42’, FOO=BAR’, ‘FOO2=BAR2’],<br>    dns             =&gt; [‘8.8.8.8’, ‘8.8.4.4’],<br>    restart_service =&gt; true<br>}<br>‘’’</p>
+<p>可以看到，使用Puppet来管理Docker是非常轻松的事，如果我们把Puppet运行在container里面呢？</p>
+<p>’‘’</p>
+<h1 id="编写Dockerfile">编写Dockerfile</h1>
+<p>FROM ubuntu:12.04<br>RUN apt-get install -qy wget<br>RUN mkdir /puppet<br>WORKDIR /puppet<br>RUN wget -q <a href="http://apt.puppetlabs.com/puppetlabs-release-precise.deb" target="_blank" rel="external">http://apt.puppetlabs.com/puppetlabs-release-precise.deb</a> RUN dpkg -i puppetlabs-release-precise.deb<br>RUN apt-get update -q<br>RUN apt-get install -qy puppet-common<br>CMD puppet agent —no-daemonize —verbose<br>‘’’</p>
+<p>安装完成后，我们是以daemon的形式在运行Puppet，如果不想启用后台进程，可以采用puppet apply的方式来运行，不过后续如果有更新，我们还需要调用Docker外部命令，dockerfile参考如下： </p>
+<p>‘’’</p>
+<h1 id="编写Dockerfile-1">编写Dockerfile</h1>
+<p>FROM ubuntu:12.04<br>RUN apt-get install -qy wget<br>RUN mkdir /puppet<br>WORKDIR /puppet<br>RUN wget -q <a href="http://apt.puppetlabs.com/puppetlabs-release-precise.deb" target="_blank" rel="external">http://apt.puppetlabs.com/puppetlabs-release-precise.deb</a> RUN dpkg -i puppetlabs-release-precise.deb<br>RUN apt-get update -q<br>RUN apt-get install -qy puppet-common<br>ENV FACTER_HOSTNAME database42<br>ADD ./site.pp /puppet/site.pp<br>RUN puppet apply site.pp<br>‘’’</p>
+<p>其实两者在实现上没有本质上的区别，但是很多人肯定会问，它们之间的本质区别到底在那里？<br>这里有一个理解，那就是Puppet，到底用来做什么？</p>
+<p>更多的时候：Puppet是用来做系统初始化的工作。那么，更多的运维变更，都是交给其它工具来完成。因此，在这里我们就不难理解两者的差异了。</p>
+<p>利用Dockerfile安装启动Puppet来做系统初始化，例如：sshd、syslogd、crond等等，这些又有什么用呢？Docker images本身就已经实现了基础信息的标准化。</p>
+<p>在Container中能使用Puppet做变更管理吗？答案是肯定的。但是，我没有这么做过，我也不清楚是否有人这么实现。因此这么做，会带来外部管理Container中Puppet agent的问题，难道你想全采用Dockerfile来管理吗？</p>
+<p>总结：其实说了这么说，只有一句话：”利用Puppet安装管理Docker，剩下的事情交给Dockerfile”。</p>
+<p>PPT地址：<a href="http://www.slideshare.net/PuppetLabs/2014-0819puppetcampchicago-1?qid=457b9364-17ab-42d9-b0ca-22544ce8dfcd&amp;v=qf1&amp;b=&amp;from_search=10" target="_blank" rel="external">http://www.slideshare.net/PuppetLabs/2014-0819puppetcampchicago-1?qid=457b9364-17ab-42d9-b0ca-22544ce8dfcd&amp;v=qf1&amp;b=&amp;from_search=10</a></p>
+<p>最后请各位推荐并关注本人公众账号：</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -200,7 +157,7 @@ STAT <span class="built_in">version</span> <span class="number">1.4</span><span 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://bubbyroom.com/2014/09/16/changing-the-system-clock-cant-cause-memcached/" data-title="changing the system clock can&#39;t cause memcached | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  <div data-url="http://bubbyroom.com/2014/09/17/Puppet-and-Docker-1+1=3/" data-title="Puppet and Docker 1+1=3 | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
   </div>
 
 </div>
@@ -210,18 +167,18 @@ STAT <span class="built_in">version</span> <span class="number">1.4</span><span 
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2014/09/17/Puppet-and-Docker-1+1=3/" title="Puppet and Docker 1+1=3">
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
   <strong>PREVIOUS:</strong><br/>
   <span>
-  Puppet and Docker 1+1=3</span>
+  Puppet action Errata</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2014/09/02/http-load-generate-tools-tsung/"  title="http load generate tools tsung">
+<a href="/2014/09/16/changing-the-system-clock-cant-cause-memcached/"  title="changing the system clock can&#39;t cause memcached">
  <strong>NEXT:</strong><br/> 
- <span>http load generate tools tsung
+ <span>changing the system clock can&#39;t cause memcached
 </span>
 </a>
 </div>
@@ -238,7 +195,7 @@ STAT <span class="built_in">version</span> <span class="number">1.4</span><span 
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#利用Puppet安装Docker"><span class="toc-number">1.</span> <span class="toc-text">利用Puppet安装Docker</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#安装docker"><span class="toc-number"></span> <span class="toc-text">安装docker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#download_the_registry_image"><span class="toc-number"></span> <span class="toc-text">download the registry image</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#don’t_download_all_ubuntu,"><span class="toc-number"></span> <span class="toc-text">don’t download all ubuntu,</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#just_‘precise’"><span class="toc-number"></span> <span class="toc-text">just ‘precise’</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Run_containers"><span class="toc-number"></span> <span class="toc-text">Run containers</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile-1"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li></ol>
   </div>
 
 <div id="asidepart">

@@ -67,6 +67,29 @@
 
   <section class="post" itemscope itemprop="blogPost">
   
+    <a href="/2011/02/21/mysql-ignore-db/" title="mysql master/slave replicate ignore database" itemprop="url">
+  
+    <h1 itemprop="name">mysql master/slave replicate ignore database</h1>
+    
+     
+           <p itemprop="description" >记录下：
+需求：
+1、 不记录这个库的binlog
+2、 从不同步这个库
+设这个库为bubbyroom
+主my.cnf增加
+binlog-ignore-db = bubbyroom
+
+从my.cnf增加
+replicate-ignore-db = bubbyroom/etc/in</p>
+        
+    
+    <time datetime="2011-02-21T06:15:05.000Z" itemprop="datePublished">2月 21 2011</time>
+  </a>
+</section>
+
+  <section class="post" itemscope itemprop="blogPost">
+  
     <a href="/2011/02/16/centos-yum-install-php5-2/" title="centos yum 安装php5.2" itemprop="url">
   
     <h1 itemprop="name">centos yum 安装php5.2</h1>
@@ -215,21 +238,6 @@ ftp://zid-luxinst.uibk.ac.at/</p>
         
     
     <time datetime="2011-01-27T03:28:04.000Z" itemprop="datePublished">1月 27 2011</time>
-  </a>
-</section>
-
-  <section class="post" itemscope itemprop="blogPost">
-  
-    <a href="/2011/01/26/cpan-error-make-test-had-returned-bad-status/" title="CPAN error: make test had returned bad status" itemprop="url">
-  
-    <h1 itemprop="name">CPAN error: make test had returned bad status</h1>
-    
-     
-           <p itemprop="description" >CPAN error: make test had returned bad status, won’t install without force
-To solve “CPAN error: make test had returned bad status, won’t in</p>
-        
-    
-    <time datetime="2011-01-26T14:16:16.000Z" itemprop="datePublished">1月 26 2011</time>
   </a>
 </section>
 
