@@ -4,18 +4,16 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Puppet and Docker 1+1=3 | Liuyu Blog</title>
+    <title>10 common ops mistakes | Liuyu Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Liu Yu">
     
-    <meta name="description" content="Docker and Puppet （1+1=3）
+    <meta name="description" content="翻译 10 Common Ops Mistakes
 
-还记得很早之前，应该是Docker刚开始火的时候，很多人都认为Docker会替代Puppet，持有这一观点的大多数应该是程序员。个人猜想。
+PagerDuty 的运维经理Arup Chakrabarti，在Heavybit总部讨论运维团队易犯的最大错误，应该如何避免这些错误，总结了10个错误，完整的视频可以查看Heavybits Video Library。
 
-
-Dockerfile可以自动构建一个image，包括软件包及依赖。
-程序员只需要快速构建一个测试环境。">
+1. 基础设施配置错误">
     
     
     
@@ -74,15 +72,15 @@ Dockerfile可以自动构建一个image，包括软件包及依赖。
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/09/17/Puppet-and-Docker-1+1=3/" title="Puppet and Docker 1+1=3" itemprop="url">Puppet and Docker 1+1=3</a>
+      <a href="/2014/09/26/10-common-ops-mistakes/" title="10 common ops mistakes" itemprop="url">10 common ops mistakes</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-09-17T09:56:38.000Z" itemprop="datePublished">9月 17 2014</time>
-    更新日期:<time datetime="2014-09-17T09:58:15.000Z" itemprop="dateModified">9月 17 2014</time>
+    <time datetime="2014-09-26T07:02:38.000Z" itemprop="datePublished">9月 26 2014</time>
+    更新日期:<time datetime="2014-09-26T08:28:51.000Z" itemprop="dateModified">9月 26 2014</time>
     
   </p>
 </header>
@@ -91,63 +89,76 @@ Dockerfile可以自动构建一个image，包括软件包及依赖。
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#利用Puppet安装Docker"><span class="toc-number">1.</span> <span class="toc-text">利用Puppet安装Docker</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#安装docker"><span class="toc-number"></span> <span class="toc-text">安装docker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#download_the_registry_image"><span class="toc-number"></span> <span class="toc-text">download the registry image</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#don’t_download_all_ubuntu,"><span class="toc-number"></span> <span class="toc-text">don’t download all ubuntu,</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#just_‘precise’"><span class="toc-number"></span> <span class="toc-text">just ‘precise’</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Run_containers"><span class="toc-number"></span> <span class="toc-text">Run containers</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile-1"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#翻译_10_Common_Ops_Mistakes"><span class="toc-number">1.</span> <span class="toc-text">翻译 10 Common Ops Mistakes</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-_基础设施配置错误"><span class="toc-number">1.1.</span> <span class="toc-text">1. 基础设施配置错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-_测试环境设计不合理"><span class="toc-number">1.2.</span> <span class="toc-text">2. 测试环境设计不合理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-_配置管理不正确"><span class="toc-number">1.3.</span> <span class="toc-text">3. 配置管理不正确</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-_部署方法不正确"><span class="toc-number">1.4.</span> <span class="toc-text">4. 部署方法不正确</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-_事件处理不正确"><span class="toc-number">1.5.</span> <span class="toc-text">5. 事件处理不正确</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-_忽略监控与报警"><span class="toc-number">1.6.</span> <span class="toc-text">6. 忽略监控与报警</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-_没有持续备份"><span class="toc-number">1.7.</span> <span class="toc-text">7. 没有持续备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-_忽略高可用性原则"><span class="toc-number">1.8.</span> <span class="toc-text">8. 忽略高可用性原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-_陷入常见的安全陷阱"><span class="toc-number">1.9.</span> <span class="toc-text">9. 陷入常见的安全陷阱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-_忽略内部IT需求"><span class="toc-number">1.10.</span> <span class="toc-text">10. 忽略内部IT需求</span></a></li></ol>
 		</div>
 		
-		<p>Docker and Puppet （1+1=3）</p>
+		<h1 id="翻译_10_Common_Ops_Mistakes">翻译 10 Common Ops Mistakes</h1>
 <blockquote>
-<p>还记得很早之前，应该是Docker刚开始火的时候，很多人都认为Docker会替代Puppet，持有这一观点的大多数应该是程序员。个人猜想。</p>
+<p>PagerDuty 的运维经理Arup Chakrabarti，在Heavybit总部讨论运维团队易犯的最大错误，应该如何避免这些错误，总结了10个错误，完整的视频可以查看<a href="http://www.heavybit.com/library/video/2014-06-03-arup-chakrabarti" target="_blank" rel="external">Heavybits Video Library</a>。</p>
 </blockquote>
+<h2 id="1-_基础设施配置错误">1. 基础设施配置错误</h2>
 <ol>
-<li>Dockerfile可以自动构建一个image，包括软件包及依赖。</li>
-<li>程序员只需要快速构建一个测试环境。</li>
+<li><p>创建账户<br>使用个人账户作为基础设施部署。这个所带来的问题就是员工离职时，个人账户一旦删除，基础设施将不可用。所有一切与该账户相关的公共设施将都受到影响。据个人了解：国内很多公司都这么干，包括某个大公司。<br>个人密码存储，这个细节也很容易被忽略。比如在git/svn中存有明文密码，本地也有类似情况。其中可以使用1password，lastpass等密码管理工具来管理你的密码。</p>
+</li>
+<li><p>选择工具<br>作为创业团队，或者是做小项目实验的团队，建议利用PaaS工具。这样你可以专注志如何获取更多的客户，而不是基础设施的管理。</p>
+</li>
 </ol>
-<p>真是一句道破天机呀，Dockerfile的确是很强大，语法也很简单，以至于大家马上就爱上它了。这正是因为如此，大家脑海里都会有一个疑问，Puppet与Docker的关系到底如何？</p>
-<p>一直以来，我也没有找到很多的理由来解释两者之关的关系，我们到底要如何好好利用这两款软件？最开始我就认为把Puppet客户端部署在Docker容器里，是不太现实的问题，Docker的特点就是快，创建快，销毁也快。如果还需要再维护一套Puppet来做配置管理，适得其反。并且Docker网络方案并不成熟，无法有效地管理Puppet在容器中的客户端。</p>
-<p>前2天有幸看到@jpetazzo 大神在Puppetcamp上的分享《Docker and Puppet （1+1=3）》深有体会，特此分享给大家。</p>
-<p>PPT的几个要点：</p>
+<h2 id="2-_测试环境设计不合理">2. 测试环境设计不合理</h2>
 <ol>
-<li>Dockerfile vs Shell Scripts</li>
-<li>Dockerfile vs Configureation management</li>
-<li>Dockerfile and Puppet </li>
+<li><p>保留测试和生产环境分离<br>测试环境与生产环境一定要物理隔离，这里包括：账户，代码，应用</p>
+</li>
+<li><p>虚拟机<br>为了保持本地电脑与服务器的环境一致，这里需要采用虚拟机。我觉得这也是Docker为什么火的关键因素之一。</p>
+</li>
 </ol>
-<p>针对几个要点总结如下：</p>
+<h2 id="3-_配置管理不正确">3. 配置管理不正确</h2>
+<p>  Ansible 和 Salt 是比较容易学的两个工具。Ansible能够帮助你快速部署你的代码。这其实就是命令执行系统，效率如何，谁用谁知道。<br>  不管你用那个，需要注意的就是限制、限制、限制。</p>
 <ol>
-<li>Shell脚本处理异常比较繁琐，重新构建时都需要再次选择，并且它永远是从头开始执行，整体性能比较低下。</li>
-<li>配置软件的优点：它能确保所有的操作系统都收敛到一个已知状态、编写的模块可以重复使用、可以任意组合模板库。</li>
-<li>配置软件的缺点：学习路线曲折，需要配置一个agent客户端、除非你使用puppet appley来执行、资源集中。</li>
-<li>以前使用Puppet：管理系统或虚拟机的软件包安装、部署代码、启动服务。</li>
-<li>现在使用Puppet：管理系统或虚拟机的Docker安装、容器运行。</li>
-<li>现在使用Dockerfiles：安装软件包、部署代码、启动服务。</li>
+<li>权限限制，不是所有人都可以执行所有命令</li>
+<li>命令限制，危险命令一定要加入黑名单</li>
+<li>机器限制，并不是所有机器都要统一管理，例如DB</li>
 </ol>
-<p>最关键的点就是最后3条。为什么说在容器之外运行Puppet更为方便？</p>
-<h2 id="利用Puppet安装Docker">利用Puppet安装Docker</h2>
-<p>配置代码参考如下：</p>
-<p>‘’’</p>
-<h1 id="安装docker">安装docker</h1>
-<p>include ‘docker’<br>class { ‘docker’:<br>    version =&gt; ‘1.2.0’<br>}</p>
-<h1 id="download_the_registry_image">download the registry image</h1>
-<p>docker::image { ‘stackbrew/registry’:<br>}</p>
-<h1 id="don’t_download_all_ubuntu,">don’t download all ubuntu,</h1>
-<h1 id="just_‘precise’">just ‘precise’</h1>
-<p>docker::image { ‘ubuntu’:<br>  image_tag =&gt; ‘precise’<br>}</p>
-<h1 id="Run_containers">Run containers</h1>
-<p>docker::run { ‘slavedb’:<br>  image   =&gt; ‘jpetazzo/postgresql’<br>    command         =&gt; ‘…’<br>    ports           =&gt; [‘5432’, ‘22’],<br>    links           =&gt; [‘masterdb:master’],<br>    use_name        =&gt; true,<br>    volumes         =&gt; [‘/var/lib/postgresql’],<br>    volumes_from    =&gt; ‘420fc7e8aa20’,<br>    memory_limit    =&gt; 100000000, # bytes<br>    username        =&gt; ‘postgres’,<br>    hostname        =&gt; ‘sdb.prod.dckr.io’,<br>    env             =&gt; [‘FUZZINESS=42’, FOO=BAR’, ‘FOO2=BAR2’],<br>    dns             =&gt; [‘8.8.8.8’, ‘8.8.4.4’],<br>    restart_service =&gt; true<br>}<br>‘’’</p>
-<p>可以看到，使用Puppet来管理Docker是非常轻松的事，如果我们把Puppet运行在container里面呢？</p>
-<p>’‘’</p>
-<h1 id="编写Dockerfile">编写Dockerfile</h1>
-<p>FROM ubuntu:12.04<br>RUN apt-get install -qy wget<br>RUN mkdir /puppet<br>WORKDIR /puppet<br>RUN wget -q <a href="http://apt.puppetlabs.com/puppetlabs-release-precise.deb" target="_blank" rel="external">http://apt.puppetlabs.com/puppetlabs-release-precise.deb</a> RUN dpkg -i puppetlabs-release-precise.deb<br>RUN apt-get update -q<br>RUN apt-get install -qy puppet-common<br>CMD puppet agent —no-daemonize —verbose<br>‘’’</p>
-<p>安装完成后，我们是以daemon的形式在运行Puppet，如果不想启用后台进程，可以采用puppet apply的方式来运行，不过后续如果有更新，我们还需要调用Docker外部命令，dockerfile参考如下： </p>
-<p>‘’’</p>
-<h1 id="编写Dockerfile-1">编写Dockerfile</h1>
-<p>FROM ubuntu:12.04<br>RUN apt-get install -qy wget<br>RUN mkdir /puppet<br>WORKDIR /puppet<br>RUN wget -q <a href="http://apt.puppetlabs.com/puppetlabs-release-precise.deb" target="_blank" rel="external">http://apt.puppetlabs.com/puppetlabs-release-precise.deb</a> RUN dpkg -i puppetlabs-release-precise.deb<br>RUN apt-get update -q<br>RUN apt-get install -qy puppet-common<br>ENV FACTER_HOSTNAME database42<br>ADD ./site.pp /puppet/site.pp<br>RUN puppet apply site.pp<br>‘’’</p>
-<p>其实两者在实现上没有本质上的区别，但是很多人肯定会问，它们之间的本质区别到底在那里？<br>这里有一个理解，那就是Puppet，到底用来做什么？</p>
-<p>更多的时候：Puppet是用来做系统初始化的工作。那么，更多的运维变更，都是交给其它工具来完成。因此，在这里我们就不难理解两者的差异了。</p>
-<p>利用Dockerfile安装启动Puppet来做系统初始化，例如：sshd、syslogd、crond等等，这些又有什么用呢？Docker images本身就已经实现了基础信息的标准化。</p>
-<p>在Container中能使用Puppet做变更管理吗？答案是肯定的。但是，我没有这么做过，我也不清楚是否有人这么实现。因此这么做，会带来外部管理Container中Puppet agent的问题，难道你想全采用Dockerfile来管理吗？</p>
-<p>总结：其实说了这么说，只有一句话：”利用Puppet安装管理Docker，剩下的事情交给Dockerfile”。</p>
-<p>PPT地址：<a href="http://www.slideshare.net/PuppetLabs/2014-0819puppetcampchicago-1?qid=457b9364-17ab-42d9-b0ca-22544ce8dfcd&amp;v=qf1&amp;b=&amp;from_search=10" target="_blank" rel="external">http://www.slideshare.net/PuppetLabs/2014-0819puppetcampchicago-1?qid=457b9364-17ab-42d9-b0ca-22544ce8dfcd&amp;v=qf1&amp;b=&amp;from_search=10</a></p>
-<p>最后请各位推荐并关注本人公众账号：</p>
+<h2 id="4-_部署方法不正确">4. 部署方法不正确</h2>
+<ol>
+<li><p>一致性<br>每一段代码都必须部署一致，强型按你的规范来。很多人都在提倡什么规范化，标准化，流程化，其实没有必要限制死，有效即可。</p>
+</li>
+<li><p>编排你的部署系统<br>功能强大的自动化软件肯定是能帮你保持系统一致性，但只适用于规模较大的部署。推荐了Git作为系统的底层工具，Capistrano作为部署工具，Ansible和Salt做为配置管理工具。</p>
+</li>
+</ol>
+<h2 id="5-_事件处理不正确">5. 事件处理不正确</h2>
+<ol>
+<li><p>制定一个流程<br>创建和记录事件管理流程是绝对有必要的。不管是不是好看，是不是够华丽，这是必须要有的。</p>
+</li>
+<li><p>保持随叫随到<br>一般，公司都有7X24小时值班人员，遇到故障时随时通知。比较优秀的做法就是做一个平台，遇到故障时以不同的方式通知不同的人。紧急事件可以在线oncall。</p>
+</li>
+</ol>
+<h2 id="6-_忽略监控与报警">6. 忽略监控与报警</h2>
+<p>  无论从那里启动，你都需要添加监控，像开源的监控软件：Nagios、Zabbix，都是不错的选择。所以说，你没有理由不用。</p>
+<h2 id="7-_没有持续备份">7. 没有持续备份</h2>
+<p>  很多时候我们做了备份，但没有持续备份，所以说定期备份到S3是现在的行业惯例。我觉得，代码可以扔到git，在那有一个副本即可。数据可以定期dump后，做异地，甚至本地计算机备份。</p>
+<h2 id="8-_忽略高可用性原则">8. 忽略高可用性原则</h2>
+<ol>
+<li><p>喊喊口号<br>每一层，每个状态，是否都做了高可用呢？很多时候，大部分人只是说我们做了LVS，就够了，其实更多层面的是你的代码是否人容错与高可用机制。而不仅仅是负载均衡层面。另外一个就是HA是否做了优化。这个涉及开发层面上的意识了。</p>
+</li>
+<li><p>数据库<br>现在数据库都是主从逻辑了，但是dump出来，异地来一份还是很有必要的。如果是重要的数据最好是多机房容灾。</p>
+</li>
+</ol>
+<h2 id="9-_陷入常见的安全陷阱">9. 陷入常见的安全陷阱</h2>
+<ol>
+<li><p>仅依赖SSH<br>通过SSH连接数据库和负载均衡时，最好能加一层防火墙，对你的登录进行全面的检查与验证，以确保没有被入侵。这个环节，很多人都忽略掉了。</p>
+</li>
+<li><p>没有配置单独的用户账户<br>这个问题和第一个问题相似，所以大家都在使用LDAP</p>
+</li>
+<li><p>开发周期没有使用加密<br>代码在开发期，并没有加强加密，导致开发人员在开发时并没有注意这一项。如果在开发期，就全面监控代码，可以避免后期很多问题。</p>
+</li>
+</ol>
+<h2 id="10-_忽略内部IT需求">10. 忽略内部IT需求</h2>
+<p>一般不会有严格的操作问题，但有几点是需要注意的：</p>
+<ol>
+<li>设备的通用性：办工设备的通用与备用</li>
+<li>访问工具的权限：文件共享，内部分享</li>
+<li>备份本地计算机：USB磁盘镜像，这个在国内应该是很少做的。</li>
+<li>磁盘加密：这个的确很有必要，万一笔记本丢失了，数据不会存在问题。</li>
+</ol>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -157,7 +168,7 @@ Dockerfile可以自动构建一个image，包括软件包及依赖。
 
 <div class="article-share" id="share">
 
-  <div data-url="http://bubbyroom.com/2014/09/17/Puppet-and-Docker-1+1=3/" data-title="Puppet and Docker 1+1=3 | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  <div data-url="http://bubbyroom.com/2014/09/26/10-common-ops-mistakes/" data-title="10 common ops mistakes | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
   </div>
 
 </div>
@@ -167,18 +178,18 @@ Dockerfile可以自动构建一个image，包括软件包及依赖。
 <nav class="article-nav clearfix">
  
  <div class="prev" >
- <a href="/2014/09/26/10-common-ops-mistakes/" title="10 common ops mistakes">
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
   <strong>PREVIOUS:</strong><br/>
   <span>
-  10 common ops mistakes</span>
+  Puppet action Errata</span>
 </a>
 </div>
 
 
 <div class="next">
-<a href="/2014/09/16/changing-the-system-clock-cant-cause-memcached/"  title="changing the system clock can&#39;t cause memcached">
+<a href="/2014/09/17/Puppet-and-Docker-1+1=3/"  title="Puppet and Docker 1+1=3">
  <strong>NEXT:</strong><br/> 
- <span>changing the system clock can&#39;t cause memcached
+ <span>Puppet and Docker 1+1=3
 </span>
 </a>
 </div>
@@ -195,7 +206,7 @@ Dockerfile可以自动构建一个image，包括软件包及依赖。
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#利用Puppet安装Docker"><span class="toc-number">1.</span> <span class="toc-text">利用Puppet安装Docker</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#安装docker"><span class="toc-number"></span> <span class="toc-text">安装docker</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#download_the_registry_image"><span class="toc-number"></span> <span class="toc-text">download the registry image</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#don’t_download_all_ubuntu,"><span class="toc-number"></span> <span class="toc-text">don’t download all ubuntu,</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#just_‘precise’"><span class="toc-number"></span> <span class="toc-text">just ‘precise’</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Run_containers"><span class="toc-number"></span> <span class="toc-text">Run containers</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#编写Dockerfile-1"><span class="toc-number"></span> <span class="toc-text">编写Dockerfile</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#翻译_10_Common_Ops_Mistakes"><span class="toc-number">1.</span> <span class="toc-text">翻译 10 Common Ops Mistakes</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-_基础设施配置错误"><span class="toc-number">1.1.</span> <span class="toc-text">1. 基础设施配置错误</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-_测试环境设计不合理"><span class="toc-number">1.2.</span> <span class="toc-text">2. 测试环境设计不合理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-_配置管理不正确"><span class="toc-number">1.3.</span> <span class="toc-text">3. 配置管理不正确</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-_部署方法不正确"><span class="toc-number">1.4.</span> <span class="toc-text">4. 部署方法不正确</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-_事件处理不正确"><span class="toc-number">1.5.</span> <span class="toc-text">5. 事件处理不正确</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-_忽略监控与报警"><span class="toc-number">1.6.</span> <span class="toc-text">6. 忽略监控与报警</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-_没有持续备份"><span class="toc-number">1.7.</span> <span class="toc-text">7. 没有持续备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-_忽略高可用性原则"><span class="toc-number">1.8.</span> <span class="toc-text">8. 忽略高可用性原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-_陷入常见的安全陷阱"><span class="toc-number">1.9.</span> <span class="toc-text">9. 陷入常见的安全陷阱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-_忽略内部IT需求"><span class="toc-number">1.10.</span> <span class="toc-text">10. 忽略内部IT需求</span></a></li></ol>
   </div>
 
 <div id="asidepart">
