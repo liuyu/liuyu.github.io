@@ -4,27 +4,14 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>Puppet action Errata | Liuyu Blog</title>
+    <title>11 online Puppet resources you should know | Liuyu Blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     <meta name="author" content="Liu Yu">
     
-    <meta name="description" content="《Puppet实战》勘误反馈
-再见2013，你好2014！
-选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。为此，就在这辞旧迎新的日子里挤出此文。
-先祝大家：
-1
-2
-3
-4
-5
-6
-	    Happy     
-		  New       
-	    Year  
-	        BYE 2013      
-	    HELLO 2014           
-祝新年快乐、平安、健康！">
+    <meta name="description" content="​有很多朋友都在问，有没有在线学习Puppet的地方。作者Surendra Kumar A.整理了很多无法Google到的11个在线学习的Puppet资源。笔者就自己的一些经验简单译+注释了一下。
+Puppet官方文档
+docs.puppetlabs.comPuppet官方文档，包括Puppetla">
     
     
     
@@ -83,15 +70,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata" itemprop="url">Puppet action Errata</a>
+      <a href="/2014/10/20/11-online-Puppet-resources-you-should-know/" title="11 online Puppet resources you should know" itemprop="url">11 online Puppet resources you should know</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://bubbyroom.com" title="Liu Yu">Liu Yu</a>
     </p>
   <p class="article-time">
-    <time datetime="2018-12-11T16:00:00.000Z" itemprop="datePublished">12月 12 2018</time>
-    更新日期:<time datetime="2014-07-01T05:23:52.000Z" itemprop="dateModified">7月 1 2014</time>
+    <time datetime="2014-10-20T13:17:43.000Z" itemprop="datePublished">10月 20 2014</time>
+    更新日期:<time datetime="2014-10-20T13:21:46.000Z" itemprop="dateModified">10月 20 2014</time>
     
   </p>
 </header>
@@ -100,82 +87,42 @@
 		
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
-		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet官方文档"><span class="toc-number">1.</span> <span class="toc-text">Puppet官方文档</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_IRC"><span class="toc-number">2.</span> <span class="toc-text">Puppet IRC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_Q&amp;A"><span class="toc-number">3.</span> <span class="toc-text">Puppet Q&amp;A</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_Blogs/Sites"><span class="toc-number">4.</span> <span class="toc-text">Puppet Blogs/Sites</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_Groups"><span class="toc-number">5.</span> <span class="toc-text">Puppet Groups</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它Puppet页面"><span class="toc-number">6.</span> <span class="toc-text">其它Puppet页面</span></a></li></ol>
 		</div>
 		
-		<h1 id="《Puppet实战》勘误反馈">《Puppet实战》勘误反馈</h1>
-<h2 id="再见2013，你好2014！">再见2013，你好2014！</h2>
-<p>选在今天这个特殊的日子(date: 2013-12-31 22:34:14)写这篇文章，一是 @年年风雨 问书中的错误反馈，二是 @KissPuppet 说弄个博客大家反馈都能看得到，不会收到重复信息。<br>为此，就在这辞旧迎新的日子里挤出此文。</p>
-<p>先祝大家：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre>1
-2
-3
-4
-5
-6
-</pre></td><td class="code"><pre>	    Happy     
-		  New       
-	    Year  
-	        BYE 2013      
-	    HELLO 2014           
-祝新年快乐、平安、健康！
-</pre></td></tr></table></figure><br><a id="more"></a><br><br>## 写在前面的话<br><br>《Puppet实战》从2012年9月华章杨福川兄弟找我沟通，直至 2013-12-12号预售，2013-12-27号正式发售，历时15个月。过程在这里就不细表了，真的很艰辛，写作是很孤独而枯燥的事，没有想到我能坚持到底。且文笔貌似没有长进。大哭。<br><br>本人已尽力确保本书内容的准确性，但无法避免一些细节错误或印刷错误。如果你在阅读本书发现任何疑问或错误的地方，无论是标点符号还是代码块，欢迎将这些信息通过本文评论进行反馈，我将不胜感激。<br>我会认真核对你的每一个反馈，核对无误后，会通过update $date $write 的形式更新在此博文中。你也可以把你的个人信息注在反馈信息中。<br><br>当然，你也可以通过 <code>liuyu105#gmail.com</code> 给我反馈信息。<br><br>反馈简单格式如下：<br><br><figure class="highlight"><table><tr><td class="gutter"><pre>1
-</pre></td><td class="code"><pre>第一章 第8页 图1-1 puppet dashboard 错写成了 deshboard
-</pre></td></tr></table></figure>
-
-<p>分隔线</p>
-<hr>
-<p><strong> %Changelog </strong>  </p>
-<ul>
-<li><p>2013-10-27 Chenlin <chenlin0802@></chenlin0802@></p>
-<ul>
-<li>第1章 P8 图1-1 puppet dashboard 错写成了 deshboard</li>
-<li>第5章 P54、P55、P56 各种名的正则表达式是不是应该为 \A[a-z][a-z0-9] ……  ，书中少写了个 “-“，写成了\A[az]</li>
-<li>第5章 P54 5.2.3节的最后几行， require nginx::install 的方法空格位置不对，写成了 requir enginx::install  应为：require nginx::install </li>
-<li>第5章 P62 class[‘name’] -&gt; class[‘name2’] 中class应该为Class ，首字母大写，另外引号这里是印刷导致，不应该为中文的符号</li>
-</ul>
-</li>
-<li><p>2014-01-10 小吴</p>
-<ul>
-<li>第6章 P96  source =&gt; ‘puppet://$fileserver/modules/test/test’  其中的变量在新的语法中应为${fileserver}</li>
-<li>第7章 P126 图7-1 ensure =&gt; template(‘nginx/vhost.erb’) 这里的ensure应为content</li>
-<li>第7章 P132  最下面  nam =&gt; nginx,少写个e</li>
-<li>第7章 P139 子类名： nginx::configng、inx::vhost   符号错位nginx::config、nginx::vhost</li>
-<li>第14章 P227  4）启动Git, git-daemon  应该为git daemon</li>
-<li>第14章 228页  cp /tmp/puppet/<em>   应该为cp /tmp/puppet/</em> ./</li>
-</ul>
-</li>
-<li><p>2014-01-18 liusy23</p>
-<ul>
-<li>第4章 P47  (3) 在修改testing分支的site.pp时，应该为sudo vim /etc/puppet/modules/test/manifests/init.pp<br>PS: P44 写的evn却为testing，因此这块的测试环境不够严谨，但原理没有错误</li>
-</ul>
-</li>
-<li><p>2014-02-06 @stackhacker</p>
-<ul>
-<li>第2章 P25 倒数7行，是最为人生（应为性）化的操作系统之一</li>
-</ul>
-</li>
-</ul>
+		<p>​有很多朋友都在问，有没有在线学习Puppet的地方。作者Surendra Kumar A.整理了很多无法Google到的11个在线学习的Puppet资源。笔者就自己的一些经验简单译+注释了一下。</p>
+<h2 id="Puppet官方文档">Puppet官方文档</h2>
+<p><a href="http://docs.puppetlabs.com/" target="_blank" rel="external">docs.puppetlabs.com</a><br>Puppet官方文档，包括Puppetlabs开发的多个产品手册。同时官方还提供离线文档，<a href="https://docs.puppetlabs.com/puppetdocs-latest.tar.gz" target="_blank" rel="external">离线下载地址</a></p>
+<p><a href="https://puppetlabs.com/learn/" target="_blank" rel="external">https://puppetlabs.com/learn/</a><br>Puppet labs提供的在线学习Puppet的课堂，包括视频教学和在线练习工具，前提是你需要注册。Puppetlabs将给你提供Linux系统的was虚拟机进行练习，的确是很方便，大大地降低了学习成本。个人也觉得很赞，这和Github提供的<a href="https://try.github.io/levels/1/challenges/1" target="_blank" rel="external">try_Github</a>很类似。</p>
+<p><a href="https://puppetlabs.com/blog" target="_blank" rel="external">https://puppetlabs.com/blog</a><br>Puppetlabs的官方Blog，包括最新的资讯等，建议大家订阅。</p>
+<p><a href="http://ask.puppetlabs.com/questions/" target="_blank" rel="external">http://ask.puppetlabs.com/questions/</a><br>Puppetlabs的QA网站，这个和下面的QA一样。你可以在这里提交问题和跟踪BUG等。</p>
+<p><a href="http://puppetlabs.com/misc/webinars" target="_blank" rel="external">http://puppetlabs.com/misc/webinars</a><br>Puppet每周一次的网络研讨会，主要会讨论一些与Puppet相关的技术，包括：Puppet资源、配置及其它技术，同时还包括开发软件、Docker、虚拟化等。几乎都是视频教程，可惜没有配字幕，全靠听力，这个会有一点吃力。不过也是练习听力的好去处，HOHO</p>
+<h2 id="Puppet_IRC">Puppet IRC</h2>
+<p>IRC就不用说了嘛，国外开发者的最爱。在国内大多数人还是会选择QQ，现在使用微信的也多起来了。Puppetlabs提供两个官方的IRC供使用者和开发者。<br><img src="http://www.linuxnix.com/wp-content/uploads/2013/01/Linuxnix-free-e-book.png" alt="IRC"></p>
+<p><a href="http://webchat.freenode.net/?channels=puppet" target="_blank" rel="external">Puppet使用者</a><br><a href="http://webchat.freenode.net/?channels=puppet-dev" target="_blank" rel="external">Puppet开发者</a></p>
+<p>你的问题在这里很快都会得到解答，前提是：你得会英文。</p>
+<h2 id="Puppet_Q&amp;A">Puppet Q&amp;A</h2>
+<p>QA网站就不用提了，大名鼎鼎的SF肯定在列。<br>现在国内也有很多QA网站，不过还是比较推荐如下几个：<br><a href="http://ask.puppetlabs.com/questions/" target="_blank" rel="external">http://ask.puppetlabs.com/questions/</a><br><a href="http://serverfault.com/questions/tagged/puppet" target="_blank" rel="external">http://serverfault.com/questions/tagged/puppet</a><br><a href="http://stackoverflow.com/questions/tagged/puppet" target="_blank" rel="external">http://stackoverflow.com/questions/tagged/puppet</a></p>
+<h2 id="Puppet_Blogs/Sites">Puppet Blogs/Sites</h2>
+<p>Puppet cookbook很多人肯定知道，这在国外也很受欢迎。<br><a href="http://www.planetpuppet.org/" target="_blank" rel="external">http://www.planetpuppet.org/</a><br><a href="http://puppetcookbook.com/" target="_blank" rel="external">http://puppetcookbook.com/</a></p>
+<h2 id="Puppet_Groups">Puppet Groups</h2>
+<p>Groups就看个人喜好啦，有一些问题需要讨论时，可以在这里搜索一下，如果没有，可以发貼问一下，然后用G-mail订阅一下很方便。不过国人应该偏喜欢用BBS。原由大家都懂的。<br><a href="https://groups.google.com/forum/#!forum/puppet-users" target="_blank" rel="external">https://groups.google.com/forum/#!forum/puppet-users</a><br><a href="https://groups.google.com/forum/#!forum/puppet-dev" target="_blank" rel="external">https://groups.google.com/forum/#!forum/puppet-dev</a></p>
+<h2 id="其它Puppet页面">其它Puppet页面</h2>
+<p>我只能说Quora和Reddit是两个优秀的站点。<br><a href="http://www.quora.com/search?q=puppet" target="_blank" rel="external">http://www.quora.com/search?q=puppet</a><br><a href="http://www.reddit.com/r/Puppet/search?q=puppet&amp;sort=relevance&amp;restrict_sr=on&amp;t=all" target="_blank" rel="external">http://www.reddit.com/r/Puppet/search?q=puppet&amp;sort=relevance&amp;restrict_sr=on&amp;t=all</a></p>
+<p>以上网站我不能说我都经常去，但官方文档是使用最多的，建议大家多阅读。今天就先不推荐国内相关的BLOG与站点啦。</p>
+<p>如果你有知道不错的学习Puppet的地方，欢迎给我推荐～</p>
+<p>直接回复即可，我将从回复中抽取一名，赠送亲笔签名的《Puppet实战》。同时也欢迎转发朋友圈分享！</p>
+<p>如果你认为该文章还不错，欢迎点赞，为我增加一个读者。</p>
   
 	</div>
 		<footer class="article-footer clearfix">
 
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/puppet/">puppet</a>
-  </div>
-
-
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/Puppet/">Puppet</a>
-</div>
 
 
 
 <div class="article-share" id="share">
 
-  <div data-url="http://bubbyroom.com/2018/12/12/puppet-action-errata/" data-title="Puppet action Errata | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
+  <div data-url="http://bubbyroom.com/2014/10/20/11-online-Puppet-resources-you-should-know/" data-title="11 online Puppet resources you should know | Liuyu Blog" data-tsina="1054764633" class="share clearfix">
   </div>
 
 </div>
@@ -184,11 +131,19 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2018/12/12/puppet-action-errata/" title="Puppet action Errata">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  Puppet action Errata</span>
+</a>
+</div>
+
 
 <div class="next">
-<a href="/2014/10/20/11-online-Puppet-resources-you-should-know/"  title="11 online Puppet resources you should know">
+<a href="/2014/09/26/10-common-ops-mistakes/"  title="10 common ops mistakes">
  <strong>NEXT:</strong><br/> 
- <span>11 online Puppet resources you should know
+ <span>10 common ops mistakes
 </span>
 </a>
 </div>
@@ -205,7 +160,7 @@
 
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
-  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#《Puppet实战》勘误反馈"><span class="toc-number">1.</span> <span class="toc-text">《Puppet实战》勘误反馈</span></a></li><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#再见2013，你好2014！"><span class="toc-number">1.1.</span> <span class="toc-text">再见2013，你好2014！</span></a></li></ol>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet官方文档"><span class="toc-number">1.</span> <span class="toc-text">Puppet官方文档</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_IRC"><span class="toc-number">2.</span> <span class="toc-text">Puppet IRC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_Q&amp;A"><span class="toc-number">3.</span> <span class="toc-text">Puppet Q&amp;A</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_Blogs/Sites"><span class="toc-number">4.</span> <span class="toc-text">Puppet Blogs/Sites</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Puppet_Groups"><span class="toc-number">5.</span> <span class="toc-text">Puppet Groups</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它Puppet页面"><span class="toc-number">6.</span> <span class="toc-text">其它Puppet页面</span></a></li></ol>
   </div>
 
 <div id="asidepart">
